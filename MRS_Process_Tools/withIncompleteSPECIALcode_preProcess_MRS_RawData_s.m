@@ -1,7 +1,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% preProcess_MRS_RawData_s.m
+% withIncompleteSPECIALcode_preProcess_MRS_RawData_s.m
 %
 %% Function to measure the signal-to-noise ratio (SNR) and the linewidth (LW)/FWHM of a 
 %  selected resonance/peak in single volume magnetic resonance spectroscopy (MRS) data
@@ -10,7 +10,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filenamew,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc] = withIncompleteSPECIALcode_preProcess_MRS_RawData_s(dirString,outDirString,filename,filenamew,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
 % Processing script for Siemens MRS data in .dat format (twix raw data).  
@@ -67,7 +67,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filenamew,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
+function [out,out_w,out_noproc,out_w_noproc] = withIncompleteSPECIALcode_preProcess_MRS_RawData_s(dirString,outDirString,filename,filenamew,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
