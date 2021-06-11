@@ -371,25 +371,72 @@ switch seqType
 		
 		%% Combine signals from different coil elements
 		% First step should be to combine coil channels. For this find the coil phases 
-		% from the water unsuppressed data, if available; otherwise from the MR spectra
+		% from water unsuppressed data, if available; otherwise from the MR spectra
 		% Arguments referring to the nPos_ccth point of the FID and weighting of channels 
 		% based on maximum signal ('w') are ignored, when coilcombos are provided as input
-		nPos_cc		= 1;
-		nPos_cc_w	= 1;
+		nPos_cc				= 1;
+		nPos_cc_w			= 1;
+		nPos_cc_ref_ECC		= 1;
+		nPos_cc_ref_Quant	= 1;
+		
+		% If separate water scans and reference scans were acquired, get coil phases from
+		% both types of signals, and for coil combination use 
+		% if reference scans exist,
+		%	coil phases from reference scans for reference scans and MR spectra, since
+		%	reference scans were acquired together with MR spectra
+		%	coil phases from water scans for water scans
+		%
+		% if only water scans exist, 
+		%	coil phases from water scans for water scans and for MR spectra
+		%
+		% if neither reference scans nor water scans exist,
+		%	coil phases from MR spectra for MR spectra
+		
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%
+		% NOTE: If reference scans exist, it is assumed that the dkd sequence from CMRR 
+		% was used, i.e. two types of reference data exist: one for ECC and one for 
+		% quantification (Quant); 
+		% Use reference scans for ECC also for processing of spectra, but combine
+		% reference scans for quantification using their own coil phases
+		%
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+		% First, obtain all possible coil phases from existing types of data
+		if with_ref
+			% Obtain coil phases and amplitudes from reference scans for ECC and for Quant
+			coilcombos_ref_ECC		= op_getcoilcombos(out_ref_ECC_raw,nPos_cc_w,'w');
+			coilcombos_ref_Quant	= op_getcoilcombos(out_ref_Quant_raw,nPos_cc_w,'w');
+			% Combine reference scans using respective coil phases
+			[out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,ph_ref_ECC,sig_ref_ECC]			= ...
+				op_addrcvrs(out_ref_ECC_raw,nPos_cc_ref_ECC,'w',coilcombos_ref_ECC);
+			[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,ph_ref_Quant,sig_ref_Quant]	= ...
+				op_addrcvrs(out_ref_Quant_raw,nPos_cc_ref_Quant,'w',coilcombos_ref_Quant);
+		end		% End of if with_ref		
 		if with_water
 			% Obtain coil phases and amplitudes from unsuppressed water signal
 			%coilcombos	= op_getcoilcombos(out_raw_w,1);
-			coilcombos	= op_getcoilcombos(out_raw_w,nPos_cc_w,'w');
-			[outw_cc,fidw_pre,specw_pre,phw,sigw]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos);
+			coilcombosw	= op_getcoilcombos(out_raw_w,nPos_cc_w,'w');
+			% Combine water scans using respective coil phases
+			[outw_cc,fidw_pre,specw_pre,phw,sigw]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombosw);
+		end			% % End of if with_water
+		
+		% Obtain coil phases and amplitudes from (averaged) MR spectra
+		%coilcombos_mrs	= op_getcoilcombos(op_averaging(out_raw),1);
+		coilcombos_mrs	= op_getcoilcombos(op_averaging(out_raw),nPos_cc,'w');
+		
+		% Select coil phases and amplitudes for coil combination of MR spectra depending
+		% on available signals
+		if with_ref
+			coilcombos	= coilcomboa_ef_ECC;
 		else
-			if with_ref
-			% Obtain coil phases and amplitudes from reference scans (water signal)
-			coilcombos	= op_getcoilcombos(out_raw_ref,nPos_cc_w,'w');
+			if with_water
+				coilcombos	= coilcombosw;
 			else
-				%coilcombos	= op_getcoilcombos(op_averaging(out_raw),1);
-				coilcombos	= op_getcoilcombos(op_averaging(out_raw),nPos_cc,'w');
-			end
-		end
+				coilcombos		= coilcombos_mrs;
+			end			% % End of if with_water
+		end		% End of if with_ref
+			
 		% Combine coil channels before and after signal averaging for comparison and
 		% plotting
 		[out_cc,fid_pre,spec_pre,ph,sig]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
@@ -398,6 +445,10 @@ switch seqType
 		
 		% Generate unprocessed spectrum or spectra, respectively
 		out_noproc			= op_averaging(out_cc);
+		if with_ref
+			out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
+			out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
+		end
 		if with_water
 			outw_noproc		= op_averaging(outw_cc);
 		end
@@ -1115,468 +1166,7 @@ switch seqType
 
 	case 'SPECIAL'
 		disp('NOT YET COMPLETED ...');
-		% Create filenames for saving of processed output including OVS options
-		outFileName		= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-		outFileNameW	= [nameW, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
-		
-		
-		%% now combine the coil channels:
-		
-		% Find the coil phases either from additional unsuppressed watrer signal or from MR
-		% spectrum
-		% CBF: Note that here the second point of the time domain signal is used
-		% 'diff' option for combining spectra means addition (see manual)!
-		if with_water
-			coilcombos=op_getcoilcombos(op_combinesubspecs(out_w_raw,'diff'),2);
-		else
-			coilcombos=op_getcoilcombos_specReg(op_combinesubspecs(op_averaging(out_raw),'diff'),0,0.01,2);
-		end
-		
-		% CBF: Arguments referring to the 2nd point of the FID and weighting of channels based
-		% on maximum signal ('w') are ignored, when coilcombos are provided as input
-		[out_cc,fid_pre,spec_pre,ph,sig]=op_addrcvrs(out_raw,2,'w',coilcombos);
-		if with_water
-			[out_w_cc,fid_w_pre,spec_w_pre,ph_w,sig_w]=op_addrcvrs(out_w_raw,2,'w',coilcombos);
-		end
-		
-		%make the un-processed spectra, which may be optionally output from this function:
-		% CBF: Non-processed SPECIAL data - i.e. ISIS combination to obtain fully localized
-		% signals is carried out - are generated for comparison;
-		% only (manual) phase correction is applied below, and the non-processed data are saved as
-		% well
-		out_noproc=op_combinesubspecs(op_averaging(out_cc),'diff');
-		if with_water
-			out_w_noproc=op_combinesubspecs(op_averaging(out_w_cc),'diff');
-		end
-		
-		%plot the data before and after coil phasing:
-		figure('position',[0 50 560 420]);
-		subplot(2,1,1);
-		plot(out_raw.ppm,out_raw.specs(:,:,1,1));xlim([-1 7]);
-		xlabel('Frequency (ppm)');
-		ylabel('Amplitude (a.u.)');
-		title('Multi-channel (water supp.) data before phase correction');
-		subplot(2,1,2);
-		plot(out_raw.ppm,spec_pre(:,:,1,1));xlim([-1 7]);
-		xlabel('Frequency (ppm)');
-		ylabel('Amplitude (a.u.)');
-		title('Multi-channel (water supp.) data after phase correction');
-		
-		if with_water
-			figure('position',[0 550 560 420]);
-			subplot(2,1,1);
-			plot(out_w_raw.ppm,out_w_raw.specs(:,:,1,1));xlim([4 5]);
-			xlabel('Frequency (ppm)');
-			ylabel('Amplitude (a.u.)');
-			title('Multi-channel (water unsupp.) data before phase correction');
-			subplot(2,1,2);
-			plot(out_w_raw.ppm,spec_w_pre(:,:,1,1));xlim([4 5]);
-			xlabel('Frequency (ppm)');
-			ylabel('Amplitude (a.u.)');
-			title('Multi-channel (water unsupp.) data after phase correction');
-		end
-		%disp('Press any key to continue...');
-		%pause;
-		close all;
-		
-		
-		%% CBF: If minimum user input selected, alignment of subspectra is not optional
-		
-		%%%%%%%%%%%%%%%%%%%%%OPTIONAL ALIGNMENT OF SUBSPECTRA%%%%%%%%%%%%%%%%
-		fs_ai			= [];
-		phs_ai			= [];
-		% CBF: Ask for user input for alignment only, if minimum user input is NOT selected
-		alignISIS		= 'y';
-		if strcmp(strMinUserIn,'n') || strcmp(strMinUserIn,'N')
-			alignISIS		= input('would you like to align subspectra?  ','s');
-		end
-		if strcmp(alignISIS,'y') || strcmp(alignISIS,'Y')
-			%What we're actually doing is aligning the averages, then aligning the
-			%subspectra, then aligning the averages again, and then aligning the
-			%subspectra again.
-			% CBF: Spectral registration in the time domain using the first 0.4 s of each signal
-			% and the average of the averages as reference to align with ('y');
-			% additional outputs are frequency shifts (in Hz) and phase shifts (in degrees)
-			[out_ai,fs_temp,phs_temp]=op_alignAverages(out_cc,0.4,'y');
-			fs_ai=fs_temp;
-			phs_ai=phs_temp;
-			% CBF: Apply spectral registration to align ISIS subspectra prior to subtraction
-			% using the first 0.4 s of each signal and add shifts from this alignment to
-			% second column of shifts from previous alignment(s)
-			[out_ai,fs_temp,phs_temp]=op_alignISIS(out_ai,0.4);
-			fs_ai(:,2)=fs_ai(:,2)+fs_temp;
-			phs_ai(:,2)=phs_ai(:,2)+phs_temp;
-			% CBF: Spectral registration in the time domain using the first 0.4 s of each signal
-			% and the average of the averages as reference to align with ('y');
-			% add shifts from this alignment to shifts from previous alignment(s)
-			[out_ai,fs_temp,phs_temp]=op_alignAverages(out_ai,0.4,'y');
-			fs_ai=fs_ai+fs_temp;
-			phs_ai=phs_ai+phs_temp;
-			% CBF: Apply spectral registration to align ISIS subspectra prior to subtraction
-			% using the first 0.4 s of each signal and add shifts from this alignment to
-			% second column of shifts from previous alignment(s)
-			[out_ai,fs_temp,phs_temp]=op_alignISIS(out_ai,0.4);
-			fs_ai(:,2)=fs_ai(:,2)+fs_temp;
-			phs_ai(:,2)=phs_ai(:,2)+phs_temp;
-			
-			%for fs_ai and phs_ai, take the average across both subspecs:
-			fs_ai=mean(fs_ai,2);
-			phs_ai=mean(phs_ai,2);
-			
-			if with_water
-				%Now repeat above for water unsuppressed data:
-				[out_w_ai,fs_w_temp,phs_w_temp]=op_alignAverages(out_w_cc,0.4,'y');
-				fs_w_ai=fs_w_temp;
-				phs_w_ai=phs_w_temp;
-				[out_w_ai,fs_w_temp,phs_w_temp]=op_alignISIS(out_w_ai,0.4);
-				fs_w_ai(:,2)=fs_w_ai(:,2)+fs_w_temp;
-				phs_w_ai(:,2)=phs_w_ai(:,2)+phs_w_temp;
-				[out_w_ai,fs_w_temp,phs_w_temp]=op_alignAverages(out_w_ai,0.4,'y');
-				fs_w_ai=fs_w_ai+fs_w_temp;
-				phs_w_ai=phs_w_ai+phs_w_temp;
-				[out_w_ai,fs_w_temp,phs_w_temp]=op_alignISIS(out_w_ai,0.4);
-				fs_w_ai(:,2)=fs_w_ai(:,2)+fs_w_temp;
-				phs_w_ai(:,2)=phs_w_ai(:,2)+phs_w_temp;
-				
-				%for fs_w_ai and phs_w_ai, take the average across both subspecs:
-				fs_w_ai=mean(fs_w_ai,2);
-				phs_w_ai=mean(phs_w_ai,2);
-			end
-			
-			%Now check the plots to make sure that they look okay:
-			%First make combined subspecs plots:
-			out_cc_temp=op_combinesubspecs(out_cc,'diff');
-			out_ai_cc_temp=op_combinesubspecs(out_ai,'diff');
-			if with_water
-				out_w_cc_temp=op_combinesubspecs(out_w_cc,'diff');
-				out_w_ai_cc_temp=op_combinesubspecs(out_w_ai,'diff');
-			end
-			
-			%Now plot them
-			close all
-			figure('position',[0 0 560 420]);
-			subplot(1,2,1);
-			plot(out_cc_temp.ppm,out_cc_temp.specs);
-			xlim([0 5]);
-			xlabel('Frequency (ppm)');
-			ylabel('Amplitude (a.u.)');
-			title('Subspecs not aligned: (all averages)');
-			subplot(1,2,2);
-			plot(out_ai_cc_temp.ppm,out_ai_cc_temp.specs);
-			xlim([0 5]);
-			xlabel('Frequency (ppm)');
-			ylabel('Amplitude (a.u.)');
-			title('Subspecs aligned: (all averages)');
-			
-			if with_water
-				figure('position',[0 550 560 420]);
-				subplot(1,2,1);
-				plot(out_w_cc_temp.ppm,out_w_cc_temp.specs);
-				xlim([3.7 5.7]);
-				xlabel('Frequency (ppm)');
-				ylabel('Amplitude (a.u.)');
-				title('Subspecs not aligned: (all averages)');
-				subplot(1,2,2);
-				plot(out_w_ai_cc_temp.ppm,out_w_ai_cc_temp.specs);
-				xlim([3.7 5.7]);
-				xlabel('Frequency (ppm)');
-				ylabel('Amplitude (a.u.)');
-				title('Subspecs aligned: (all averages)');
-			end
-			
-			figure('position',[570 50 560 420]);
-			subplot(2,1,1);
-			plot([1:length(fs_ai)],fs_ai);
-			xlabel('Scan Number');
-			ylabel('Frequency Drift (Hz)');
-			title('Estimated Frequency Drift');
-			subplot(2,1,2);
-			plot([1:length(phs_ai)],phs_ai);
-			xlabel('Scan Number');
-			ylabel('Phase Drift (Degrees)');
-			title('Estimated Phase Drift');
-			
-			sat		= 'y';
-			%sat=input('are you satisfied with alignment of subspecs? ','s');
-			
-			if strcmp(fsPolysat,'n') || strcmp(sat,'N')
-				out_ai=out_cc;
-				if with_water
-					out_w_ai=out_w_cc;
-				end
-			end
-			
-		else
-			out_ai=out_cc;
-			if with_water
-				out_w_ai=out_w_cc;
-			end
-			fs_ai=zeros(size(out_cc.fids,out_cc.dims.averages),1);
-			phs_ai=zeros(size(out_cc.fids,out_cc.dims.averages),1);
-		end
-		
-		% Now combine the subspecs to obtain fully localized SPECIAL spectra
-		out_cs=op_combinesubspecs(out_ai,'diff');
-		if with_water
-			out_w_cs=op_combinesubspecs(out_w_ai,'diff');
-		end
-		
-		%%%%%%%%%%%%%%%%%%%%%END OF ALIGNMENT OF SUBSPECTRA%%%%%%%%%%%%%%%%%%
-		
-		
-		%% CBF: If minimum user input selected, removal of bad averages is not optional
-		
-		%%%%%%%%%%%%%%%%%%%%%OPTIONAL REMOVAL OF BAD AVERAGES%%%%%%%%%%%%%%%%
-		close all
-		figure('position',[0 50 560 420]);
-		plot(out_cs.ppm,out_cs.specs);
-		xlabel('Frequency (ppm)');
-		ylabel('Amplitude (a.u.)');
-		title('Water suppressed spectra (all averages)');
-		
-		out_cs2=out_cs;
-		nBadAvgTotal=0;
-		nbadAverages=1;
-		allAveragesLeft=[1:out_cs.sz(out_cs.dims.averages)]';
-		allBadAverages=[];
-		% CBF: Ask for user input for removal of bad averages only, if minimum user input is NOT
-		% selected
-		rmbadav		= 'y';
-		if strcmp(strMinUserIn,'n') || strcmp(strMinUserIn,'N')
-			rmbadav=input('would you like to remove bad averages?  ','s');
-		end
-		
-		close all;
-		if rmbadav=='n' || rmbadav=='N'
-			out_rm=out_cs;
-		else
-			% CBF: Remove bad averages; choose # of standard deviations by which averages have to
-			% differ to be classified as 'bad'
-			% (in _auto version of this script, i.e. with essentially no user input, 4 is used)
-			sat='n'
-			while sat=='n'||sat=='N'
-				% CBF: Ask for user input for # of standard deviations only, if minimum user
-				% input is NOT selected
-				% 'nSD' was initialized at beginning of routine
-				if strcmp(strMinUserIn,'n') || strcmp(strMinUserIn,'N')
-					nSD		= input('input number of standard deviations.  ');
-				end
-				iter=1;
-				nbadAverages=1;
-				nBadAvgTotal=0;
-				allAveragesLeft=[1:out_cs.sz(out_cs.dims.averages)]';
-				allBadAverages=[];
-				out_cs2=out_cs;
-				while nbadAverages>0
-					[out_rm,metric{iter},badAverages]=op_rmbadaverages(out_cs2,nSD,'t');
-					badAverages;
-					allBadAverages=[allBadAverages; allAveragesLeft(badAverages)];
-					badavMask_temp=zeros(length(allAveragesLeft),1);
-					badavMask_temp(badAverages)=1;
-					allAveragesLeft=allAveragesLeft(~badavMask_temp);
-					nbadAverages=length(badAverages)*out_raw.sz(out_raw.dims.subSpecs);
-					nBadAvgTotal=nBadAvgTotal+nbadAverages;
-					out_cs2=out_rm;
-					iter=iter+1;
-					disp([num2str(nbadAverages) ' bad averages removed on this iteration.']);
-					disp([num2str(nBadAvgTotal) ' bad averages removed in total.']);
-					%disp('Press any key to continue...');
-					%pause
-					close all;
-				end
-				figure('position',[0 50 560 420]);
-				subplot(1,2,1);
-				plot(out_cs.ppm,out_cs.specs);xlim([1 5]);
-				xlabel('Frequency (ppm)');
-				ylabel('Amplitude (a.u.)');
-				title('Before removal of bad averages:');
-				subplot(1,2,2);
-				plot(out_rm.ppm,out_rm.specs);xlim([1 5]);
-				xlabel('Frequency (ppm)');
-				ylabel('Amplitude (a.u.)');
-				title('After removal of bad averages:');
-				figure('position',[0 550 560 420]);
-				plot([1:length(metric{1})],metric{1},'.r',[1:length(metric{iter-1})],metric{iter-1},'x');
-				xlabel('Scan Number');
-				ylabel('Unlikeness metric (a.u.)');
-				title('Unlikeness metrics before and after bad averages removal');
-				legend('before','after');
-				legend boxoff;
-				sat		= 'y';
-				%sat=input('are you satisfied with bad averages removal? ','s');
-			end
-		end
-		
-		
-% 		% CBF: Create filenames for saving of processed output below
-% 		outFileName		= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-% 		outFileNameW	= [nameW, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
-		
-		% write a readme file to record the number of dropped avgs
-		% CBF: Write readme file to output directory instead of data directory
-		%fid=fopen([dirString '/readme.txt'],'w+');
-		%fid		= fopen([outDirString outFileName '_readme.txt'],'w+');
-		fid		= fopen([outDirString filename '/readme.txt'],'w+');
-		fprintf(fid,'Original number of averages: \t%5.6f',out_raw.sz(out_raw.dims.averages)*2);
-		disp(['Original number of averages:  ' num2str(out_raw.sz(out_raw.dims.averages)*2)]);
-		fprintf(fid,'\nNumber of bad Averages removed:  \t%5.6f',nBadAvgTotal);
-		disp(['Number of bad averages removed:  ' num2str(nBadAvgTotal)]);
-		fprintf(fid,'\nNumber of remaining averages in processed dataset:  \t%5.6f',out_rm.sz(out_rm.dims.averages)*2);
-		disp(['Number of remaining averages in processed dataset:  ' num2str(out_rm.sz(out_rm.dims.averages)*2)]);
-		fclose(fid);
-		
-		close all;
-		
-		%Now remove the entries from fs_ai and phs_ai that correspond to
-		%the bad-averages that were removed.
-		BadAvgMask=zeros(length(fs_ai),1);
-		BadAvgMask(allBadAverages)=1;
-		size(BadAvgMask)
-		size(fs_ai)
-		fs_ai=fs_ai(~BadAvgMask);
-		phs_ai=phs_ai(~BadAvgMask);
-		
-		%%%%%%%%%%%%%%%%%%%%END OF BAD AVERAGES REMOVAL%%%%%%%%%%%%%%%%%%%%
-		
-		
-		%% CBF: If minimum user input selected, frequency drift correction is not optional
-		% now align averages;
-		% CBF: Ask for user input for frequency correction only, if minimum user input is NOT
-		% selected
-		driftCorr		= 'y';
-		if strcmp(strMinUserIn,'n') || strcmp(strMinUserIn,'N')
-			driftCorr=input('Would you like to perform frequency drift correction?  ','s');
-		end
-		if driftCorr=='n'|| driftCorr=='N'
-			out_aa		= out_rm;
-			if with_water
-				out_w_aa	= out_w_cs;
-			end
-		else
-			% CBF: Align averages in time or in frequency domain; if in time domain, obtain tmax
-			% for drift correction as user input
-			% (in _auto version of this routine, i.e. with almost no user input, tmax is also
-			% still a user input)
-			sat			= 'n'
-			while sat=='n' || sat=='N'
-				out_rm2			= out_rm;
-				fsPoly			= 100;
-				phsPoly			= 1000;
-				fsCum			= fs_ai;fsPoly
-				phsCum			= phs_ai;
-				iter			= 1;
-				while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
-					close all
-					if aaDomain=='t' || aaDomain=='T'
-						tmax=input('input tmax for drift correction: ');
-						[out_aa,fs,phs]=op_alignAverages(out_rm2,tmax,'n');
-					elseif aaDomain=='f' || aaDomain=='F'
-						tmax=tmaxin+0.04*randn(1);
-						fmin=1.8+0.1*randn(1);
-						fmaxarray=[2.4,2.85,3.35,4.2,4.4,5.2];
-						fmax=fmaxarray(randi(6,1))
-						[out_aa,fs,phs]=op_alignAverages_fd(out_rm2,fmin,fmax,tmax,'n');
-					end
-					if with_water
-						[out_w_aa,fs_w,phs_w]=op_alignAverages(out_w_cs,5*tmax,'n');
-					end
-					
-					fsCum=fsCum+fs;
-					phsCum=phsCum+phs;
-					fsPoly=polyfit([1:out_aa.sz(out_aa.dims.averages)]',fs,1)
-					phsPoly=polyfit([1:out_aa.sz(out_aa.dims.averages)]',phs,1)
-					iter
-					out_rm2=out_aa;
-					if with_water
-						out_w_cs=out_w_aa;
-					end
-					iter=iter+1;
-				end
-				%Now plot the cumulative frequency drift correction:
-				figure('position',[0 550 1125 420]);
-				subplot(2,1,1);
-				plot(out_rm.ppm,out_rm.specs);xlim([0 6]);
-				xlabel('Frequency (ppm)');
-				ylabel('Amplitude (a.u.)');
-				title('Before drift correction:');
-				subplot(2,1,2);
-				plot(out_aa.ppm,out_aa.specs);xlim([0 6]);
-				xlabel('Frequency (ppm)');
-				ylabel('Amplitude (a.u.)');
-				title('After drift correction:');
-				
-				figure('position',[0 50 560 420]);
-				plot([1:out_aa.sz(out_aa.dims.averages)],phsCum);
-				xlabel('Scan Number');
-				ylabel('Phase Drift (deg.)');
-				title('Estimated Phase Drift');
-				
-				figure('position',[570 50 560 420]);
-				plot([1:out_aa.sz(out_aa.dims.averages)],fsCum);
-				xlabel('Scan Number');
-				ylabel('Frequency Drift (Hz)');
-				title('Estimated Frequency Drift');
-				
-				sat		= 'y';
-				%sat=input('Are you satisfied with the drift correction? ','s');
-			end
-			
-		end
-		
-		
-		%% now do the averaging and left shift to get rid of first order phase:
-		out_av=op_leftshift(op_averaging(out_aa),out_aa.pointsToLeftshift);
-		if with_water
-			out_w_av=op_leftshift(op_averaging(out_w_aa),out_w_aa.pointsToLeftshift);
-		end
-		
-		
-		%% CBF: Do manual phase correction only, if minimum user input is NOT selected
-		if strcmp(strMinUserIn,'n') || strcmp(strMinUserIn,'N')
-			%Do a manual phase correction:
-			SpecTool(out_av,0.05,-2,7);
-			ph0		= input('input 0 order phase correction: ');
-			ph1		= input('input 1st order phase correction: ');
-		else
-			% Set zero-order and first-order phases to zero for LCModel processing
-			ph0		= 0;
-			ph1		= 0;
-		end
-		% Apply phase correction
-		out			= op_addphase(out_av,ph0,ph1);
-		out_noproc	= op_addphase(out_noproc,ph0,ph1);
-		
-		
-		% Now do a manual phase correction on the water unsuppressed data, if minimum user input
-		% is not selected
-		if with_water
-			if strcmp(strMinUserIn,'n') || strcmp(strMinUserIn,'N')
-				SpecTool(out_w_av,0.05,-2,7);
-				ph0_w	= input('input 0 order phase correction: ');
-				ph1_w	= input('input 1st order phase correction: ');
-			else
-				% Set zero-order and first-order phases to zero for LCModel processing
-				ph0_w	= 0;
-				ph1_w	= 0;
-			end
-			% Apply phase correction
-			out_w			= op_addphase(out_w_av,ph0_w,ph1_w);
-			out_w_noproc	= op_addphase(out_w_noproc,ph0_w,ph1_w);
-		end
-		
-		
-		%% Auto phase correction and frequency shifting for peak alignment
-		
-		
-		
-		%% Make figure(s) to show the final spectra and save results
-		
-		% Can be realized by calling a separate routine?
-		% Use code from run_megapressproc_CBF.m
-		
-		
-		
-		
+	
 		
 	case 'MEGA-PRESS'
 		disp('Coming soon ...');
@@ -1585,9 +1175,11 @@ switch seqType
 		% Can be realized by calling a separate routine?
 		% Use code from run_specialproc_CBF.m
 		
+		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
-end
+		
+end		% End of switch seqType
 
 
 
