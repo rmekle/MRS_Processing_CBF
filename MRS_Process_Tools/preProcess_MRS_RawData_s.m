@@ -880,6 +880,7 @@ switch seqType
 				clear out_noproc_tmp;
 			end		% End of if out_noproc.dims.subSpecs ~= 0
 		end		% End of if out_av.dims.subSpecs ~= 0
+		
 		if with_water
 			if outw_av.dims.subSpecs ~= 0
 				disp(sMsg_newLines);
@@ -899,9 +900,58 @@ switch seqType
 					out_w_noproc_tmp		= out_w_noproc;
 					out_w_noproc			= op_average_subSpecs_s(out_w_noproc_tmp);
 					clear out_w_noproc_tmp;
-				end		% End of if out_noproc.dims.subSpecs ~= 0
+				end		% End of if out_w_noproc.dims.subSpecs ~= 0
 			end		% End of if outw_av.dims.subSpecs ~= 0
 		end		% End of if with_water
+		
+		if with_ref
+			% Though it is highly unlikely that for only one type of reference scans
+			% subspectra are present and not for the other one, both types of reference
+			% scans from Dinesh's CMRR sequence are treated independently to be on the
+			% safe side
+			if out_ref_ECC_av.dims.subSpecs ~= 0
+				disp(sMsg_newLines);
+				warning('%s: Subspectra still present in reference (water) scans for ECC! # of subsprectra = out_ref_ECC_av.sz(out_ref_ECC_av.dims.subSpecs) = %d', sFunctionName, out_ref_ECC_av.sz(out_ref_ECC_av.dims.subSpecs));
+				disp(sMsg_newLine);
+				disp('Averaging subSpecs of reference (water) scans for ECC ...');
+				disp(sMsg_newLines);
+				out_ref_ECC_av_tmp		= out_ref_ECC_av;
+				out_ref_ECC_av			= op_average_subSpecs_s(out_ref_ECC_av_tmp);
+				clear out_ref_ECC_av_tmp;
+				
+				% Since unprocessed refrence scans will also be written to file in LCModel
+				% format, the unprocessed subSpectra have to be averaged as well to avoid
+				% any errors in output routine io_writelcm.m due to isISIS flag being
+				% still set to 1
+				if out_ref_ECC_noproc.dims.subSpecs ~= 0
+					out_ref_ECC_noproc_tmp		= out_ref_ECC_noproc;
+					out_ref_ECC_noproc			= op_average_subSpecs_s(out_ref_ECC_noproc_tmp);
+					clear out_ref_ECC_noproc_tmp;
+				end		% End of if out_ref_ECC_noproc.dims.subSpecs ~= 0
+			end		% End of if out_ref_ECC_av.dims.subSpecs ~= 0
+			
+			if out_ref_Quant_av.dims.subSpecs ~= 0
+				disp(sMsg_newLines);
+				warning('%s: Subspectra still present in reference (water) scans for Quant! # of subsprectra = out_ref_Quant_av.sz(out_ref_Quant_av.dims.subSpecs) = %d', sFunctionName, out_ref_Quant_av.sz(out_ref_Quant_av.dims.subSpecs));
+				disp(sMsg_newLine);
+				disp('Averaging subSpecs of reference (water) scans for Quant ...');
+				disp(sMsg_newLines);
+				out_ref_Quant_av_tmp	= out_ref_Quant_av;
+				out_ref_Quant_av		= op_average_subSpecs_s(out_ref_Quant_av_tmp);
+				clear out_ref_Quant_av_tmp;
+				
+				% Since unprocessed refrence scans will also be written to file in LCModel
+				% format, the unprocessed subSpectra have to be averaged as well to avoid
+				% any errors in output routine io_writelcm.m due to isISIS flag being
+				% still set to 1
+				if out_ref_Quant_noproc.dims.subSpecs ~= 0
+					out_ref_Quant_noproc_tmp	= out_ref_Quant_noproc;
+					out_ref_Quant_noproc		= op_average_subSpecs_s(out_ref_Quant_noproc_tmp);
+					clear out_ref_Quant_noproc_tmp;
+				end		% End of if out_ref_Quant_noproc.dims.subSpecs ~= 0
+			end		% End of if out_ref_Quant_av.dims.subSpecs ~= 0
+			
+		end		% End of if with_ref
 		
 		
 		%% Perform phase and frequency corrections
