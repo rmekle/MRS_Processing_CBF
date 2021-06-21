@@ -31,8 +31,14 @@
 % seqType	   = String specifying the MRS sequence type used for data acquisition, e.g.
 %					'PRESS', 'STEAM', 'SPECIAL', 'sLASER', 'MEGA-PRESS'
 % dataType	   = String describing the type of MRS data:
-%					'water' = water signal, 'mrs' = MR spectrum without water signal, 
-%					'mrs_w'= MR spectrum with respective water signal
+%					'mrs'		= MR spectrum without water signal, 
+%					'mrs_w'		= MR spectrum with unsuppressed water signal
+%					'mrs_w_ref'	= MR spectrum with unsuppressed water signal and reference
+%									(water) scans
+%					'mrs_ref'	= MR spectrum with reference (water) scans
+%					'water'		= MR spectrum is unsuppressed water signal itself
+%					'water_ref' = MR spectrum is unsuppressed water signal itself with
+%									reference (water) scans (should be very rare!)
 % strOVS	   = (optional) String that specifies whether water acquired with OVS ('wOVS')
 %					 or withoutOVS ('woutOVS') is used for processing. 
 %					 Default is 'woutOVS', which means that OVS was not used. 
@@ -428,7 +434,7 @@ switch seqType
 		% Select coil phases and amplitudes for coil combination of MR spectra depending
 		% on available signals
 		if with_ref
-			coilcombos	= coilcomboa_ef_ECC;
+			coilcombos	= coilcombos_ref_ECC;
 		else
 			if with_water
 				coilcombos	= coilcombosw;
@@ -450,7 +456,7 @@ switch seqType
 			out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
 		end
 		if with_water
-			outw_noproc		= op_averaging(outw_cc);
+			outw_noproc				= op_averaging(outw_cc);
 		end
 
 		% Generate plots showing coil channels before and after phase alignment
@@ -521,7 +527,7 @@ switch seqType
 		close(h1);
 		
 		
-		%% Remove bad averages from data
+		%% Remove bad averages from MRS data
 		%%%%%%%% OPTIONAL REMOVAL OF BAD AVERAGES FROM DATASET %%%%%%%%%%%%%%%%%%%%
 		close all;
 		out_cc2			= out_cc;
@@ -619,7 +625,7 @@ switch seqType
 				%sat1=input('are you satisfied with the removal of bad averages? ','s');
 				sat='y';
 				
-			end
+			end			% End of while sat=='n' || sat=='N'
 			
 			% Write a readme file to record the number of dropped avgs to output directory
 			% for report instead of input data directory, if report switch is turned ON
@@ -636,7 +642,7 @@ switch seqType
 				disp(['Number of remaining averages in processed dataset:  ' num2str(out_rm.sz(out_rm.dims.averages))]);
 				fclose(fid1);
 			end
-		end
+		end		% End of if rmbadav=='n' || rmbadav=='N' || out_cc.dims.averages == 0
 				
 		%%%%%%%%%%%%%%%%%%%% END OF BAD AVERAGES REMOVAL %%%%%%%%%%%%%%%%%%%%
 		
@@ -649,17 +655,23 @@ switch seqType
 		% data is spectrum or water signal
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain 
-		if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-			% MR spectrum is provided together with or without unsuppressed water signal 
-			ppmmin_fix		= 1.6;
-			ppmmaxarray_fix	= [3.5; 4.0; 5.5];
-			iamax			= 6;
-		else
-			% MR spectrum is water signal itself
-			ppmmin_fix		= 4.2;
-			ppmmaxarray_fix	= [5.5 5.5 5.2];
-			iamax			= 6;
-		end
+		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
+		switch dataType
+			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+				% MR spectrum is provided together without or with unsuppressed water 
+				% signal and/or with reference scans
+				ppmmin_fix		= 1.6;
+				ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+				iamax			= 6;
+			case {'water', 'water_ref'}
+				% MR spectrum is water signal itself without or with reference scans
+				ppmmin_fix		= 4.2;
+				ppmmaxarray_fix	= [5.5 5.5 5.2];
+				iamax			= 6;
+			
+			otherwise
+				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+		end		% End of switch dataType
 		
 		% Do not perform drift correction, if either not selected or if dimension of 
 		% averages does not exist (index for dimension of averages = 0), 
@@ -669,14 +681,22 @@ switch seqType
 		if driftCorr=='n' || driftCorr=='N' || out_rm.dims.averages == 0
 			out_av		= op_averaging(out_rm);
 			if with_water
-				outw_av		= op_averaging(outw_cc);
+				outw_av				= op_averaging(outw_cc);
+			end
+			if with_ref
+				out_ref_ECC_av		= op_averaging(out_ref_ECC_cc);
+				out_ref_Quant_av	= op_averaging(out_ref_Quant_cc);
 			end
 			fs			= 0;
 			phs			= 0;
 		else
 			if with_water
 				%outw_aa		= op_alignAverages(outw_cc,tmaxin,'n');
-				outw_aa		= op_alignAverages(outw_cc,0.2,'n');
+				outw_aa				= op_alignAverages(outw_cc,0.2,'n');
+			end
+			if with_ref
+				out_ref_ECC_aa		= op_alignAverages(out_ref_ECC_cc,0.2,'n'); 
+				out_ref_Quant_aa	= op_alignAverages(out_ref_Quant_cc,0.2,'n'); 
 			end
 			sat			= 'n';
 			out_rm2		= out_rm;
@@ -719,7 +739,7 @@ switch seqType
 						out_rm2		= out_aa;
 					end
 					iter			= iter+1;
-				end
+				end		% End of while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
 				
 				% Only display figure(s), if selected
 				if plotSwitch == 1
@@ -754,7 +774,7 @@ switch seqType
 				% Only display figure(s), if selected
 				if plotSwitch == 1
 					h6	= figure('position',[fig_left (fig_bottom+fig_dist_b) fig_width fig_height]);
-				else
+				elseif rmbadav=='n' || rmbadav=='N' || out_cc.dims.averages == 0
 					h6	= figure('visible','off');
 				end
 				plot([1:out_aa.sz(out_aa.dims.averages)],fscum,'.-','LineWidth',2);
@@ -819,13 +839,18 @@ switch seqType
 				totalFreqDrift		= mean(max(fscum)-min(fscum));
 				totalPhaseDrift		= mean(max(phscum)-min(phscum));
 				close all
-			end
+			end		% End of while sat=='n' || sat=='N'
+			
 			% Now average the aligned averages
 			out_av		= op_averaging(out_aa);
 			if with_water
-				outw_av		= op_averaging(outw_aa);
+				outw_av				= op_averaging(outw_aa);
 			end
-		end
+			if with_ref
+				out_ref_ECC_av		= op_averaging(out_ref_ECC_aa);
+				out_ref_Quant_av	= op_averaging(out_ref_Quant_aa); 
+			end
+		end		% End of if driftCorr=='n' || driftCorr=='N' || out_rm.dims.averages == 0
 		
 		
 		%% Combine any subspectra, if existent
