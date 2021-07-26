@@ -955,71 +955,142 @@ switch seqType
 		
 		
 		%% Perform phase and frequency corrections
+		% Set parameters for phase and frequency correction inluding reference frequencies
+		% and factors for zeropadding
+		freqs_Cr		= [2.9; 3.1; 3.027];
+		freqs_w			= [4.0; 5.5; 4.65];
+		zp_factor		= 16;
+		zp_factorw		= 16;
+		zp_factor_ref	= 16;
+		
 		% Left shift the MRS signals to eliminate first order phase, perform zero-order 
-		% phase correction and shift data in frequency to obtain reference peaks at known
+		% phase correction, and shift data in frequency to obtain reference peaks at known
 		% positions
 		% Now left shift
+		% MR spectrum
 		out_ls		= op_leftshift(out_av,out_av.pointsToLeftshift);
 		if with_water
-			outw_ls		= op_leftshift(outw_av,outw_av.pointsToLeftshift);
+			% Water signal
+			outw_ls				= op_leftshift(outw_av,outw_av.pointsToLeftshift);
 		end
+		
+		if with_ref
+			% Reference (water) signals
+			out_ref_ECC_ls		= op_leftshift(out_ref_ECC_av,out_ref_ECC_av.pointsToLeftshift);
+			out_ref_Quant_ls	= op_leftshift(out_ref_Quant_av,out_ref_Quant_av.pointsToLeftshift);
+		end		% End of if with_ref
 		
 		% Perform automatic zero-order phase correction
 		% If data is MR spectrum, use creatine peak at 3.027 ppm:
-		if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-			out_ls_zp		= op_zeropad(out_ls,16);
-			[out_ph,ph0]	= op_autophase(out_ls,2.9,3.1);
-			out_ls_zp		= op_addphase(out_ls_zp,ph0);
-			% And now for water unsuppressed data (use water peak):
-			if with_water
-				outw_ls_zp	= op_zeropad(outw_ls,16);
-				indexw		= find(abs(outw_ls_zp.specs) == max(abs(outw_ls_zp.specs(outw_ls_zp.ppm>4 & outw_ls_zp.ppm<5.5))));
-				ph0w		= -phase(outw_ls_zp.specs(indexw))*180/pi;
-				outw_ph		= op_addphase(outw_ls,ph0w);
-				outw_ls_zp	= op_addphase(outw_ls_zp,ph0w);
-			end
-		else
-			% MR spectrum is water signal itself, so use water peak:
-			out_ls_zp	= op_zeropad(out_ls,16);
-			indexw		= find(abs(out_ls_zp.specs) == max(abs(out_ls_zp.specs(out_ls_zp.ppm>4 & out_ls_zp.ppm<5.5))));
-			ph0			= -phase(out_ls_zp.specs(indexw))*180/pi;
-			out_ph		= op_addphase(out_ls,ph0);
-			out_ls_zp	= op_addphase(out_ls_zp,ph0);
-		end
+		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )	
+		switch dataType
+			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+				% MR spectrum is provided together without or with unsuppressed water
+				% signal and/or with reference scans
+				out_ls_zp		= op_zeropad(out_ls,zp_factor);
+				%[out_ph,ph0]	= op_autophase(out_ls,2.9,3.1);
+				[out_ph,ph0]	= op_autophase(out_ls,freqs_Cr(1),freqs_Cr(2));
+				out_ls_zp		= op_addphase(out_ls_zp,ph0);
+				% And now for water unsuppressed data (use water peak):
+				if with_water
+					outw_ls_zp	= op_zeropad(outw_ls,zp_factorw);
+					%indexw		= find(abs(outw_ls_zp.specs) == max(abs(outw_ls_zp.specs(outw_ls_zp.ppm>4 & outw_ls_zp.ppm<5.5))));
+					indexw		= find(abs(outw_ls_zp.specs) == max(abs(outw_ls_zp.specs(outw_ls_zp.ppm>freqs_w(1) & outw_ls_zp.ppm<freqs_w(2)))));
+					ph0w		= -phase(outw_ls_zp.specs(indexw))*180/pi;
+					outw_ph		= op_addphase(outw_ls,ph0w);
+					outw_ls_zp	= op_addphase(outw_ls_zp,ph0w);
+				end
+			case {'water', 'water_ref'}
+				% MR spectrum is water signal itself without or with reference scans
+				out_ls_zp	= op_zeropad(out_ls,zp_factor);
+				indexw		= find(abs(out_ls_zp.specs) == max(abs(out_ls_zp.specs(out_ls_zp.ppm>freqs_w(1) & out_ls_zp.ppm<freqs_w(2)))));
+				ph0			= -phase(out_ls_zp.specs(indexw))*180/pi;
+				out_ph		= op_addphase(out_ls,ph0);
+				out_ls_zp	= op_addphase(out_ls_zp,ph0);
+				
+			otherwise
+				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+		end		% End of switch dataType
 		
-		% Perform same phase corection on unprocessed data
+		% Reference scans can be processed the same way for all cases of the above switch
+		% statement assuming that these are always water signals
+		if with_ref
+			% Reference (water) signals
+			out_ref_ECC_ls_zp	= op_zeropad(out_ref_ECC_ls,zp_factor_ref);
+			index_ref_ECC		= find(abs(out_ref_ECC_ls_zp.specs) == max(abs(out_ref_ECC_ls_zp.specs(out_ref_ECC_ls_zp.ppm>freqs_w(1) & out_ref_ECC_ls_zp.ppm<freqs_w(2)))));
+			ph0_ref_ECC			= -phase(out_ref_ECC_ls_zp.specs(index_ref_ECC))*180/pi;
+			out_ref_ECC_ph		= op_addphase(out_ref_ECC_ls,ph0_ref_ECC);
+			out_ref_ECC_ls_zp	= op_addphase(out_ref_ECC_ls_zp,ph0_ref_ECC);
+			
+			out_ref_Quant_ls_zp	= op_zeropad(out_ref_Quant_ls,zp_factor_ref);
+			index_ref_Quant		= find(abs(out_ref_Quant_ls_zp.specs) == max(abs(out_ref_Quant_ls_zp.specs(out_ref_Quant_ls_zp.ppm>freqs_w(1) & out_ref_Quant_ls_zp.ppm<freqs_w(2)))));
+			ph0_ref_Quant		= -phase(out_ref_Quant_ls_zp.specs(index_ref_Quant))*180/pi;
+			out_ref_Quant_ph	= op_addphase(out_ref_Quant_ls,ph0_ref_Quant);
+			out_ref_Quant_ls_zp	= op_addphase(out_ref_Quant_ls_zp,ph0_ref_Quant);
+		end		% End of if with_ref
+		
+		% Perform same phase corection (left shift and zero-order) on unprocessed data
+		% MR spectrum
 		out_noproc		= op_addphase(op_leftshift(out_noproc,out_noproc.pointsToLeftshift),ph0);
 		if with_water
-			outw_noproc		= op_addphase(op_leftshift(outw_noproc,outw_noproc.pointsToLeftshift),ph0w);
+			% Water signal
+			out_w_noproc		= op_addphase(op_leftshift(out_w_noproc,out_w_noproc.pointsToLeftshift),ph0w);
 		end
 
+		if with_ref
+			% Reference (water) signals
+			out_ref_ECC_noproc		= op_addphase(op_leftshift(out_ref_ECC_noproc,out_ref_ECC_noproc.pointsToLeftshift),ph0_ref_ECC);
+			out_ref_Quant_noproc	= op_addphase(op_leftshift(out_ref_Quant_noproc,out_ref_Quant_noproc.pointsToLeftshift),ph0_ref_Quant);
+		end		% End of if with_ref
 		
 		% Frequency shift all spectra
 		% If data is MR spectrum, so that creatine appears at 3.027 ppm
-		if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-			[~,frqShift]	= op_ppmref(out_ls_zp,2.9,3.1,3.027);
-			out				= op_freqshift(out_ph,frqShift);
-			out_noproc		= op_freqshift(out_noproc,frqShift);
-			% And now for water unsuppressed data (user water peak and set it to 4.65 ppm)
-			if with_water
-				[~,frqShiftw]	= op_ppmref(outw_ls_zp,4,5.5,4.65);
-				outw			= op_freqshift(outw_ph,frqShiftw);
-				outw_noproc		= op_freqshift(outw_noproc,frqShiftw);
-			end
-		else
-			% MR spectrum is water signal itself, so use water peak and set it to 4.65 ppm
-			[~,frqShift]	= op_ppmref(out_ls_zp,4,5.5,4.65);
-			out				= op_freqshift(out_ph,frqShift);
-			out_noproc		= op_freqshift(out_noproc,frqShift);
-		end
-		close all;		
+		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
+		switch dataType
+			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+				% MR spectrum is provided together without or with unsuppressed water
+				% signal and/or with reference scans
+				%[~,frqShift]	= op_ppmref(out_ls_zp,2.9,3.1,3.027);
+				[~,frqShift]	= op_ppmref(out_ls_zp,freqs_Cr(1),freqs_Cr(2),freqs_Cr(3));
+				out				= op_freqshift(out_ph,frqShift);
+				out_noproc		= op_freqshift(out_noproc,frqShift);
+				% For water unsuppressed data, use water peak and set it to 4.65 ppm
+				if with_water
+					%[~,frqShiftw]	= op_ppmref(outw_ls_zp,4,5.5,4.65);
+					[~,frqShiftw]	= op_ppmref(outw_ls_zp,freqs_w(1),freqs_w(2),freqs_w(3));
+					out_w			= op_freqshift(outw_ph,frqShiftw);
+					out_w_noproc	= op_freqshift(out_w_noproc,frqShiftw);
+				end
+			case {'water', 'water_ref'}
+				% MR spectrum is water signal itself without or with reference scans,
+				% so use water peak and set it to 4.65 ppm
+				%[~,frqShift]	= op_ppmref(out_ls_zp,4,5.5,4.65);
+				[~,frqShift]	= op_ppmref(out_ls_zp,freqs_w(1),freqs_w(2),freqs_w(3));
+				out				= op_freqshift(out_ph,frqShift);
+				out_noproc		= op_freqshift(out_noproc,frqShift);
+				
+			otherwise
+				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+		end		% End of switch dataType
 		
-		
-		
-		%% Make figure(s) to show the final spectra and save results
-		
+		% Reference scans can be processed the same way for all cases of the above switch
+		% statement assuming that these are always water signals
+		if with_ref
+			% Reference (water) signals
+			[~,frqShift_ref_ECC]	= op_ppmref(out_ref_ECC_ls_zp,freqs_w(1),freqs_w(2),freqs_w(3));
+			out_ref_ECC				= op_freqshift(out_ref_ECC_ph,frqShift_ref_ECC);
+			out_ref_ECC_noproc		= op_freqshift(out_ref_ECC_noproc,frqShift_ref_ECC);
 			
-		%% Display spectra and save corresponding figures
+			[~,frqShift_ref_Quant]	= op_ppmref(out_ref_Quant_ls_zp,freqs_w(1),freqs_w(2),freqs_w(3));
+			out_ref_Quant			= op_freqshift(out_ref_Quant_ph,frqShift_ref_Quant);
+			out_ref_Quant_noproc	= op_freqshift(out_ref_Quant_noproc,frqShift_ref_Quant);		
+		end		% End of if with_ref
+		
+						
+		%% Display final MR spectra and save corresponding figures
+		% Close all figures
+		close all;	
+		
 		%h=figure('visible','off');
 		%plot(out.ppm,real(out.specs),'linewidth',2);xlim([0.2 5.2]);
 		%xlabel('Frequency (ppm)','FontSize',10);
@@ -1028,7 +1099,7 @@ switch seqType
 		% Set figure parameters
 		% Set plotting resolution and properties of axes depending on data type
 		resolution		= 600;
-		% If data is MR spectrum mor MR spectrum and a water signal
+		% If data is MR spectrum or MR spectrum and a water signal
 		if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
 			xLimValues1		= [0.0 5.5];
 			xLimValues2		= [0.2 4.2];
@@ -1118,11 +1189,11 @@ switch seqType
 		end		% End of if with_water
 		
 		
-		%% If minimum user input selected, writing results to file is not optional
-		% Write processed and unprocessed data (spectra and water) to file, if user selected
+		%% Write processed and unprocessed data (spectra and water signals) to file, if user selected
 		% Use .RAW format for LCModel
-		% Ask for user input for writing results to file only, if minimum user input is NOT
-		% selected
+		% Ask for user input for writing results to file only, if minimum user input is 
+		% NOT selected
+		% If minimum user input selected, writing results to file is not optional
 		wrt				= 'y';
 		if strcmp(strMinUserIn,'n') || strcmp(strMinUserIn,'N')
 			wrt			= input('Write results to file? ','s');
