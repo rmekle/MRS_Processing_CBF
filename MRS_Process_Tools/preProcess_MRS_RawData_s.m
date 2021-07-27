@@ -3,19 +3,18 @@
 %
 % preProcess_MRS_RawData_s.m
 %
-%% Function to measure the signal-to-noise ratio (SNR) and the linewidth (LW)/FWHM of a 
-%  selected resonance/peak in single volume magnetic resonance spectroscopy (MRS) data
+%% Function to preprocess single volume magnetic resonance spectroscopy (MRS) data
 %  using functions from the MRS processing toolkit FID-A
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
 % Processing script for Siemens MRS data in .dat format (twix raw data).  
 % Includes combination of receiver channels, removal of bad averages, 
-% frequency drift correction, and leftshifting.
+% frequency drift correction, phase and frequency correction.
 % 
 % INPUTS:
 % dirString    = String variable for the name of the directory containing
@@ -60,20 +59,27 @@
 %					figures and a readme file: 1 = ON, 0 = OFF. Default is 1. 
 % 
 % OUTPUTS:
-% out          = Fully processed, water suppressed output spectrum.
-% out_w        = Fully processed, water unsuppressed output spectrum.
-% out_noproc   = Water suppressed output spectrum without pre-
-%                   processing (No bad-averages removal, no frequency drift
-%                   correction).
-% out_w_noproc = Water unsuppressed output spectrum without pre-
-%                   processing.
+% out          = Fully preprocessed, water suppressed output spectrum
+% out_w        = Fully preprocessed, water unsuppressed output spectrum
+% out_noproc   = Water suppressed output spectrum without preprocessing 
+%                   (No bad-averages removal, no frequency drift correction)
+% out_w_noproc = Water unsuppressed output spectrum without preprocessing
+%
+% If reference sigbals are present in input data:
+%
+% out_ref_ECC			= Fully preprocessed, water reference signal(s) for eddy current
+%							compensation (ECC)
+% out_ref_Quant			= Fully preprocessed, water reference signal(s) for metabolite
+%							quantification (Quant)
+% out_ref_ECC_noproc	= Water reference signal(s) for ECC without preprocessing 
+% out_ref_Quant_noproc	= Water reference signal(s) for Quant without preprocessing
 %
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2021; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
+function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
