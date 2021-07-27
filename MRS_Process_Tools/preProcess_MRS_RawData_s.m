@@ -10,7 +10,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filenamew,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
 % Processing script for Siemens MRS data in .dat format (twix raw data).  
@@ -25,7 +25,7 @@
 % filename     = String variable for the name of the water suppressed .dat file,
 %					e.g. 3T_20170510_PetraO_meas_MID00091_FID153257_rm_special_RF_ACC.dat
 %					or specialDLPFC.dat
-% filenamew    = String variable for the name of the water unsuppressed .dat file,
+% filename_w   = String variable for the name of the water unsuppressed .dat file,
 %					e.g. 3T_20170510_PetraO_meas_MID00091_FID153259_rm_special_RF_ACC.dat
 %					or specialDLPFC_w.dat
 % seqType	   = String specifying the MRS sequence type used for data acquisition, e.g.
@@ -73,7 +73,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filenamew,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
+function [out,out_w,out_noproc,out_w_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -130,17 +130,17 @@ end
 
 % Obtain different parts of filenames
 [sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
-[sPathStrW,nameW, extW] 			= fileparts(filenamew);
+[sPathStr_W,name_w, ext_W] 			= fileparts(filename_w);
 
 % Create filenames for saving of processed output depending on sequence type
 if( strcmp(seqType, 'MEGA-PRESS') )
 	% Assuming that MEGA-PRESS editing is usually performed without OVS
 	outFileName		= [nameSpec, sprintf('_%.1f', nSD)];
-	outFileNameW	= [nameW, '_w', sprintf('_%.1f', nSD)];
+	outFileName_w	= [name_W, '_w', sprintf('_%.1f', nSD)];
 else
 	% Water signals and/or MR spectra were acquired with or without OVS
 	outFileName		= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileNameW	= [nameW, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName_w	= [name_W, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
 end
 
 
@@ -421,10 +421,10 @@ switch seqType
 		end		% End of if with_ref		
 		if with_water
 			% Obtain coil phases and amplitudes from unsuppressed water signal
-			%coilcombos	= op_getcoilcombos(out_raw_w,1);
-			coilcombosw	= op_getcoilcombos(out_raw_w,nPos_cc_w,'w');
+			%coilcombos		= op_getcoilcombos(out_raw_w,1);
+			coilcombos_w	= op_getcoilcombos(out_raw_w,nPos_cc_w,'w');
 			% Combine water scans using respective coil phases
-			[outw_cc,fidw_pre,specw_pre,phw,sigw]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombosw);
+			[out_w_cc,fid_w_pre,spec_w_pre,ph_w,sig_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
 		end			% % End of if with_water
 		
 		% Obtain coil phases and amplitudes from (averaged) MR spectra
@@ -437,7 +437,7 @@ switch seqType
 			coilcombos	= coilcombos_ref_ECC;
 		else
 			if with_water
-				coilcombos	= coilcombosw;
+				coilcombos	= coilcombos_w;
 			else
 				coilcombos		= coilcombos_mrs;
 			end			% % End of if with_water
@@ -456,7 +456,7 @@ switch seqType
 			out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
 		end
 		if with_water
-			outw_noproc				= op_averaging(outw_cc);
+			out_w_noproc				= op_averaging(out_w_cc);
 		end
 
 		% Generate plots showing coil channels before and after phase alignment
@@ -681,7 +681,7 @@ switch seqType
 		if driftCorr=='n' || driftCorr=='N' || out_rm.dims.averages == 0
 			out_av		= op_averaging(out_rm);
 			if with_water
-				outw_av				= op_averaging(outw_cc);
+				out_w_av			= op_averaging(out_w_cc);
 			end
 			if with_ref
 				out_ref_ECC_av		= op_averaging(out_ref_ECC_cc);
@@ -691,8 +691,8 @@ switch seqType
 			phs			= 0;
 		else
 			if with_water
-				%outw_aa		= op_alignAverages(outw_cc,tmaxin,'n');
-				outw_aa				= op_alignAverages(outw_cc,0.2,'n');
+				%out_w_aa		= op_alignAverages(out_w_cc,tmaxin,'n');
+				out_w_aa			= op_alignAverages(out_w_cc,0.2,'n');
 			end
 			if with_ref
 				out_ref_ECC_aa		= op_alignAverages(out_ref_ECC_cc,0.2,'n'); 
@@ -844,7 +844,7 @@ switch seqType
 			% Now average the aligned averages
 			out_av		= op_averaging(out_aa);
 			if with_water
-				outw_av				= op_averaging(outw_aa);
+				out_w_av			= op_averaging(out_w_aa);
 			end
 			if with_ref
 				out_ref_ECC_av		= op_averaging(out_ref_ECC_aa);
@@ -882,15 +882,15 @@ switch seqType
 		end		% End of if out_av.dims.subSpecs ~= 0
 		
 		if with_water
-			if outw_av.dims.subSpecs ~= 0
+			if out_w_av.dims.subSpecs ~= 0
 				disp(sMsg_newLines);
-				warning('%s: Subspectra still present in unsuppressed water signal! # of subsprectra = outw_av.sz(outw_av.dims.subSpecs) = %d', sFunctionName, outw_av.sz(outw_av.dims.subSpecs));
+				warning('%s: Subspectra still present in unsuppressed water signal! # of subsprectra = out_w_av.sz(outw_av.dims.subSpecs) = %d', sFunctionName, out_w_av.sz(out_w_av.dims.subSpecs));
 				disp(sMsg_newLine);
 				disp('Averaging subSpecs of water signal ...');
 				disp(sMsg_newLines);
-				outw_av_tmp	= outw_av;
-				outw_av				= op_average_subSpecs_s(outw_av_tmp);
-				clear outw_av_tmp;
+				out_w_av_tmp	= out_w_av;
+				out_w_av		= op_average_subSpecs_s(out_w_av_tmp);
+				clear out_w_av_tmp;
 				
 				% Since unprocessed water signals will also be written to file in LCModel 
 				% format, the unprocessed subSpectra have to be averaged as well to avoid 
@@ -901,7 +901,7 @@ switch seqType
 					out_w_noproc			= op_average_subSpecs_s(out_w_noproc_tmp);
 					clear out_w_noproc_tmp;
 				end		% End of if out_w_noproc.dims.subSpecs ~= 0
-			end		% End of if outw_av.dims.subSpecs ~= 0
+			end		% End of if out_w_av.dims.subSpecs ~= 0
 		end		% End of if with_water
 		
 		if with_ref
@@ -960,7 +960,7 @@ switch seqType
 		freqs_Cr		= [2.9; 3.1; 3.027];
 		freqs_w			= [4.0; 5.5; 4.65];
 		zp_factor		= 16;
-		zp_factorw		= 16;
+		zp_factor_w		= 16;
 		zp_factor_ref	= 16;
 		
 		% Left shift the MRS signals to eliminate first order phase, perform zero-order 
@@ -971,7 +971,7 @@ switch seqType
 		out_ls		= op_leftshift(out_av,out_av.pointsToLeftshift);
 		if with_water
 			% Water signal
-			outw_ls				= op_leftshift(outw_av,outw_av.pointsToLeftshift);
+			out_w_ls				= op_leftshift(out_w_av,out_w_av.pointsToLeftshift);
 		end
 		
 		if with_ref
@@ -993,18 +993,18 @@ switch seqType
 				out_ls_zp		= op_addphase(out_ls_zp,ph0);
 				% And now for water unsuppressed data (use water peak):
 				if with_water
-					outw_ls_zp	= op_zeropad(outw_ls,zp_factorw);
-					%indexw		= find(abs(outw_ls_zp.specs) == max(abs(outw_ls_zp.specs(outw_ls_zp.ppm>4 & outw_ls_zp.ppm<5.5))));
-					indexw		= find(abs(outw_ls_zp.specs) == max(abs(outw_ls_zp.specs(outw_ls_zp.ppm>freqs_w(1) & outw_ls_zp.ppm<freqs_w(2)))));
-					ph0w		= -phase(outw_ls_zp.specs(indexw))*180/pi;
-					outw_ph		= op_addphase(outw_ls,ph0w);
-					outw_ls_zp	= op_addphase(outw_ls_zp,ph0w);
+					outw_ls_zp	= op_zeropad(outw_ls,zp_factor_w);
+					%indexw		= find(abs(out_w_ls_zp.specs) == max(abs(out_w_ls_zp.specs(outw_ls_zp.ppm>4 & out_w_ls_zp.ppm<5.5))));
+					index_w		= find(abs(out_w_ls_zp.specs) == max(abs(out_w_ls_zp.specs(out_w_ls_zp.ppm>freqs_w(1) & out_w_ls_zp.ppm<freqs_w(2)))));
+					ph0_w		= -phase(out_w_ls_zp.specs(index_w))*180/pi;
+					out_w_ph	= op_addphase(out_w_ls,ph0_w);
+					out_w_ls_zp	= op_addphase(out_w_ls_zp,ph0_w);
 				end
 			case {'water', 'water_ref'}
 				% MR spectrum is water signal itself without or with reference scans
 				out_ls_zp	= op_zeropad(out_ls,zp_factor);
-				indexw		= find(abs(out_ls_zp.specs) == max(abs(out_ls_zp.specs(out_ls_zp.ppm>freqs_w(1) & out_ls_zp.ppm<freqs_w(2)))));
-				ph0			= -phase(out_ls_zp.specs(indexw))*180/pi;
+				index_w		= find(abs(out_ls_zp.specs) == max(abs(out_ls_zp.specs(out_ls_zp.ppm>freqs_w(1) & out_ls_zp.ppm<freqs_w(2)))));
+				ph0			= -phase(out_ls_zp.specs(index_w))*180/pi;
 				out_ph		= op_addphase(out_ls,ph0);
 				out_ls_zp	= op_addphase(out_ls_zp,ph0);
 				
@@ -1034,7 +1034,7 @@ switch seqType
 		out_noproc		= op_addphase(op_leftshift(out_noproc,out_noproc.pointsToLeftshift),ph0);
 		if with_water
 			% Water signal
-			out_w_noproc		= op_addphase(op_leftshift(out_w_noproc,out_w_noproc.pointsToLeftshift),ph0w);
+			out_w_noproc		= op_addphase(op_leftshift(out_w_noproc,out_w_noproc.pointsToLeftshift),ph0_w);
 		end
 
 		if with_ref
@@ -1056,10 +1056,10 @@ switch seqType
 				out_noproc		= op_freqshift(out_noproc,frqShift);
 				% For water unsuppressed data, use water peak and set it to 4.65 ppm
 				if with_water
-					%[~,frqShiftw]	= op_ppmref(outw_ls_zp,4,5.5,4.65);
-					[~,frqShiftw]	= op_ppmref(outw_ls_zp,freqs_w(1),freqs_w(2),freqs_w(3));
-					out_w			= op_freqshift(outw_ph,frqShiftw);
-					out_w_noproc	= op_freqshift(out_w_noproc,frqShiftw);
+					%[~,frqShift_w]	= op_ppmref(out_w_ls_zp,4,5.5,4.65);
+					[~,frqShift_w]	= op_ppmref(out_w_ls_zp,freqs_w(1),freqs_w(2),freqs_w(3));
+					out_w			= op_freqshift(out_w_ph,frqShift_w);
+					out_w_noproc	= op_freqshift(out_w_noproc,frqShift_w);
 				end
 			case {'water', 'water_ref'}
 				% MR spectrum is water signal itself without or with reference scans,
@@ -1164,7 +1164,7 @@ switch seqType
 		if with_water
 			% Show and save water signal
 			h_w				= figure('visible','on');
-			plot(outw_subSpec2.ppm,real(outw.specs),'linewidth',1.5);xlim(xLimValues3);
+			plot(out_w_subSpec2.ppm,real(out_w.specs),'linewidth',1.5);xlim(xLimValues3);
 			axes_h_w		= get(h_w,'CurrentAxes');
 			set(axes_h_w,'FontSize',12, 'FontWeight','bold');
 			set(axes_h_w,'XDir','reverse');
@@ -1180,11 +1180,11 @@ switch seqType
 			% Create filenames for saving of processed output
 			%strFigName_addW	= '_w_processed_lcm_3_3_5_9ppm';
 			digits = [fix(xLimValues2(1)) fix(abs(xLimValues3(1)-fix(xLimValues3(1)))*10) fix(xLimValues3(2)) fix(abs(xLimValues3(2)-fix(xLimValues3(2)))*10)];
-			strFigName_addW	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
-			figureNameW_fig	= [outFileNameW, strFigName_addW, '.fig'];
-			figureNameW_png	= [outFileNameW, strFigName_addW, '.png'];
-			saveFigure_s(h_w, outDirString, figureNameW_fig, 'fig', resolution);
-			saveFigure_s(h_w, outDirString, figureNameW_png, 'png', resolution);
+			strFigName_add_W	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
+			figureName_w_fig	= [outFileName_w, strFigName_add_w, '.fig'];
+			figureName_w_png	= [outFileName_w, strFigName_add_w, '.png'];
+			saveFigure_s(h_w, outDirString, figureName_w_fig, 'fig', resolution);
+			saveFigure_s(h_w, outDirString, figureName_w_png, 'png', resolution);
 
 		end		% End of if with_water
 		
@@ -1204,8 +1204,8 @@ switch seqType
 			RF=io_writelcm(out,[outDirString outFileName '_processed_lcm' '.RAW'],out.te);
 			RF=io_writelcm(out_noproc,[outDirString outFileName '_unprocessed_lcm' '.RAW'],out_noproc.te);
 			if with_water
-				RF=io_writelcm(out_w,[outDirString  outFileNameW '_processed_lcm' '.RAW'],out_w.te);
-				RF=io_writelcm(out_w_noproc,[outDirString outFileNameW '_unprocessed_lcm' '.RAW'],out_w_noproc.te);
+				RF=io_writelcm(out_w,[outDirString  outFileName_w '_processed_lcm' '.RAW'],out_w.te);
+				RF=io_writelcm(out_w_noproc,[outDirString outFileName_w '_unprocessed_lcm' '.RAW'],out_w_noproc.te);
 			end
 		end
 		
