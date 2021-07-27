@@ -130,17 +130,17 @@ end
 
 % Obtain different parts of filenames
 [sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
-[sPathStr_W,name_w, ext_W] 			= fileparts(filename_w);
+[sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
 
 % Create filenames for saving of processed output depending on sequence type
 if( strcmp(seqType, 'MEGA-PRESS') )
 	% Assuming that MEGA-PRESS editing is usually performed without OVS
 	outFileName		= [nameSpec, sprintf('_%.1f', nSD)];
-	outFileName_w	= [name_W, '_w', sprintf('_%.1f', nSD)];
+	outFileName_w	= [name_w, '_w', sprintf('_%.1f', nSD)];
 else
 	% Water signals and/or MR spectra were acquired with or without OVS
 	outFileName		= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileName_w	= [name_W, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName_w	= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
 end
 
 
@@ -774,7 +774,7 @@ switch seqType
 				% Only display figure(s), if selected
 				if plotSwitch == 1
 					h6	= figure('position',[fig_left (fig_bottom+fig_dist_b) fig_width fig_height]);
-				elseif rmbadav=='n' || rmbadav=='N' || out_cc.dims.averages == 0
+				else
 					h6	= figure('visible','off');
 				end
 				plot([1:out_aa.sz(out_aa.dims.averages)],fscum,'.-','LineWidth',2);
