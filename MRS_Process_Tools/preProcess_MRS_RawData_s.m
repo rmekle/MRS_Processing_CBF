@@ -111,7 +111,7 @@ if nargin<maxNargin
 							nSD = 3.2;
 							if nargin<(maxNargin-7)
 								strOVS = 'woutOVS';
-							end
+							end													
 						end
 					end
 				end
@@ -141,12 +141,16 @@ end
 % Create filenames for saving of processed output depending on sequence type
 if( strcmp(seqType, 'MEGA-PRESS') )
 	% Assuming that MEGA-PRESS editing is usually performed without OVS
-	outFileName		= [nameSpec, sprintf('_%.1f', nSD)];
-	outFileName_w	= [name_w, '_w', sprintf('_%.1f', nSD)];
+	outFileName				= [nameSpec, sprintf('_%.1f', nSD)];
+	outFileName_w			= [name_w, '_w', sprintf('_%.1f', nSD)];
+	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
+	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
 else
 	% Water signals and/or MR spectra were acquired with or without OVS
-	outFileName		= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileName_w	= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName_ref_ECC		= [nameSpec, '_ref_ECC_', '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName_ref_Quant	= [nameSpec, '_ref_Quant_', '_', strOVS, sprintf('_%.1f', nSD)];
 end
 
 
@@ -1105,17 +1109,25 @@ switch seqType
 		% Set figure parameters
 		% Set plotting resolution and properties of axes depending on data type
 		resolution		= 600;
-		% If data is MR spectrum or MR spectrum and a water signal
-		if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-			xLimValues1		= [0.0 5.5];
-			xLimValues2		= [0.2 4.2];
-			xTickValues2	= [0.5:0.5:4.0];
-		else
-			% MR spectrum is water signal itself
-			xLimValues1		= [3.3 5.9];
-			xLimValues2		= [4.2 5.1];
-			xTickValues2	= [4.2:0.2:5.0];
-		end
+		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
+		switch dataType
+			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+				% MR spectrum is provided together without or with unsuppressed water
+				% signal and/or with reference scans
+				xLimValues1		= [0.0 5.5];
+				xLimValues2		= [0.2 4.2];
+				xTickValues2	= [0.5:0.5:4.0];
+				title('Result: Preprocessed Spectrum','FontSize',12);
+			case {'water', 'water_ref'}
+				% MR spectrum is water signal itself without or with reference scans,
+				xLimValues1		= [3.3 5.9];
+				xLimValues2		= [4.2 5.1];
+				xTickValues2	= [4.2:0.2:5.0];
+				title('Result: Preprocessed Water Spectrum','FontSize',12);
+			otherwise
+				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+		end		% End of switch dataType
+		
 		h_mrs			= figure('visible','on');
 		plot(out.ppm,real(out.specs),'linewidth',1.5);xlim(xLimValues1);
 		set(gca,'FontSize',12, 'FontWeight','bold');
@@ -1124,7 +1136,7 @@ switch seqType
 		xlabel('ppm','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','middle');
 		ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
 		box off;
-		title('Result: Preprocessed Spectrum','FontSize',12);
+		%title('Result: Preprocessed Spectrum','FontSize',12);
 		xf1		= xLimValues1(1) + (xLimValues1(2) - xLimValues1(1))/2;
 		yf1		= 1.0*min(get(gca, 'ylim'));
 		set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
@@ -1170,7 +1182,7 @@ switch seqType
 		if with_water
 			% Show and save water signal
 			h_w				= figure('visible','on');
-			plot(out_w_subSpec2.ppm,real(out_w.specs),'linewidth',1.5);xlim(xLimValues3);
+			plot(out_w.ppm,real(out_w.specs),'linewidth',1.5);xlim(xLimValues3);
 			axes_h_w		= get(h_w,'CurrentAxes');
 			set(axes_h_w,'FontSize',12, 'FontWeight','bold');
 			set(axes_h_w,'XDir','reverse');
@@ -1186,13 +1198,67 @@ switch seqType
 			% Create filenames for saving of processed output
 			%strFigName_addW	= '_w_processed_lcm_3_3_5_9ppm';
 			digits = [fix(xLimValues2(1)) fix(abs(xLimValues3(1)-fix(xLimValues3(1)))*10) fix(xLimValues3(2)) fix(abs(xLimValues3(2)-fix(xLimValues3(2)))*10)];
-			strFigName_add_W	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
+			strFigName_add_w	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
 			figureName_w_fig	= [outFileName_w, strFigName_add_w, '.fig'];
 			figureName_w_png	= [outFileName_w, strFigName_add_w, '.png'];
 			saveFigure_s(h_w, outDirString, figureName_w_fig, 'fig', resolution);
 			saveFigure_s(h_w, outDirString, figureName_w_png, 'png', resolution);
 
 		end		% End of if with_water
+		
+		
+		%% Display (water) reference signals and save correspoding figures, if available
+		xLimValues4		= [3.3 5.9];
+		if with_ref
+			% Show and save (water) reference signals
+			% Reference signal for ECC
+			h_ref_ECC			= figure('visible','on');
+			plot(out_ref_ECC.ppm,real(out_ref_ECC.specs),'linewidth',1.5);xlim(xLimValues4);
+			axes_h_ref_ECC		= get(h_ref_ECC,'CurrentAxes');
+			set(axes_h_ref_ECC,'FontSize',12, 'FontWeight','bold');
+			set(axes_h_ref_ECC,'XDir','reverse');
+			set(axes_h_ref_ECC,'XAxisLocation', 'origin');
+			xlabel('ppm','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','middle');
+			ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
+			box off;
+			title('Result: Preprocessed Reference Signal for ECC','FontSize',12);
+			xf3		= xLimValues4(1) + (xLimValues4(2) - xLimValues4(1))/2;
+			yf3		= 1.0*min(get(axes_h_ref_ECC, 'ylim'));
+			set(get(axes_h_ref_ECC,'XLabel'),'Position', [xf3, yf3]);
+			% Save figure of reference signal for ECC
+			% Create filenames for saving of processed output
+			%strFigName_addW	= '_w_processed_lcm_3_3_5_9ppm';
+			digits = [fix(xLimValues2(1)) fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) fix(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
+			strFigName_add_ref_ECC	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
+			figureName_ref_ECC_fig	= [outFileName_ref_ECC, strFigName_add_ref_ECC, '.fig'];
+			figureName_ref_ECC_png	= [outFileName_ref_ECC, strFigName_add_ref_ECC, '.png'];
+			saveFigure_s(h_ref_ECC, outDirString, figureName_ref_ECC_fig, 'fig', resolution);
+			saveFigure_s(h_ref_ECC, outDirString, figureName_ref_ECC_png, 'png', resolution);
+			
+			% Reference signal for metabolite quantification (Quant)
+			h_ref_Quant			= figure('visible','on')
+			plot(out_ref_Quant.ppm,real(out_ref_Quant.specs),'linewidth',1.5);xlim(xLimValues4);
+			axes_h_ref_Quant	= get(h_ref_Qzuant,'CurrentAxes');
+			set(axes_h_ref_Quant,'FontSize',12, 'FontWeight','bold');
+			set(axes_h_ref_Quant,'XDir','reverse');
+			set(axes_h_ref_Quant,'XAxisLocation', 'origin');
+			xlabel('ppm','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','middle');
+			ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
+			box off;
+			title('Result: Preprocessed Reference Signal for Quantification (Quant)','FontSize',12);
+			xf3		= xLimValues4(1) + (xLimValues4(2) - xLimValues4(1))/2;
+			yf3		= 1.0*min(get(axes_h_ref_Quant, 'ylim'));
+			set(get(axes_h_ref_Quant,'XLabel'),'Position', [xf3, yf3]);
+			% Save figure of reference signal for metabolite quantification (Quant)
+			% Create filenames for saving of processed output
+			%strFigName_addW	= '_w_processed_lcm_3_3_5_9ppm';
+			digits = [fix(xLimValues2(1)) fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) fix(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
+			strFigName_add_ref_Quant	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
+			figureName_ref_Quant_fig	= [outFileName_ref_Quant, strFigName_add_ref_Quant, '.fig'];
+			figureName_ref_Quant_png	= [outFileName_ref_Quant, strFigName_add_ref_Quant, '.png'];
+			saveFigure_s(h_ref_Quant, outDirString, figureName_ref_Quant_fig, 'fig', resolution);
+			saveFigure_s(h_ref_Quant, outDirString, figureName_ref_Quant_png, 'png', resolution);	
+		end		% End of if with_ref
 		
 		
 		%% Write processed and unprocessed data (spectra and water signals) to file, if user selected
