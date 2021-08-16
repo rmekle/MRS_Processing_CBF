@@ -1117,13 +1117,14 @@ switch seqType
 				xLimValues1		= [0.0 5.5];
 				xLimValues2		= [0.2 4.2];
 				xTickValues2	= [0.5:0.5:4.0];
-				title('Result: Preprocessed Spectrum','FontSize',12);
+				strTitle_mrs	= sprintf('Result: Preprocessed Spectrum');
 			case {'water', 'water_ref'}
 				% MR spectrum is water signal itself without or with reference scans,
 				xLimValues1		= [3.3 5.9];
 				xLimValues2		= [4.2 5.1];
 				xTickValues2	= [4.2:0.2:5.0];
-				title('Result: Preprocessed Water Spectrum','FontSize',12);
+				strTitle_mrs	= sprintf('Result: Preprocessed Water Spectrum');
+				
 			otherwise
 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
 		end		% End of switch dataType
@@ -1137,6 +1138,7 @@ switch seqType
 		ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
 		box off;
 		%title('Result: Preprocessed Spectrum','FontSize',12);
+		title(strTitle_mrs,'FontSize',12);
 		xf1		= xLimValues1(1) + (xLimValues1(2) - xLimValues1(1))/2;
 		yf1		= 1.0*min(get(gca, 'ylim'));
 		set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
@@ -1203,7 +1205,6 @@ switch seqType
 			figureName_w_png	= [outFileName_w, strFigName_add_w, '.png'];
 			saveFigure_s(h_w, outDirString, figureName_w_fig, 'fig', resolution);
 			saveFigure_s(h_w, outDirString, figureName_w_png, 'png', resolution);
-
 		end		% End of if with_water
 		
 		
@@ -1236,7 +1237,7 @@ switch seqType
 			saveFigure_s(h_ref_ECC, outDirString, figureName_ref_ECC_png, 'png', resolution);
 			
 			% Reference signal for metabolite quantification (Quant)
-			h_ref_Quant			= figure('visible','on')
+			h_ref_Quant			= figure('visible','on');
 			plot(out_ref_Quant.ppm,real(out_ref_Quant.specs),'linewidth',1.5);xlim(xLimValues4);
 			axes_h_ref_Quant	= get(h_ref_Qzuant,'CurrentAxes');
 			set(axes_h_ref_Quant,'FontSize',12, 'FontWeight','bold');
@@ -1261,7 +1262,7 @@ switch seqType
 		end		% End of if with_ref
 		
 		
-		%% Write processed and unprocessed data (spectra and water signals) to file, if user selected
+		%% Write processed and unprocessed data (spectra water, and reference signals) to file, if user selected
 		% Use .RAW format for LCModel
 		% Ask for user input for writing results to file only, if minimum user input is 
 		% NOT selected
@@ -1273,12 +1274,20 @@ switch seqType
 		if wrt=='y' || wrt=='Y'
 			disp(sMsg_newLines);
 			disp('Writing results to file ...');
-			RF=io_writelcm(out,[outDirString outFileName '_processed_lcm' '.RAW'],out.te);
-			RF=io_writelcm(out_noproc,[outDirString outFileName '_unprocessed_lcm' '.RAW'],out_noproc.te);
+			RF = io_writelcm(out,[outDirString outFileName '_processed_lcm' '.RAW'],out.te);
+			RF = io_writelcm(out_noproc,[outDirString outFileName '_unprocessed_lcm' '.RAW'],out_noproc.te);
 			if with_water
-				RF=io_writelcm(out_w,[outDirString  outFileName_w '_processed_lcm' '.RAW'],out_w.te);
-				RF=io_writelcm(out_w_noproc,[outDirString outFileName_w '_unprocessed_lcm' '.RAW'],out_w_noproc.te);
-			end
+				% Save water signal
+				RF_w = io_writelcm(out_w,[outDirString  outFileName_w '_processed_lcm' '.RAW'],out_w.te);
+				RF_w = io_writelcm(out_w_noproc,[outDirString outFileName_w '_unprocessed_lcm' '.RAW'],out_w_noproc.te);
+			end		% End of if with_water
+			if with_ref
+				% Save (water) reference signals
+				RF_ref_ECC   = io_writelcm(out_ref_ECC,[outDirString  outFileName_ref_ECC '_processed_lcm' '.RAW'],out_ref_ECC.te);
+				RF_ref_ECC	 = io_writelcm(out_ref_ECC_noproc,[outDirString outFileName_ref_ECC '_unprocessed_lcm' '.RAW'],out_ref_ECC_noproc.te);
+				RF_ref_Quant = io_writelcm(out_ref_Quant,[outDirString  outFileName_ref_Quant '_processed_lcm' '.RAW'],out_ref_Quant.te);
+				RF_ref_Quant = io_writelcm(out_ref_Quant_noproc,[outDirString outFileName_ref_Quant '_unprocessed_lcm' '.RAW'],out_ref_Quant_noproc.te);				
+			end		% End of if with_ref
 		end
 		
 		
@@ -1297,7 +1306,8 @@ switch seqType
 			%legend('Real(MRS Data)');
 			%legend boxoff;
 			box off;
-			title('Result: Preprocessed Spectrum','FontSize',12);
+			%title('Result: Preprocessed Spectrum','FontSize',12);
+			title(strTitle_mrs,'FontSize',12);
 			xf1		= xLimValues1(1) + (xLimValues1(2) - xLimValues1(1))/2;
 			yf1		= 1.0*min(get(gca, 'ylim'));
 			set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
@@ -1332,6 +1342,7 @@ switch seqType
 			fprintf(fid2,'\n<h1>FID-A Processing Report</h1>');
 			fprintf(fid2,'\n<h2>Processing pipeline applied to %s MRS data using %s </h2>', seqType, sFunctionName);
 			fprintf(fid2,'\n<p>FILENAME: %s </p>', fullfile(dirString, filename));
+			fprintf(fid2,'\n<p>Data type: %s </p>', dataType);
 			fprintf(fid2,'\n<p>DATE: %s </p>',date);
 			fprintf(fid2,'\n\n<p> </p>');
 			fprintf(fid2,'\n\n<h2>Results of multi-coil combination:</h2>');
