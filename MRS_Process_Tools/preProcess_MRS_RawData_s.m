@@ -895,7 +895,7 @@ switch seqType
 		if with_water
 			if out_w_av.dims.subSpecs ~= 0
 				disp(sMsg_newLines);
-				warning('%s: Subspectra still present in unsuppressed water signal! # of subsprectra = out_w_av.sz(outw_av.dims.subSpecs) = %d', sFunctionName, out_w_av.sz(out_w_av.dims.subSpecs));
+				warning('%s: Subspectra still present in unsuppressed water signal! # of subsprectra = out_w_av.sz(out_w_av.dims.subSpecs) = %d', sFunctionName, out_w_av.sz(out_w_av.dims.subSpecs));
 				disp(sMsg_newLine);
 				disp('Averaging subSpecs of water signal ...');
 				disp(sMsg_newLines);
@@ -1004,8 +1004,8 @@ switch seqType
 				out_ls_zp		= op_addphase(out_ls_zp,ph0);
 				% And now for water unsuppressed data (use water peak):
 				if with_water
-					outw_ls_zp	= op_zeropad(outw_ls,zp_factor_w);
-					%indexw		= find(abs(out_w_ls_zp.specs) == max(abs(out_w_ls_zp.specs(outw_ls_zp.ppm>4 & out_w_ls_zp.ppm<5.5))));
+					out_w_ls_zp	= op_zeropad(out_w_ls,zp_factor_w);
+					%indexw		= find(abs(out_w_ls_zp.specs) == max(abs(out_w_ls_zp.specs(out_w_ls_zp.ppm>4 & out_w_ls_zp.ppm<5.5))));
 					index_w		= find(abs(out_w_ls_zp.specs) == max(abs(out_w_ls_zp.specs(out_w_ls_zp.ppm>freqs_w(1) & out_w_ls_zp.ppm<freqs_w(2)))));
 					ph0_w		= -phase(out_w_ls_zp.specs(index_w))*180/pi;
 					out_w_ph	= op_addphase(out_w_ls,ph0_w);
@@ -1142,7 +1142,7 @@ switch seqType
 		title(strTitle_mrs,'FontSize',12);
 		xf1		= xLimValues1(1) + (xLimValues1(2) - xLimValues1(1))/2;
 		yf1		= 1.0*min(get(gca, 'ylim'));
-		%set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
+		set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
 		
 		% Save figure of spectrum
 		% Create name for figure files
@@ -1251,7 +1251,7 @@ switch seqType
 			xlabel('ppm','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','middle');
 			ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
 			box off;
-			title('Preprocessed Reference Signal for Quantification (Quant)','FontSize',12);
+			title('Preprocessed Reference Signal for Quantification','FontSize',12);
 			xf3		= xLimValues4(1) + (xLimValues4(2) - xLimValues4(1))/2;
 			yf3		= 1.0*min(get(axes_h_ref_Quant, 'ylim'));
 			set(get(axes_h_ref_Quant,'XLabel'),'Position', [xf3, yf3]);
