@@ -1239,7 +1239,7 @@ switch seqType
 			% Reference signal for metabolite quantification (Quant)
 			h_ref_Quant			= figure('visible','on');
 			plot(out_ref_Quant.ppm,real(out_ref_Quant.specs),'linewidth',1.5);xlim(xLimValues4);
-			axes_h_ref_Quant	= get(h_ref_Qzuant,'CurrentAxes');
+			axes_h_ref_Quant	= get(h_ref_Quant,'CurrentAxes');
 			set(axes_h_ref_Quant,'FontSize',12, 'FontWeight','bold');
 			set(axes_h_ref_Quant,'XDir','reverse');
 			set(axes_h_ref_Quant,'XAxisLocation', 'origin');
