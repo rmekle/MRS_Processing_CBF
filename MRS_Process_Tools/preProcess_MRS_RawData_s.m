@@ -268,7 +268,8 @@ disp(newline);
 
 if with_water
 	disp('***WITH ADDITIONAL WATER UNSUPPRESSED DATA***');
-	out_w_raw		= io_loadspec_twix([dirString filename_w]);
+	%out_w_raw		= io_loadspec_twix([dirString filename_w]);
+	out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
 	
 	% Convert single precision data (default format used my mapVBVD.m for imaging data) 
 	% into double precision for processing, if not empty
