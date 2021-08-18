@@ -179,8 +179,8 @@ switch dataType
 		out_ref_Quant_noproc	= struct([]);
 	case 'mrs_w'
 		% MR spectrum is provided together with unsuppressed water signal
-		if isempty(filenamew)
-			error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filenamew);
+		if isempty(filename_w)
+			error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
 		end
 		disp('Data is MR spectrum with additional unsuppressed water signal ...');
 		with_water				= true;
@@ -192,8 +192,8 @@ switch dataType
 	case 'mrs_w_ref'
 		% MR spectrum is provided together with unsuppressed water signal and reference
 		% scans
-		if isempty(filenamew)
-			error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filenamew);
+		if isempty(filename_w)
+			error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
 		end
 		disp('Data is MR spectrum with additional unsuppressed water signal and with reference scans ...');
 		with_water				= true;
@@ -230,8 +230,8 @@ end		% End of switch dataType
 				
 % if( strcmp(dataType, 'mrs_w') )
 % 	% MR spectrum is provided together with unsuppressed water signal
-% 	if isempty(filenamew)
-% 		error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filenamew);
+% 	if isempty(filename_w)
+% 		error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
 % 	end
 % 	disp('Data is MR spectrum with additional unsuppressed water signal ...');
 % 	with_water		= true;
@@ -268,7 +268,7 @@ disp(newline);
 
 if with_water
 	disp('***WITH ADDITIONAL WATER UNSUPPRESSED DATA***');
-	out_w_raw		= io_loadspec_twix([dirString filenamew]);
+	out_w_raw		= io_loadspec_twix([dirString filename_w]);
 	
 	% Convert single precision data (default format used my mapVBVD.m for imaging data) 
 	% into double precision for processing, if not empty
@@ -431,8 +431,8 @@ switch seqType
 		end		% End of if with_ref		
 		if with_water
 			% Obtain coil phases and amplitudes from unsuppressed water signal
-			%coilcombos		= op_getcoilcombos(out_raw_w,1);
-			coilcombos_w	= op_getcoilcombos(out_raw_w,nPos_cc_w,'w');
+			%coilcombos		= op_getcoilcombos(out_w_raw,1);
+			coilcombos_w	= op_getcoilcombos(out_w_raw,nPos_cc_w,'w');
 			% Combine water scans using respective coil phases
 			[out_w_cc,fid_w_pre,spec_w_pre,ph_w,sig_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
 		end			% % End of if with_water
@@ -1117,13 +1117,13 @@ switch seqType
 				xLimValues1		= [0.0 5.5];
 				xLimValues2		= [0.2 4.2];
 				xTickValues2	= [0.5:0.5:4.0];
-				strTitle_mrs	= sprintf('Result: Preprocessed Spectrum');
+				strTitle_mrs	= sprintf('Preprocessed MR Spectrum');
 			case {'water', 'water_ref'}
 				% MR spectrum is water signal itself without or with reference scans,
 				xLimValues1		= [3.3 5.9];
 				xLimValues2		= [4.2 5.1];
 				xTickValues2	= [4.2:0.2:5.0];
-				strTitle_mrs	= sprintf('Result: Preprocessed Water Spectrum');
+				strTitle_mrs	= sprintf('Preprocessed Water Spectrum');
 				
 			otherwise
 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
@@ -1141,7 +1141,7 @@ switch seqType
 		title(strTitle_mrs,'FontSize',12);
 		xf1		= xLimValues1(1) + (xLimValues1(2) - xLimValues1(1))/2;
 		yf1		= 1.0*min(get(gca, 'ylim'));
-		set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
+		%set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
 		
 		% Save figure of spectrum
 		% Create name for figure files
@@ -1158,10 +1158,14 @@ switch seqType
 		saveFigure_s(h_mrs, outDirString, figureName_fig, 'fig', resolution);
 		saveFigure_s(h_mrs, outDirString, figureName_png, 'png', resolution);
 		
-		% Modify figure to show different spectral range and save modified figure es well
+		% Copy and modify figure to show different spectral range and save modified figure
+		% as well
 		% For figure creation, i.e. if spectrum should be used as figure for display or in 
 		% paper, use only ppm range from 0.2 to 4.2 and 'whiten' y-axis
 		% For regular use, leave y-axis as is to indicate signal strength
+		ax_h_mrs		= gca;
+		h_mrs2			= figure('visible','on');
+		ax_h_mrs2		= copyobj(ax_h_mrs,h_mrs2);
 		%set(gca, 'XLim', xLimValues, 'XTick',[0.5:0.5:4.0], 'XTickLabel',[0.5:0.5:4.0], 'YTickLabel',[], 'YColor',[1 1 1]);
 		%set(gca, 'XLim', xLimValues2, 'XTick',[0.5:0.5:4.0], 'XTickLabel',[0.5:0.5:4.0]);
 		set(gca, 'XLim', xLimValues2, 'XTick',xTickValues2, 'XTickLabel',xTickValues2);
@@ -1175,8 +1179,8 @@ switch seqType
 		strFigName_add	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
 		figureName_fig	= [outFileName, strFigName_add, '.fig'];
 		figureName_png	= [outFileName, strFigName_add, '.png'];
-		saveFigure_s(h_mrs, outDirString, figureName_fig, 'fig', resolution);
-		saveFigure_s(h_mrs, outDirString, figureName_png, 'png', resolution);
+		saveFigure_s(h_mrs2, outDirString, figureName_fig, 'fig', resolution);
+		saveFigure_s(h_mrs2, outDirString, figureName_png, 'png', resolution);
 		
 		
 		%% Display water signals and save correspoding figures, if available
@@ -1192,7 +1196,7 @@ switch seqType
 			xlabel('ppm','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','middle');
 			ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
 			box off;
-			title('Result: Preprocessed Water Signal','FontSize',12);
+			title('Preprocessed Water Signal','FontSize',12);
 			xf3		= xLimValues3(1) + (xLimValues3(2) - xLimValues3(1))/2;
 			yf3		= 1.0*min(get(axes_h_w, 'ylim'));
 			set(get(axes_h_w,'XLabel'),'Position', [xf3, yf3]);
@@ -1222,7 +1226,7 @@ switch seqType
 			xlabel('ppm','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','middle');
 			ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
 			box off;
-			title('Result: Preprocessed Reference Signal for ECC','FontSize',12);
+			title('Preprocessed Reference Signal for ECC','FontSize',12);
 			xf3		= xLimValues4(1) + (xLimValues4(2) - xLimValues4(1))/2;
 			yf3		= 1.0*min(get(axes_h_ref_ECC, 'ylim'));
 			set(get(axes_h_ref_ECC,'XLabel'),'Position', [xf3, yf3]);
@@ -1246,7 +1250,7 @@ switch seqType
 			xlabel('ppm','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','middle');
 			ylabel('Amplitude(a.u.)','FontSize',16, 'FontWeight','bold', 'HorizontalAlignment','center', 'VerticalAlignment','baseline');
 			box off;
-			title('Result: Preprocessed Reference Signal for Quantification (Quant)','FontSize',12);
+			title('Preprocessed Reference Signal for Quantification (Quant)','FontSize',12);
 			xf3		= xLimValues4(1) + (xLimValues4(2) - xLimValues4(1))/2;
 			yf3		= 1.0*min(get(axes_h_ref_Quant, 'ylim'));
 			set(get(axes_h_ref_Quant,'XLabel'),'Position', [xf3, yf3]);
