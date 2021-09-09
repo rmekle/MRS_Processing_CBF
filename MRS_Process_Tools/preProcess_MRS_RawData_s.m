@@ -120,6 +120,8 @@ if nargin<maxNargin
 	end
 end
 
+
+%% Process names of directories and input filenames and create directory for html report
 % Use filenames for the MRS datasets provided as input arguments
 % NOTE: It is assumed that water suppressed and water unsuppressed data are in same
 % directory!
@@ -134,24 +136,50 @@ if( ~strcmp( outDirString(end), filesep ) )
 	outDirString	= [outDirString, filesep];
 end
 
-% Obtain different parts of filenames
+% Obtain different parts of input filenames
 [sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
 [sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
 
-% Create filenames for saving of processed output depending on sequence type
-if( strcmp(seqType, 'MEGA-PRESS') )
-	% Assuming that MEGA-PRESS editing is usually performed without OVS
-	outFileName				= [nameSpec, sprintf('_%.1f', nSD)];
-	outFileName_w			= [name_w, '_w', sprintf('_%.1f', nSD)];
-	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
-	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
-else
-	% Water signals and/or MR spectra were acquired with or without OVS
-	outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', nSD)];
+% Make a new directory for the output report and figures each, if not already existent,
+% and if desrired
+if reportSwitch == 1
+	%mkdir([outDirString nameSpec '/report']);
+	%mkdir([outDirString nameSpec '/report/figs']);
+	reportDirStr		= [nameSpec '_report/'];
+	reportFigDirStr		= [nameSpec '_report/figs/'];
+	if ~exist( [outDirString reportDirStr], 'dir' )
+		mkdir([outDirString reportDirStr]);
+	end
+	if ~exist( [outDirString reportFigDirStr], 'dir' )
+		mkdir([outDirString reportFigDirStr]);
+	end
 end
+
+
+% % Create filenames for saving of processed output depending on sequence type
+% if( strcmp(seqType, 'MEGA-PRESS') )
+% 	% Assuming that MEGA-PRESS editing is usually performed without OVS
+% 	% Assuming that no bad average removal is applied for any of the water signals
+% 	outFileName				= [nameSpec, sprintf('_%.1f', nSD)];
+% 	outFileName_w			= [name_w, '_w', sprintf('_%.1f', nSD)];
+% 	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
+% 	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
+% else
+% 	% Water signals and/or MR spectra were acquired with or without OVS
+% 	% Assuming that water reference signals for ECC are always acquired in same way as 
+% 	% the MR spectrum,i.e. if OVS is automatically turned on (as it is for dkd_sLaser), 
+% 	% then water reference signals for ECC are acquired with OVS ('wOVS'); 
+% 	% Assuming that water reference signals for quantification are always acquired without
+% 	% OVS ('woutOVS') to avoid MT effects
+% 	% Assuming that no bad average removal is applied for any of the water signals
+% 	outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
+% 	outFileName_w			= [name_w, '_w', '_', strOVS];
+% 	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', 8), '_', strOVS];
+% 	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('%d', 8), '_', 'woutOVS'];
+% 	%outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
+% 	%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', nSD)];
+% 	%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', nSD)];
+% end
 
 
 %% Set parameters for figure display
@@ -165,6 +193,11 @@ fig_dist_l	= 570;
 
 
 %% Depending on type of data provided load all corresponding data files
+% Init # of shots (averages) for water unsuppressed signals and water reference signals 
+noAvg_w			= 0;
+noAvg_ref_ECC	= 0;
+noAvg_ref_Quant	= 0;
+
 % Display info
 fprintf('%s:\n', sFunctionName);
 switch dataType 
@@ -280,26 +313,14 @@ if with_water
 		out_w_raw.fids		= double(out_w_raw.fids);
 		out_w_raw.specs		= double(out_w_raw.specs);
 	end
+	
+	% Store # of shots (averages) for water signal
+	noAvg_w					= out_w_raw.averages;
 else
 	%disp('***WITHOUT ADDITIONAL WATER UNSUPPRESSED DATA***');
 	fprintf('%s: ***WITHOUT ADDITIONAL WATER UNSUPPRESSED DATA***\n', sFunctionName);
     %out_w			= struct([]);
     %out_w_noproc	= struct([)];
-end
-
-% Make a new directory for the output report and figures each, if not already existent,
-% and if desrired
-if reportSwitch == 1
-	%mkdir([outDirString nameSpec '/report']);
-	%mkdir([outDirString nameSpec '/report/figs']);
-	reportDirStr		= [nameSpec '_report/'];
-	reportFigDirStr		= [nameSpec '_report/figs/'];
-	if ~exist( [outDirString reportDirStr], 'dir' )
-		mkdir([outDirString reportDirStr]);
-	end
-	if ~exist( [outDirString reportFigDirStr], 'dir' )
-		mkdir([outDirString reportFigDirStr]);
-	end
 end
 disp(sMsg_newLines);
 
@@ -366,6 +387,7 @@ switch seqType
 				out_ref_ECC_raw.sz				= size(out_ref_ECC_raw.fids);
 				out_ref_ECC_raw.averages		= out_ref_raw.averages/2;
 				out_ref_ECC_raw.rawAverages		= out_ref_raw.rawAverages/2;
+				noAvg_ref_ECC					= out_ref_ECC_raw.averages;
 				
 				% Extract data for reference scans for ECC into corresponding data struct
 				% Same substruct indexing object can be used, since both types of
@@ -384,12 +406,33 @@ switch seqType
 				out_ref_Quant_raw.sz			= size(out_ref_Quant_raw.fids);
 				out_ref_Quant_raw.averages		= out_ref_raw.averages/2;
 				out_ref_Quant_raw.rawAverages	= out_ref_raw.rawAverages/2;
+				noAvg_ref_Quant					= out_ref_Quant_raw.averages;
 				
 			else
 				error('%s: Reference scans option for sequence %s not yet implemented!', sFunctionName, out.seq);
 			end		% End of if isSVSdkd_seq 
 			
 		end		% End of if with_ref
+		
+		
+		%% Create filenames for saving of processed output depending on sequence type
+		% Information that is used here is only available after loading the data
+		% Water signals and/or MR spectra were acquired with or without OVS
+		% Assuming that water reference signals for ECC are always acquired in same way as
+		% the MR spectrum, i.e. if OVS is automatically turned on (as it is for 
+		% svs_dkd_sLaser), then water reference signals for ECC are als acquired with 
+		% OVS ('wOVS');
+		% Assuming that water reference signals for quantification are always acquired 
+		% without OVS ('woutOVS') to avoid MT effects
+		% Assuming that no bad average removal is applied for any of the water signals
+		outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
+		outFileName_w			= [name_w, '_w', '_', strOVS];
+		%outFileName_w			= [name_w, '_w', sprintf('%d', noAvg_w), '_', strOVS_w];
+		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', noAvg_ref_ECC), '_', strOVS];
+		outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('%d', noAvg_ref_Quant), '_', 'woutOVS'];
+		%outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
+		%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', nSD)];
+		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', nSD)];
 
 		
 		%% Combine signals from different coil elements
@@ -554,7 +597,7 @@ switch seqType
 		
 		% Do not remove bad averages, if either not selected or if dimension of 
 		% averages does not exist (index for dimension of averages = 0), 
-		% e.g. when data is already averaged
+		% e.g. when data are already averaged
 		%if rmbadav=='n' || rmbadav=='N'
 		if rmbadav=='n' || rmbadav=='N' || out_cc.dims.averages == 0
 			out_rm		= out_cc;
@@ -1410,6 +1453,16 @@ switch seqType
 		
 	case 'MEGA-PRESS'
 		disp('Coming soon ...');
+		
+		% Create filenames for saving of processed output depending on sequence type
+		% Assuming that no bad average removal is applied for any of the water signals
+		outFileName				= [nameSpec, sprintf('_%.1f', nSD)];
+		outFileName_w			= [name_w, '_w'];
+		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
+		outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
+		%outFileName_w			= [name_w, '_w', sprintf('_%.1f', nSD)];
+		%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
+		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
 		
 		% Figure display and saving
 		% Can be realized by calling a separate routine?
