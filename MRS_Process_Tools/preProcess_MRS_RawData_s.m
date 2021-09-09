@@ -149,8 +149,8 @@ else
 	% Water signals and/or MR spectra were acquired with or without OVS
 	outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
 	outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileName_ref_ECC		= [nameSpec, '_ref_ECC_', '_', strOVS, sprintf('_%.1f', nSD)];
-	outFileName_ref_Quant	= [nameSpec, '_ref_Quant_', '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', nSD)];
+	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', nSD)];
 end
 
 
@@ -165,6 +165,8 @@ fig_dist_l	= 570;
 
 
 %% Depending on type of data provided load all corresponding data files
+% Display info
+fprintf('%s:\n', sFunctionName);
 switch dataType 
 	case 'mrs'
 		% Only MR spectrum
@@ -267,7 +269,8 @@ end
 disp(newline);
 
 if with_water
-	disp('***WITH ADDITIONAL WATER UNSUPPRESSED DATA***');
+	%disp('***WITH ADDITIONAL WATER UNSUPPRESSED DATA***');
+	fprintf('%s: ***WITH ADDITIONAL WATER UNSUPPRESSED DATA***\n', sFunctionName);
 	%out_w_raw		= io_loadspec_twix([dirString filename_w]);
 	out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
 	
@@ -278,7 +281,8 @@ if with_water
 		out_w_raw.specs		= double(out_w_raw.specs);
 	end
 else
-	disp('***WITHOUT ADDITIONAL WATER UNSUPPRESSED DATA***');    
+	%disp('***WITHOUT ADDITIONAL WATER UNSUPPRESSED DATA***');
+	fprintf('%s: ***WITHOUT ADDITIONAL WATER UNSUPPRESSED DATA***\n', sFunctionName);
     %out_w			= struct([]);
     %out_w_noproc	= struct([)];
 end
@@ -301,6 +305,8 @@ disp(sMsg_newLines);
 
 
 %% Pre-process all data according to sequence type and types of data provided
+% Display info
+fprintf('%s: Start of preprocessing of MRS data ... \n\n\n', sFunctionName);
 switch seqType
 	case {'PRESS', 'STEAM', 'sLASER'}
 		%% Is this Dinesh K. Deelchand's single voxel (sLaser) sequence from CMRR, U Minnesota
@@ -513,12 +519,12 @@ switch seqType
 				h2	= figure('visible','off');
 			end
 			subplot(2,1,1);
-			plot(out_w_raw.ppm,out_w_raw.specs(:,:,1,1));xlim([4 5]);
+			plot(out_w_raw.ppm,real(out_w_raw.specs(:,:,1,1)));xlim([4 5]);
 			xlabel('Frequency (ppm)');
 			ylabel('Amplitude (a.u.)');
 			title('Multi-channel (water unsupp.) data before phase correction');
 			subplot(2,1,2);
-			plot(out_w_raw.ppm,spec_w_pre(:,:,1,1));xlim([4 5]);
+			plot(out_w_raw.ppm,real(spec_w_pre(:,:,1,1)));xlim([4 5]);
 			xlabel('Frequency (ppm)');
 			ylabel('Amplitude (a.u.)');
 			title('Multi-channel (water unsupp.) data after phase correction');
@@ -554,7 +560,7 @@ switch seqType
 			out_rm		= out_cc;
 			%nSD			= 'N/A';
 		else
-			sat		='n'
+			sat		='n';
 			while sat=='n' || sat=='N'
 				%nSD=4; % Setting the number of standard deviations;
 				iter			= 1;
@@ -1278,7 +1284,7 @@ switch seqType
 		end
 		if wrt=='y' || wrt=='Y'
 			disp(sMsg_newLines);
-			disp('Writing results to file ...');
+			fprintf('%s: Writing results to file ...\n\n', sFunctionName);
 			RF = io_writelcm(out,[outDirString outFileName '_processed_lcm' '.RAW'],out.te);
 			RF = io_writelcm(out_noproc,[outDirString outFileName '_unprocessed_lcm' '.RAW'],out_noproc.te);
 			if with_water
