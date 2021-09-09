@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
 % Processing script for Siemens MRS data in .dat format (twix raw data).  
@@ -38,7 +38,10 @@
 %					'water'		= MR spectrum is unsuppressed water signal itself
 %					'water_ref' = MR spectrum is unsuppressed water signal itself with
 %									reference (water) scans (should be very rare!)
-% strOVS	   = (optional) String that specifies whether water acquired with OVS ('wOVS')
+% strOVS	   = (optional) String that specifies whether MR spectrum acquired 
+%					 with OVS ('wOVS') or withoutOVS ('woutOVS') is used for processing. 
+%					 Default is 'woutOVS', which means that OVS was not used.
+% strOVS_w	   = (optional) String that specifies whether water acquired with OVS ('wOVS')
 %					 or withoutOVS ('woutOVS') is used for processing. 
 %					 Default is 'woutOVS', which means that OVS was not used. 
 % nSD		   = (Optional) # of standard deviations for bad average removal. Default
@@ -79,7 +82,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
+function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -94,7 +97,7 @@ disp(sMsg_newLines);
 
 
 %% Check on # of input arguments and assign default values to variables, if required
-maxNargin	= 14;
+maxNargin	= 15;
 if nargin<maxNargin
 	reportSwitch = 1;
 	if nargin<(maxNargin-1)
@@ -110,8 +113,11 @@ if nargin<maxNargin
 						if nargin<(maxNargin-6)
 							nSD = 3.2;
 							if nargin<(maxNargin-7)
-								strOVS = 'woutOVS';
-							end													
+								strOVS_w = 'woutOVS';
+								if nargin<(maxNargin-8)
+									strOVS = 'woutOVS';
+								end
+							end
 						end
 					end
 				end
@@ -426,7 +432,7 @@ switch seqType
 		% without OVS ('woutOVS') to avoid MT effects
 		% Assuming that no bad average removal is applied for any of the water signals
 		outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-		outFileName_w			= [name_w, '_w', '_', strOVS];
+		outFileName_w			= [name_w, '_w', '_', strOVS_w];
 		%outFileName_w			= [name_w, '_w', sprintf('%d', noAvg_w), '_', strOVS_w];
 		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', noAvg_ref_ECC), '_', strOVS];
 		outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('%d', noAvg_ref_Quant), '_', 'woutOVS'];
@@ -1449,7 +1455,9 @@ switch seqType
 
 	case 'SPECIAL'
 		disp('NOT YET COMPLETED ...');
-	
+		
+		% Create filenames for saving of processed output depending on sequence type
+		% Adjust filenames for use of OVS with SPECIAL
 		
 	case 'MEGA-PRESS'
 		disp('Coming soon ...');
