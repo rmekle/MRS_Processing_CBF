@@ -23,7 +23,15 @@
 
 function [out, out_ref] = io_loadspec_twix_s(filename)
 
+%% CBF: Set string for name of routine and display blank lines for enhanced output visibility 
+sFunctionName		= 'io_loadspec_twix_s.m';
+sMsg_newLines		= sprintf('\n\n');
+sMsg_newLine		= sprintf('\n');
+disp(sMsg_newLines);
+fprintf('%s: Loading Siemens twix data for filename = %s\n\n', sFunctionName, filename);    
 
+
+%% Read in twix data
 %read in the data using the new mapVBVD.  This code has been adapted to 
 %handle both single RAID files and multi-RAID files.  The vast majority of
 %Siemens twix data comes as a single RAID file, but I've encoundered a few 
@@ -258,7 +266,7 @@ if ~isempty(dims.t)
     dimsToIndex=dimsToIndex(dimsToIndex~=dims.t);
 else
     dims.t=0;
-    error('ERROR:  Spectrom contains no time domain information!!');
+    error('%s:  ERROR: Spectrum contains no time domain information!!', sFunctionName);
 end
 
 %Now index the dimension of the coil channels
@@ -496,10 +504,11 @@ elseif isSiemens
 elseif isMinn || isSVSdkdseq
     leftshift = twix_obj.image.iceParam(5,1);
 	if isSVSdkdseq
-		disp(sprintf('\n'));
+		%disp(sprintf('\n'));
+		disp(sMsg_newLine);
 		% Not clear whether this option holds for svs_slaser_dkd
 		%warning('isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n', isSVSdkdseq, leftshift);
-		fprintf('isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n', isSVSdkdseq, leftshift);
+		fprintf('%s: isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n', sFunctionName, isSVSdkdseq, leftshift);
 	end
 else
     leftshift = twix_obj.image.freeParam(1);
@@ -569,11 +578,20 @@ end
 % So far, these reference scans have only been used by Dinesh Deelchand's sequence from
 % the CMRR in Minnesota, svs_slaser_dkd; these can also set to zero
 if ~isSVSdkdseq || noRefScans == 0
+	% Display info
+	disp(sMsg_newLine);
+	fprintf('%s: Sequence isSVSdkdseq = %d \t # of MRS reference scans = noRefScans = %d, not extracted!', sFunctionName, isSVSdkdseq, noRefScans);    
+	disp(sMsg_newLines);
+	
 	% Create empyt output data structure for reference data
-	fprintf('No MRS reference scans extracted! isSVSdkdseq = %d \t noRefScans = %d', isSVSdkdseq, noRefScans);    
     %out_ref		= '';
 	out_ref		= struct([]);	% Creates a 0x0 struct yielding isempty(out_ref) = 1
 else
+	% Display info
+	disp(sMsg_newLine);
+	fprintf('%s: Sequence isSVSdkdseq = %d \t # of MRS reference scans = noRefScans = %d', sFunctionName, isSVSdkdseq, noRefScans);    
+	disp(sMsg_newLines);
+	
 	% Init output data structure for reference scans by copying output data structure for 
 	% regular scans and then replace data and adjust information about data accordingly;
 	% most fields of the structure and data flags are the same for the reference scans and
