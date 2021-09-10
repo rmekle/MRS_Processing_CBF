@@ -1376,6 +1376,23 @@ switch seqType
 			saveas(h_mrs_html, fullfile(outDirString, reportFigDirStr, 'finalSpecFig'), 'jpg');
 			saveas(h_mrs_html, fullfile(outDirString, reportFigDirStr, 'finalSpecFig'), 'fig');
 			
+			% Copy and modify figure to show different spectral range and save modified figure
+			% as well
+			% For figure creation, i.e. if spectrum should be used as figure for display or in
+			% paper, use only ppm range from 0.2 to 4.2 and 'whiten' y-axis
+			% For regular use, leave y-axis as is to indicate signal strength
+			ax_h_mrs_html	= gca;
+			h_mrs_html2		= figure('visible','off');
+			ax_h_mrs_html2	= copyobj(ax_h_mrs_html,h_mrs_html2);
+			set(gca, 'XLim', xLimValues2, 'XTick',xTickValues2, 'XTickLabel',xTickValues2);
+			xf2		= xLimValues2(1) + (xLimValues2(2) - xLimValues2(1))/2;
+			yf2		= 1.0*min(get(gca, 'ylim'));
+			set(get(gca,'XLabel'),'Position', [xf2, yf2], 'VerticalAlignment', 'Top');
+			set(h_mrs_html2,'PaperUnits','centimeters');
+			set(h_mrs_html2,'PaperPosition',[0 0 20 10]);
+			saveas(h_mrs_html2, fullfile(outDirString, reportFigDirStr, 'finalSpecFig_narrow'), 'jpg');
+			saveas(h_mrs_html2, fullfile(outDirString, reportFigDirStr, 'finalSpecFig_narrow'), 'fig');
+			
 			
 			%% Write an html report, if report switch is turned ON
 			% Adjust directory information and name report according to each case
@@ -1447,7 +1464,8 @@ switch seqType
 			fprintf(fid2,'\n\n<p> </p>');
 			fprintf(fid2,'\n\n<h2>Final Result:</h2>');
 			%fprintf(fid2,'\n<img src= " %s%sfinalSpecFig.jpg " width="800" height="400">', outDirString, reportFigDirStr);
-			fprintf(fid2,'\n<img src= " %s " width="800" height="400">', fullfile('./figs/','finalSpecFig.jpg'));
+			%fprintf(fid2,'\n<img src= " %s " width="800" height="400">', fullfile('./figs/','finalSpecFig.jpg'));
+			fprintf(fid2,'\n<img src= " %s " width="800" height="400"><img src= " %s " width="800" height="400">', fullfile('./figs/','finalSpecFig.jpg'), fullfile('./figs/','finalSpecFig_narrow.jpg'));
 			fclose(fid2);
 			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		end
