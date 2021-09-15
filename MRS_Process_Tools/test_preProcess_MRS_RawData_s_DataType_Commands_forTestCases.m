@@ -1,19 +1,20 @@
-dataType = 'mrs_w';
-filename = filename_svs_slaser_dkd_mrs_w;
-filenamew = filename_w_svs_slaser_dkd_mrs_w;
-dirString = [dirStringBase dataType '/'];
+dataType		= 'mrs_w';
+filename		= filename_svs_slaser_dkd_mrs_w;
+filenamew		= filename_w_svs_slaser_dkd_mrs_w;
+dirString		= [dirStringBase dataType '/'];
+outDirString	= dirString;
 
 
 % Optional, if water unsuppressed signal exists
-strOVS_w	= 'woutOVS';		% 'wOVS';
+strOVS_w		= 'woutOVS';		% 'wOVS';
 
 
 % Optional, if OVS setting for acquisition of MR spectrum was different
-strOVS		= 'woutOVS';		% 'wOVS';
+strOVS			= 'woutOVS';		% 'wOVS';
 
 
 % Optional, if sequence type for acquisition of MR spectrum was different
-seqType		= 'PRESS';			% 'sLASER';
+seqType			= 'PRESS';			% 'sLASER';
 
 
 % Optional, if any of the following parameters should be changed
