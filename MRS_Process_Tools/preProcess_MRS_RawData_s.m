@@ -415,10 +415,19 @@ switch seqType
 				noAvg_ref_Quant					= out_ref_Quant_raw.averages;
 				
 			else
-				error('%s: Reference scans option for sequence %s not yet implemented!', sFunctionName, out.seq);
+				warning('%s: Reference scans option for sequence "%s" not yet implemented!\nReference scans will NOT be processed!', sFunctionName, out_raw.seq);
+				% Create empty output structs for reference scans and set boolean
+				% parameter with_ref to false to avaoid error messages and to enable 
+				% processing of the MR spectrum or water signal itself
+				out_ref_ECC				= struct([]);
+				out_ref_ECC_noproc		= struct([]);
+				out_ref_Quant			= struct([]);
+				out_ref_Quant_noproc	= struct([]);
+				with_ref				= false;
 			end		% End of if isSVSdkd_seq 
 			
 		end		% End of if with_ref
+		disp(sMsg_newLines);
 		
 		
 		%% Create filenames for saving of processed output depending on sequence type
