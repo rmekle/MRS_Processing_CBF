@@ -104,4 +104,8 @@ noisesd=std(real(noise));
 %SNR=maxNAA/noisesd
 SNR=signal/noisesd;
 
-disp(['The calculated signal-to-noise ratio is:  ' num2str(SNR) '.']);
+
+% Change RM
+% Modify display of output
+%disp(['The calculated signal-to-noise ratio is:  ' num2str(SNR) '.']);
+fprintf('\n\nThe calculated signal-to-noise ratio is: \tSNR = %f \t = %.1f \n', SNR, SNR);

@@ -26,12 +26,20 @@
 %	signal_ppmRange (required)	ppm range (min, max) for signal measurement in MRS data
 %	noise_ppmRange	(required)	ppm range (min, max) for noise measurement in MRS data
 %	LWpeak_ppmRange	(required)	ppm range (min, max) for FWHM measurement in MRS data
-%	zp_factor		(required)	zero-padding factor (used for method 1 of noise
-%								measurement); default = 8
+%	zp_factor		(required)	zero-padding factor (used for method 1 of the linewidth
+%								measurement); default value there is = 8, but here
+%								zp_factor has to be specified, since linewidth measurement
+%								routine also uses plotswitch as input argument
 %	outDirString	(required)	Directory path for saving output & workspace
 %   dataType_MRS    (required)  String describing the type of MRS data:
-%								 'water' = water signal, 'mrs' = MR spectrum without water 
-%                                signal, 'mrs_w'= MR spectrum with respective water signal
+%					'mrs'		= MR spectrum without water signal, 
+%					'mrs_w'		= MR spectrum with unsuppressed water signal
+%					'mrs_w_ref'	= MR spectrum with unsuppressed water signal and reference
+%									(water) scans
+%					'mrs_ref'	= MR spectrum with reference (water) scans
+%					'water'		= MR spectrum is unsuppressed water signal itself
+%					'water_ref' = MR spectrum is unsuppressed water signal itself with
+%									reference (water) scans (should be very rare!)
 %	plotswitch		(optional)	Switch for displaying plots: 1 = ON, 0 = OFF; default = 1
 %   seqType_MRS     (optional)  String to specify sequence type; essential for processing
 %                                raw data/dat files
@@ -233,8 +241,10 @@ end
 
 %% Compute the SNR of the MRS data for a selected peak and noise range
 %[SNR,MRS_signal,MRS_noisesd]	= op_getSNR(data_MRS, signal_ppmRange(1), signal_ppmRange(2), noise_ppmRange(1), noise_ppmRange(2));
-[SNR,MRS_signal,MRS_noiseSD]	= op_getSNR_s(data_MRS, signal_ppmRange(1), signal_ppmRange(2), noise_ppmRange(1), noise_ppmRange(2), plotswitch)
+[SNR,MRS_signal,MRS_noiseSD]	= op_getSNR_s(data_MRS, signal_ppmRange(1), signal_ppmRange(2), noise_ppmRange(1), noise_ppmRange(2), plotswitch);
 %SNR	= 100;
+fprintf('\nMRS_signal = %.2f\tMRS_noiseSD = %.2f\t=>\tSNR = %.2f \t = %.1f \n', MRS_signal, MRS_noiseSD, SNR, SNR);
+
 
 
 %% Determine the linewidth (LW) of the MRS data

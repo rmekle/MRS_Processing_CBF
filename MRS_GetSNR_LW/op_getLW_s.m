@@ -114,4 +114,8 @@ FWHM2=FWHM2*(42.577*in.Bo);  %Assumes Proton.
 
 FWHM=mean([FWHM1 FWHM2]);  
 
-disp(['The calculated linewidth is:  ' num2str(FWHM) ' Hz.' ]);
+
+% Change RM
+% Modify display of output
+%disp(['The calculated linewidth is:  ' num2str(FWHM) ' Hz.' ]);
+fprintf('\n\nThe calculated linewidth is: \tLW = %f Hz\t = %.1f Hz\n', FWHM, FWHM);
