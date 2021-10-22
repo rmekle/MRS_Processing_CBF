@@ -4,7 +4,7 @@
 %
 %% Script to preprocess a list of files of magnetic resonance spectroscopy (MRS) data
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -16,31 +16,32 @@
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'preprocess_ListOfFiles_s';
 sMsg_newLines		= sprintf('\n\n');
-%disp(sMsg_newLines);
+sMsg_newLine		= sprintf('\n');
+disp(sMsg_newLines);
 
 
 %% Init input parameters for preprocessing routine
 %dirString_In			= '';
-%outDirString_In			= '';
+%dirString_Out			= '';
 filename_In				= '';
 filenamew_In			= '';
-noSD_In					= 4.0;			% 3.2;		2.6;		4.0;
+noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 strOVS_In				='wOVS';
 strMinUserIn_In			= 'y';
 aaDomain_In				= 'f';
 tmaxin_In				= 0.2;
 iterin_In				= 20;
 alignSS_In				= 2;
-seqType					= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS';
+seqType					= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 
 % Set (additional) parameters depending on sequence type
 switch seqType
 	case 'SPECIAL'
 		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_RawData_dat_Files/';
-		outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Z_Pain_Tmp/';
-		%outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_4_0/';
-		%outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_3_2/';
-		%outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_2_6/';
+		dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Z_Pain_Tmp/';
+		%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_4_0/';
+		%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_3_2/';
+		%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_2_6/';
 	case 'MEGA-PRESS'
 		% Data (input) directories
 		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_RawData_dat_Files_MRS/';
@@ -50,18 +51,35 @@ switch seqType
 		% of MR spectra
 		switch(noSD_In)
 			case(2.6)
-				outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_2_6/';
+				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_2_6/';
 			case(3.2)
-				%outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/';
-				outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2_New/';
-				%outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_3_2/';
+				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/';
+				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2_New/';
+				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_3_2/';
 			case(4.0)
-				outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/';
-				%outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_4_0/';
+				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/';
+				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_4_0/';
 			
 			otherwise
 				error('%s: ERROR: No directory/data for noSD_In =  %f!', sFunctionName, noSD_In);
 		end
+	case 'sLASER'
+		% Data (input) directories
+		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_MRS/';
+		%dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_MRS_New/';
+		
+		% Select directory for output data depending on # of SDs used for pre-processing
+		% of MR spectra
+		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+		dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/Trauma_FID-A';
+		dirString_Out_AddOn		= sprintf('_SD_%d_%d', digits(1), digits(2));
+		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn, filesep];
+		
+		% If outout directory nonexistent, create it
+		if ~exist( dirString_Out, 'dir' )
+			mkdir(dirString_Out);
+		end
+		
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
@@ -105,7 +123,7 @@ switch seqType
 			filenamew_In	= structFileListing(ind+1).name;
 			disp(sMsg_newLines);
 			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filenamew_In, sprintf('\n\n')]);
-			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,outDirString_In,filename_In,filenamew_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
+			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filenamew_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
 			
 			% Close all figures
 			close all;
@@ -116,7 +134,7 @@ switch seqType
 			filenamew_In	= structFileListing(ind+2).name;
 			disp(sMsg_newLines);
 			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filenamew_In, sprintf('\n\n')]);
-			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,outDirString_In,filename_In,filenamew_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
+			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filenamew_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
 		end
 	case 'MEGA-PRESS'
 		% Here preprocessing of MEGA-PRESS MR spectra together with the corresponding 
@@ -138,11 +156,12 @@ switch seqType
 			filenamew_In	= structFileListing(ind+1).name;
 			disp(sMsg_newLines);
 			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filenamew_In, sprintf('\n\n')]);
-			[diffSpecOut,sumSpecOut,subSpec1Out,subSpec2Out,outwOut,outw_subSpec1Out,outw_subSpec2Out,coilcombosOut]=run_megapressproc_CBF(dirString_In,outDirString_In,filename_In,filenamew_In,noSD_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In,alignSS_In);
+			[diffSpecOut,sumSpecOut,subSpec1Out,subSpec2Out,outwOut,outw_subSpec1Out,outw_subSpec2Out,coilcombosOut]=run_megapressproc_CBF(dirString_In,dirString_Out,filename_In,filenamew_In,noSD_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In,alignSS_In);
 			
 			% Close all figures
 			%close all;
 		end		
+		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 end
@@ -157,9 +176,9 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % workspace file with a "." in its filename)
 %strSavedWorkspaceFileName		= 'workspace_run_specialproc_CBF';
 strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType, '_', dt];
-strSavedWorkspaceFileNameFull	= [outDirString_In, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
+strSavedWorkspaceFileNameFull	= [dirString_Out, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
-strSaveWorkspace	= 'y';
+strSaveWorkspace	= 'n';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
 	save(strSavedWorkspaceFileNameFull);
 end
