@@ -24,18 +24,23 @@ disp(sMsg_newLines);
 %dirString_In			= '';
 %dirString_Out			= '';
 filename_In				= '';
-filenamew_In			= '';
+filename_w_In			= '';
+strVOI					= 'HC';			% 'HC';		% 'PCG';
+seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+dataType_MRS			= 'mrs_w_ref';
+strOVS_In				= 'wOVS';
+strOVS_w_In				= 'wOVS';
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
-strOVS_In				='wOVS';
 strMinUserIn_In			= 'y';
 aaDomain_In				= 'f';
 tmaxin_In				= 0.2;
 iterin_In				= 20;
 alignSS_In				= 2;
-seqType					= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+plotSwitch_In			= 0;
+reportSwitch_In			= 1;
 
 % Set (additional) parameters depending on sequence type
-switch seqType
+switch seqType_MRS
 	case 'SPECIAL'
 		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_RawData_dat_Files/';
 		dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Z_Pain_Tmp/';
@@ -65,24 +70,24 @@ switch seqType
 		end
 	case 'sLASER'
 		% Data (input) directories
-		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_MRS/';
-		%dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_MRS_New/';
+		dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
+		dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
+		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
 		
 		% Select directory for output data depending on # of SDs used for pre-processing
 		% of MR spectra
 		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-		dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/Trauma_FID-A';
-		dirString_Out_AddOn		= sprintf('_SD_%d_%d', digits(1), digits(2));
-		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn, filesep];
+		dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+		dirString_Out_AddOn1	= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, filesep];
 		
-		% If outout directory nonexistent, create it
+		% If outout directory is non-existent, create it
 		if ~exist( dirString_Out, 'dir' )
 			mkdir(dirString_Out);
 		end
 		
-		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
 
 
@@ -100,7 +105,7 @@ noEntriesListing		= length( structFileListing );
 
 
 %% Preprocess all data files depending on sequence type
-switch seqType
+switch seqType_MRS
 	case 'SPECIAL'
 		% Here preprocessing of SPECIAL MR spectra together with the corresponding water 
 		% files is performed
@@ -120,10 +125,10 @@ switch seqType
 			% Preprocess MR spectrum and water_withOVS
 			strOVS_In		= 'wOVS';
 			filename_In		= structFileListing(ind).name;
-			filenamew_In	= structFileListing(ind+1).name;
+			filename_w_In	= structFileListing(ind+1).name;
 			disp(sMsg_newLines);
-			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filenamew_In, sprintf('\n\n')]);
-			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filenamew_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
+			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
+			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filename_w_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
 			
 			% Close all figures
 			close all;
@@ -131,13 +136,13 @@ switch seqType
 			% Preprocess MR spectrum and water_woutOVS
 			% (spectral data remain the same and only processed differently now)
 			strOVS_In		= 'woutOVS';
-			filenamew_In	= structFileListing(ind+2).name;
+			filename_w_In	= structFileListing(ind+2).name;
 			disp(sMsg_newLines);
-			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filenamew_In, sprintf('\n\n')]);
-			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filenamew_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
+			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
+			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filename_w_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
 		end
 	case 'MEGA-PRESS'
-		% Here preprocessing of MEGA-PRESS MR spectra together with the corresponding 
+		% Here preprocessing of MEGA-PRESS MR spectraFSN-FZ-CSB-08 together with the corresponding 
 		% water file is performed
 		% Assumptions:
 		% - All data files are consecutively sorted, e.g. by date
@@ -153,17 +158,52 @@ switch seqType
 		for ind=indexStart : indexStep : noEntriesListing		% noEntriesListing	% 4		% 2
 			% Preprocess MR spectrum and water
 			filename_In		= structFileListing(ind).name;
-			filenamew_In	= structFileListing(ind+1).name;
+			filename_w_In	= structFileListing(ind+1).name;
 			disp(sMsg_newLines);
-			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filenamew_In, sprintf('\n\n')]);
-			[diffSpecOut,sumSpecOut,subSpec1Out,subSpec2Out,outwOut,outw_subSpec1Out,outw_subSpec2Out,coilcombosOut]=run_megapressproc_CBF(dirString_In,dirString_Out,filename_In,filenamew_In,noSD_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In,alignSS_In);
+			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
+			[diffSpecOut,sumSpecOut,subSpec1Out,subSpec2Out,outwOut,outw_subSpec1Out,outw_subSpec2Out,coilcombosOut]=run_megapressproc_CBF(dirString_In,dirString_Out,filename_In,filename_w_In,noSD_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In,alignSS_In);
+			
+			% Close all figures
+			%close all;
+		end
+	case 'sLASER'
+		% Here preprocessing of sLASER MR spectra acquired with or without water reference
+		% signals together with the corresponding water file is performed
+		% Assumptions:
+		% - All data files are consecutively sorted, e.g. by date
+		% - Data files come in group of two files:
+		% - sLASER MR spectrum with or without reference scans, sLASER water signal
+		% - Order of files is same for all cases, i.e. spectrum; water
+		
+		% Preprocess each case (spectrum)
+		% If separate water scans and reference scans were acquired, get coil phases from
+		% both types of signals, and for coil combination use 
+		% if reference scans exist,
+		%	coil phases from reference scans for reference scans and MR spectra, since
+		%	reference scans were acquired together with MR spectra
+		%	coil phases from water scans for water scans
+		%
+		% if only water scans exist, 
+		%	coil phases from water scans for water scans and for MR spectra
+		%
+		% if neither reference scans nor water scans eFSN-FZ-CSB-08xist,
+		%	coil phases from MR spectra for MR spectra
+		indexStart		= 1;
+		indexStep		= 2;	% For sLASER, since only one water signals exists
+		for ind=indexStart : indexStep : noEntriesListing		% noEntriesListing	% 4		% 2
+			% Preprocess MR spectrum and water
+			filename_In		= structFileListing(ind).name;
+			filename_w_In	= structFileListing(ind+1).name;
+			disp(sMsg_newLines);
+			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
+			[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
 			
 			% Close all figures
 			%close all;
 		end		
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
 
 
@@ -175,7 +215,7 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
 % workspace file with a "." in its filename)
 %strSavedWorkspaceFileName		= 'workspace_run_specialproc_CBF';
-strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType, '_', dt];
+strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dt];
 strSavedWorkspaceFileNameFull	= [dirString_Out, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'n';
