@@ -24,11 +24,13 @@ sMsg_newLines		= sprintf('\n\n');
 %outDirString_In			= '';
 filename_In				= '';
 filename_w_In			= '';
+strVOI					= 'HC';			% 'HC';		% 'PCG';
 noSD_In					= 3.2;			% 2.6;		3.2;		4.0;
 %strOVS_In				='wOVS';
 %strMinUserIn_In			= 'y';
 %aaDomain_In				= 'f';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';	% 'sLASER';
+dataType_MRS			= 'mrs_w_ref';
 bCopyFiles				= 1;
 bWriteFilenames			= 1;
 
@@ -59,14 +61,18 @@ switch seqType_MRS
 		textFileName_OFF_MRS	= 'list_filenames_MRS_editOFF_Spectra.txt';
 		textFileName_OFF_w		= 'list_filenames_MRS_editOFF_Water.txt';
 	case 'sLASER'
-		% Select directory for  data depending on # of SDs used for pre-processing
+		% Select directory for input data depending on # of SDs used for pre-processing
 		% of MR spectra
 		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
 		dirString_In_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
 		
-		outDirString			= [dirString_In, '_LCModel_Analysis_Data/'];
+		% Create strings for output directoryx and list of filenames of MR spectra and 
+		% unsuppressed water signals
+		outDirString			= [dirString_In, strVOI, '_LCModel_Analysis_Data/'];
+		textFileName_MRS 		= 'list_filenames_MRS_Spectra.txt';
+		textFileName_w 			= 'list_filenames_MRS_Water.txt';
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
@@ -90,13 +96,11 @@ end
 % end
 
 
-
 %% Copy data files depending on sequence type and create list of filenames, if selected
 switch seqType_MRS
 	case 'SPECIAL'
 		% Nothing yet
-	case 'MEGA-PRESS'
-		
+	case 'MEGA-PRESS'		
 		% Obtain information about the list of different groups of files
 		% (assuming that all data files are included in the same directory)
 		% (On Linux, file list in Matlab also includes the two directories "." and "..", which
@@ -122,11 +126,11 @@ switch seqType_MRS
 		noEntriesListing_OFF_w		= length( structFileListing_OFF_w );
 		
 		% Determine MEGA-PRESS MRS difference files (MRS only)
-		structFileListing_diff_MRS	= structFileListing_diff(~ismember({structFileListing_diff.name}, {structFileListing_diff_w.name}));
+		structFileListing_diff_MRS	= structFileListing_diff( ~ismember({structFileListing_diff.name}, {structFileListing_diff_w.name}) );
 		noEntriesListing_diff_MRS	= length( structFileListing_diff_MRS );
 		
 		% Determine MEGA-PRESS MRS edit_OFF files (MRS only)
-		structFileListing_OFF_MRS	= structFileListing_OFF(~ismember({structFileListing_OFF.name}, {structFileListing_OFF_w.name}));
+		structFileListing_OFF_MRS	= structFileListing_OFF( ~ismember({structFileListing_OFF.name}, {structFileListing_OFF_w.name}) );
 		noEntriesListing_OFF_MRS	= length( structFileListing_OFF_MRS );
 
 		
@@ -221,6 +225,39 @@ switch seqType_MRS
 			end
 			
 		end		% End of if bWriteFilenames
+	case 'sLASER'
+		% Obtain information about the list of different groups of files
+		% (assuming that all data files are included in the same directory)
+		
+		% sLASER all processed .RAW files
+		structFileListing_all		= dir([dirString_In, '*_processed_*.RAW']);
+		noEntriesListing_all		= length( structFileListing_all );
+		%noDataFiles_all			= noEntriesListing_all - 2
+		
+		% sLASER processed .RAW water reference files for ECC
+		structFileListing_ref_ECC	= dir([dirString_In, '*_ref_ECC*_processed_*.RAW']);
+		noEntriesListing_ref_ECC	= length( structFileListing_ref_ECC );
+		
+		% sLASER processed .RAW water reference files for quantification (Quant)
+		structFileListing_ref_Quant	= dir([dirString_In, '*_ref_Quant*_processed_*.RAW']);
+		noEntriesListing_ref_Quant	= length( structFileListing_ref_Quant );
+				
+		% sLASER processed .RAW unsuppressed water files
+		structFileListing_w		= dir([dirString_In, '*_w_*_processed_*.RAW']);
+		noEntriesListing_w		= length( structFileListing_w );
+		
+ 		% sLASER processed .RAW MR spectra files 
+		% (find .RAW files that do not belong to any other group)
+		structFileListing_Tmp1		= structFileListing_all( ~ismember({structFileListing_all.name}, {structFileListing_ref_Quant.name}) );
+		structFileListing_Tmp2		= structFileListing_Tmp1( ~ismember({structFileListing_Tmp1.name}, {structFileListing_ref_ECC.name}) );
+ 		structFileListing_MRS		= structFileListing_Tmp2( ~ismember({structFileListing_Tmp2.name}, {structFileListing_w.name}) );
+ 		noEntriesListing_MRS		= length( structFileListing_MRS );
+
+		
+		
+		
+		
+		
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
@@ -238,7 +275,7 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dt];
 strSavedWorkspaceFileNameFull	= [outDirString, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
-strSaveWorkspace	= 'n';
+strSaveWorkspace	= 'y';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
 	save(strSavedWorkspaceFileNameFull);
 end
