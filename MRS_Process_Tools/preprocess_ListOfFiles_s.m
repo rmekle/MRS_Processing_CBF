@@ -218,7 +218,7 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dt];
 strSavedWorkspaceFileNameFull	= [dirString_Out, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
-strSaveWorkspace	= 'n';
+strSaveWorkspace	= 'y';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
 	save(strSavedWorkspaceFileNameFull);
 end
