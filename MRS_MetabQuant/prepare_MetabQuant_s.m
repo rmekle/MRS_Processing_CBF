@@ -23,17 +23,17 @@ sMsg_newLines		= sprintf('\n\n');
 %dirString_In			= '';
 %outDirString_In			= '';
 filename_In				= '';
-filenamew_In			= '';
-noSD_In					= 4.0;			% 2.6;		3.2;		4.0;
+filename_w_In			= '';
+noSD_In					= 3.2;			% 2.6;		3.2;		4.0;
 %strOVS_In				='wOVS';
 %strMinUserIn_In			= 'y';
 %aaDomain_In				= 'f';
-seqType					= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS';
+seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';	% 'sLASER';
 bCopyFiles				= 1;
 bWriteFilenames			= 1;
 
 % Set (additional) parameters depending on sequence type
-switch seqType
+switch seqType_MRS
 	case 'SPECIAL'
 		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_RawData_dat_Files/';
 		outDirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Z_Pain_Tmp/';
@@ -57,10 +57,19 @@ switch seqType
 		textFileName_diff_MRS	= 'list_filenames_MRS_Diff_Spectra.txt';
 		textFileName_OFF		= 'list_filenames_MRS_editOFF_All.txt';
 		textFileName_OFF_MRS	= 'list_filenames_MRS_editOFF_Spectra.txt';
-		textFileName_OFF_w	= 'list_filenames_MRS_editOFF_Water.txt';
+		textFileName_OFF_w		= 'list_filenames_MRS_editOFF_Water.txt';
+	case 'sLASER'
+		% Select directory for  data depending on # of SDs used for pre-processing
+		% of MR spectra
+		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+		dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+		dirString_In_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
+		
+		outDirString			= [dirString_In, '_LCModel_Analysis_Data/'];
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
 
 % If output directories for file copying do not exist, create them
@@ -81,44 +90,46 @@ end
 % end
 
 
-%% Obtain information about the list of different groups of files
-% (assuming that all data files are included in the same directory)
-% (On Linux, file list in Matlab also includes the two directories "." and "..", which
-% means that the actual # of files in the directory is (# of entries in list - 2; 
-% however, if dir is used to list specific files, e.g. using a file extension, these two 
-% directories are not included in the resulting list)
-%cd(dirString_In);
-% MEGA-PRESS difference files (MRS + water)
-structFileListing_diff		= dir([dirString_In, '*_diff_*.RAW']);
-noEntriesListing_diff		= length( structFileListing_diff );
-%noDataFiles_diff			= noEntriesListing_diff - 2
-
-% MEGA-PRESS edit_OFF files (MRS + water)
-structFileListing_OFF		= dir([dirString_In, '*_editOFF_*.RAW']);
-noEntriesListing_OFF		= length( structFileListing_OFF );
-
-% MEGA-PRESS water difference files (water only)
-structFileListing_diff_w	= dir([dirString_In, '*_w_*_diff_*.RAW']);
-noEntriesListing_diff_w		= length( structFileListing_diff_w );
-
-% MEGA-PRESS water edit_OFF files (water only)
-structFileListing_OFF_w		= dir([dirString_In, '*_w_*_editOFF_*.RAW']);
-noEntriesListing_OFF_w		= length( structFileListing_OFF_w );
-
-% Determine MEGA-PRESS MRS difference files (MRS only)
-structFileListing_diff_MRS	= structFileListing_diff(~ismember({structFileListing_diff.name}, {structFileListing_diff_w.name}));
-noEntriesListing_diff_MRS	= length( structFileListing_diff_MRS );
-
-% Determine MEGA-PRESS MRS edit_OFF files (MRS only)
-structFileListing_OFF_MRS	= structFileListing_OFF(~ismember({structFileListing_OFF.name}, {structFileListing_OFF_w.name}));
-noEntriesListing_OFF_MRS	= length( structFileListing_OFF_MRS );
-
 
 %% Copy data files depending on sequence type and create list of filenames, if selected
-switch seqType
+switch seqType_MRS
 	case 'SPECIAL'
 		% Nothing yet
 	case 'MEGA-PRESS'
+		
+		% Obtain information about the list of different groups of files
+		% (assuming that all data files are included in the same directory)
+		% (On Linux, file list in Matlab also includes the two directories "." and "..", which
+		% means that the actual # of files in the directory is (# of entries in list - 2;
+		% however, if dir is used to list specific files, e.g. using a file extension, these two
+		% directories are not included in the resulting list)
+		%cd(dirString_In);
+		% MEGA-PRESS difference files (MRS + water)
+		structFileListing_diff		= dir([dirString_In, '*_diff_*.RAW']);
+		noEntriesListing_diff		= length( structFileListing_diff );
+		%noDataFiles_diff			= noEntriesListing_diff - 2
+		
+		% MEGA-PRESS edit_OFF files (MRS + water)
+		structFileListing_OFF		= dir([dirString_In, '*_editOFF_*.RAW']);
+		noEntriesListing_OFF		= length( structFileListing_OFF );
+		
+		% MEGA-PRESS water difference files (water only)
+		structFileListing_diff_w	= dir([dirString_In, '*_w_*_diff_*.RAW']);
+		noEntriesListing_diff_w		= length( structFileListing_diff_w );
+		
+		% MEGA-PRESS water edit_OFF files (water only)
+		structFileListing_OFF_w		= dir([dirString_In, '*_w_*_editOFF_*.RAW']);
+		noEntriesListing_OFF_w		= length( structFileListing_OFF_w );
+		
+		% Determine MEGA-PRESS MRS difference files (MRS only)
+		structFileListing_diff_MRS	= structFileListing_diff(~ismember({structFileListing_diff.name}, {structFileListing_diff_w.name}));
+		noEntriesListing_diff_MRS	= length( structFileListing_diff_MRS );
+		
+		% Determine MEGA-PRESS MRS edit_OFF files (MRS only)
+		structFileListing_OFF_MRS	= structFileListing_OFF(~ismember({structFileListing_OFF.name}, {structFileListing_OFF_w.name}));
+		noEntriesListing_OFF_MRS	= length( structFileListing_OFF_MRS );
+
+		
 		% Copy only MEGA-PRESS MRS difference files and all edit_OFF files with .RAW 
 		% extension to destination folder, if selected
 		indexStart		= 1;
@@ -212,7 +223,7 @@ switch seqType
 		end		% End of if bWriteFilenames
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
 
 
@@ -224,7 +235,7 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
 % workspace file with a "." in its filename)
 %strSavedWorkspaceFileName		= 'workspace_run_specialproc_CBF';
-strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType, '_', dt];
+strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dt];
 strSavedWorkspaceFileNameFull	= [outDirString, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'n';
@@ -232,3 +243,37 @@ if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
 	save(strSavedWorkspaceFileNameFull);
 end
 
+
+
+%% Former code
+% %% Obtain information about the list of different groups of files
+% % (assuming that all data files are included in the same directory)
+% % (On Linux, file list in Matlab also includes the two directories "." and "..", which
+% % means that the actual # of files in the directory is (# of entries in list - 2; 
+% % however, if dir is used to list specific files, e.g. using a file extension, these two 
+% % directories are not included in the resulting list)
+% %cd(dirString_In);
+% % MEGA-PRESS difference files (MRS + water)
+% structFileListing_diff		= dir([dirString_In, '*_diff_*.RAW']);
+% noEntriesListing_diff		= length( structFileListing_diff );
+% %noDataFiles_diff			= noEntriesListing_diff - 2
+% 
+% % MEGA-PRESS edit_OFF files (MRS + water)
+% structFileListing_OFF		= dir([dirString_In, '*_editOFF_*.RAW']);
+% noEntriesListing_OFF		= length( structFileListing_OFF );
+% 
+% % MEGA-PRESS water difference files (water only)
+% structFileListing_diff_w	= dir([dirString_In, '*_w_*_diff_*.RAW']);
+% noEntriesListing_diff_w		= length( structFileListing_diff_w );
+% 
+% % MEGA-PRESS water edit_OFF files (water only)
+% structFileListing_OFF_w		= dir([dirString_In, '*_w_*_editOFF_*.RAW']);
+% noEntriesListing_OFF_w		= length( structFileListing_OFF_w );
+% 
+% % Determine MEGA-PRESS MRS difference files (MRS only)
+% structFileListing_diff_MRS	= structFileListing_diff(~ismember({structFileListing_diff.name}, {structFileListing_diff_w.name}));
+% noEntriesListing_diff_MRS	= length( structFileListing_diff_MRS );
+% 
+% % Determine MEGA-PRESS MRS edit_OFF files (MRS only)
+% structFileListing_OFF_MRS	= structFileListing_OFF(~ismember({structFileListing_OFF.name}, {structFileListing_OFF_w.name}));
+% noEntriesListing_OFF_MRS	= length( structFileListing_OFF_MRS );
