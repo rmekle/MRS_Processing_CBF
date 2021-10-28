@@ -31,7 +31,9 @@ noSD_In					= 3.2;			% 2.6;		3.2;		4.0;
 %aaDomain_In				= 'f';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';	% 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
-bCopyFiles				= 0;
+bCopyFiles				= 1;
+bCopyFiles_ref_ECC		= 0;
+bCopyFiles_w			= 0;
 bWriteFilenames			= 1;
 
 % Set (additional) parameters depending on sequence type
@@ -271,16 +273,6 @@ switch seqType_MRS
 				end
 			end
 			
-			% Copy (processed) water reference files for ECC
-			for ind=indexStart : indexStep : noEntriesListing_ref_ECC
-				% Copy water reference file for ECC
-				[status, msg] = copyfile(fullfile(dirString_In, structFileListing_ref_ECC(ind).name), outDirString);
-				if ~status
-					disp(msg);
-					error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_ref_ECC(ind).name, outDirString);
-				end
-			end
-			
 			% Copy (processed) water reference files quantification (Quant)
 			for ind=indexStart : indexStep : noEntriesListing_ref_Quant
 				% Copy water reference file quantification (Quant)
@@ -291,15 +283,29 @@ switch seqType_MRS
 				end
 			end
 			
-			% Copy (processed) unsuppressed water files
-			for ind=indexStart : indexStep : noEntriesListing_w
-				% Copy unsuppressed water file
-				[status, msg] = copyfile(fullfile(dirString_In, structFileListing_w(ind).name), outDirString);
-				if ~status
-					disp(msg);
-					error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_w(ind).name, outDirString);
+			% Copy (processed) water reference files for ECC, if selected
+			if bCopyFiles_ref_ECC
+				for ind=indexStart : indexStep : noEntriesListing_ref_ECC
+					% Copy water reference file for ECC
+					[status, msg] = copyfile(fullfile(dirString_In, structFileListing_ref_ECC(ind).name), outDirString);
+					if ~status
+						disp(msg);
+						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_ref_ECC(ind).name, outDirString);
+					end
 				end
-			end
+			end		% End of if bCopyFiles_ref_ECC
+			
+			% Copy (processed) unsuppressed water files, if selected
+			if bCopyFiles_w
+				for ind=indexStart : indexStep : noEntriesListing_w
+					% Copy unsuppressed water file
+					[status, msg] = copyfile(fullfile(dirString_In, structFileListing_w(ind).name), outDirString);
+					if ~status
+						disp(msg);
+						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_w(ind).name, outDirString);
+					end
+				end
+			end		% End of if bCopyFiles_w
 			
 		end		% End of if bCopyFiles
 		
@@ -323,20 +329,6 @@ switch seqType_MRS
 				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_MRS, outDirString);
 			end
 			
-			% Filenames of (processed) water reference files for ECC
-			fid_ref_ECC		= fopen(fullfile(outDirString, textFileName_ref_ECC), 'wt+');
-			if fid_ref_ECC == -1
-				error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString);
-			end
-			for i=istart : istep : (noEntriesListing_ref_ECC-1)
-				nbytes	= fprintf(fid_ref_ECC, '%s\n', structFileListing_ref_ECC(i).name);
-			end
-			% Write last filename without new line character at end of line to textfile
-			nbytes	= fprintf(fid_ref_ECC, '%s', structFileListing_ref_ECC(noEntriesListing_ref_ECC).name);
-			if fclose(fid_ref_ECC) == -1
-				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString);
-			end
-			
 			% Filenames of (processed) water reference files for quantification (Quant)
 			fid_ref_Quant	= fopen(fullfile(outDirString, textFileName_ref_Quant), 'wt+');
 			if fid_ref_Quant == -1
@@ -349,6 +341,20 @@ switch seqType_MRS
 			nbytes	= fprintf(fid_ref_Quant, '%s', structFileListing_ref_Quant(noEntriesListing_ref_Quant).name);
 			if fclose(fid_ref_Quant) == -1
 				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_Quant, outDirString);
+			end
+			
+			% Filenames of (processed) water reference files for ECC
+			fid_ref_ECC		= fopen(fullfile(outDirString, textFileName_ref_ECC), 'wt+');
+			if fid_ref_ECC == -1
+				error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString);
+			end
+			for i=istart : istep : (noEntriesListing_ref_ECC-1)
+				nbytes	= fprintf(fid_ref_ECC, '%s\n', structFileListing_ref_ECC(i).name);
+			end
+			% Write last filename without new line character at end of line to textfile
+			nbytes	= fprintf(fid_ref_ECC, '%s', structFileListing_ref_ECC(noEntriesListing_ref_ECC).name);
+			if fclose(fid_ref_ECC) == -1
+				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString);
 			end
 			
 			% Filenames of (processed) unsuppressed water files
@@ -388,37 +394,3 @@ if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
 	save(strSavedWorkspaceFileNameFull);
 end
 
-
-
-%% Former code
-% %% Obtain information about the list of different groups of files
-% % (assuming that all data files are included in the same directory)
-% % (On Linux, file list in Matlab also includes the two directories "." and "..", which
-% % means that the actual # of files in the directory is (# of entries in list - 2; 
-% % however, if dir is used to list specific files, e.g. using a file extension, these two 
-% % directories are not included in the resulting list)
-% %cd(dirString_In);
-% % MEGA-PRESS difference files (MRS + water)
-% structFileListing_diff		= dir([dirString_In, '*_diff_*.RAW']);
-% noEntriesListing_diff		= length( structFileListing_diff );
-% %noDataFiles_diff			= noEntriesListing_diff - 2
-% 
-% % MEGA-PRESS edit_OFF files (MRS + water)
-% structFileListing_OFF		= dir([dirString_In, '*_editOFF_*.RAW']);
-% noEntriesListing_OFF		= length( structFileListing_OFF );
-% 
-% % MEGA-PRESS water difference files (water only)
-% structFileListing_diff_w	= dir([dirString_In, '*_w_*_diff_*.RAW']);
-% noEntriesListing_diff_w		= length( structFileListing_diff_w );
-% 
-% % MEGA-PRESS water edit_OFF files (water only)
-% structFileListing_OFF_w		= dir([dirString_In, '*_w_*_editOFF_*.RAW']);
-% noEntriesListing_OFF_w		= length( structFileListing_OFF_w );
-% 
-% % Determine MEGA-PRESS MRS difference files (MRS only)
-% structFileListing_diff_MRS	= structFileListing_diff(~ismember({structFileListing_diff.name}, {structFileListing_diff_w.name}));
-% noEntriesListing_diff_MRS	= length( structFileListing_diff_MRS );
-% 
-% % Determine MEGA-PRESS MRS edit_OFF files (MRS only)
-% structFileListing_OFF_MRS	= structFileListing_OFF(~ismember({structFileListing_OFF.name}, {structFileListing_OFF_w.name}));
-% noEntriesListing_OFF_MRS	= length( structFileListing_OFF_MRS );
