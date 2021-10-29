@@ -46,9 +46,9 @@ pp=splinefit(inw.t,inph,150);
 %now subtract the line from the spline to get the eddy current related
 %phase offset:
 ecphase=ppval(pp,inw.t)'-polyval(p,inw.t)';
-sz=size(in.fids)
+sz=size(in.fids);
 ecphase_rep=repmat(ecphase,[1 sz(2:end)]);
-size(ecphase_rep)
+size(ecphase_rep);
 figure;
 plot(inw.t,ecphase);
 
@@ -59,12 +59,20 @@ out=in;
 out.fids=out.fids.*exp(1i*-ecphase_rep);
 out.specs=fftshift(ifft(out.fids,[],1),1);
 size(ecphase);
-ecphase(1);
-out=op_addphase(out,180*ecphase_rep(1)/pi);
+% RM: Display first value of eddy current related phase offset
+%ecphase(1);
+fprintf('ecphase(1)\t = %f\n', ecphase(1));
+% RM: Call op_addphase(...) with default values for input variables 3 & 4 to be able to 
+% use input variable 5 to supress plotting of op_addphase(...)
+%out=op_addphase(out,180*ecphase_rep(1)/pi);
+out=op_addphase(out,180*ecphase_rep(1)/pi,0,4.65,1);
 
 outw=inw;
 outw.fids=outw.fids.*exp(1i*-ecphase);
 outw.specs=fftshift(ifft(outw.fids,[],1),1);
-outw=op_addphase(outw,180*ecphase(1)/pi);
+% RM: Call op_addphase(...) with default values for input variables 3 & 4 to be able to 
+% use input variable 5 to supress plotting of op_addphase(...)
+%outw=op_addphase(outw,180*ecphase(1)/pi);
+outw=op_addphase(outw,180*ecphase(1)/pi,0,4.65,1);
 figure;
 plot(outw.t,phase(outw.fids));
