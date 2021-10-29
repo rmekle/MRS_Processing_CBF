@@ -1059,6 +1059,10 @@ switch seqType
 		
 		
 		%% Perform phase correction and frequency shifting
+		% Create empty figure, so that op_addphase(...) and other routines plot to this
+		% figure and do not overwrite previous plots (e.g. from ECC)
+		h_figTmp1	= figure;
+		
 		% Set parameters for phase correction and frequency shifting inluding reference 
 		% frequencies and factors for zeropadding
 		freqs_Cr		= [2.9; 3.1; 3.027];
@@ -1193,7 +1197,9 @@ switch seqType
 						
 		%% Display final MR spectra and save corresponding figures
 		% Close all figures
-		close all;	
+		%close all;
+		% Close selected figure(s)
+		close(h_figTmp1);
 		
 		%h=figure('visible','off');
 		%plot(out.ppm,real(out.specs),'linewidth',2);xlim([0.2 5.2]);
