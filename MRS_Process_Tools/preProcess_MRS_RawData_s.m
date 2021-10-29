@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,bECC,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
 % Processing script for Siemens MRS data in .dat format (twix raw data).  
@@ -43,7 +43,7 @@
 %					 Default is 'woutOVS', which means that OVS was not used.
 % strOVS_w	   = (optional) String that specifies whether water acquired with OVS ('wOVS')
 %					 or withoutOVS ('woutOVS') is used for processing. 
-%					 Default is 'woutOVS', which means that OVS was not used. 
+%					 Default is 'woutOVS', which means that OVS was not used.
 % nSD		   = (Optional) # of standard deviations for bad average removal. Default
 %					value is 3.2.
 % aaDomain     = (Optional) Perform the spectral registration (drift correction) using
@@ -54,6 +54,8 @@
 %                   Default is 0.2 sec.
 % iterin       = (Optional).  Maximum number of allowed iterations for the spectral
 %                   registration to converge. Default is 20.
+% bECC 		   = (optional) Boolean that specifies whether eddy current correction (ECC) 
+%					 should be performed or not. Default is 0.
 % plotSwitch   = (Optional)	Switch for displaying plots: 1 = ON, 0 = OFF. Default is 0
 % strMinUserIn = (Optional) String that specifies whether user input/interaction should be
 %					 minimized or not; 'y' or 'Y' lead to minimization, 'n' or 'N' do not
@@ -82,7 +84,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,plotSwitch,strMinUserIn,reportSwitch)
+function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,bECC,plotSwitch,strMinUserIn,reportSwitch)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -97,7 +99,7 @@ disp(sMsg_newLines);
 
 
 %% Check on # of input arguments and assign default values to variables, if required
-maxNargin	= 15;
+maxNargin	= 16;
 if nargin<maxNargin
 	reportSwitch = 1;
 	if nargin<(maxNargin-1)
@@ -105,17 +107,20 @@ if nargin<maxNargin
 		if nargin<(maxNargin-2)
 			plotSwitch = 0;
 			if nargin<(maxNargin-3)
-				iterin = 20;
+				bECC = 0;
 				if nargin<(maxNargin-4)
-					tmaxin = 0.2;
+					iterin = 20;
 					if nargin<(maxNargin-5)
-						aaDomain = 'f';
+						tmaxin = 0.2;
 						if nargin<(maxNargin-6)
-							nSD = 3.2;
+							aaDomain = 'f';
 							if nargin<(maxNargin-7)
-								strOVS_w = 'woutOVS';
+								nSD = 3.2;
 								if nargin<(maxNargin-8)
-									strOVS = 'woutOVS';
+									strOVS_w = 'woutOVS';
+									if nargin<(maxNargin-9)
+										strOVS = 'woutOVS';
+									end
 								end
 							end
 						end
@@ -331,7 +336,7 @@ end
 disp(sMsg_newLines);
 
 
-%% Pre-process all data according to sequence type and types of data provided
+%% Preprocess all data according to sequence type and types of data provided
 % Display info
 fprintf('%s: Start of preprocessing of MRS data ... \n\n\n', sFunctionName);
 switch seqType
@@ -1029,9 +1034,33 @@ switch seqType
 		end		% End of if with_ref
 		
 		
-		%% Perform phase and frequency corrections
-		% Set parameters for phase and frequency correction inluding reference frequencies
-		% and factors for zeropadding
+		%% Perform eddy current correction (ECC), if selected
+		if bECC		
+			% Copy struct of MR spectrum for ECC and init signal used for ECC
+			out_av_ECC_In			= out_av;
+			out_water_av_ECC_In		= struct([]);
+			% Use reference (water) signals for ECC, if acquired
+			% (Same calls of ECC routine are used with same input variables, but different
+			% output arguments to facilitate correct assignment of output variables
+			% for further processing depending on which if case is actually invoked)
+			if with_ref
+				out_water_av_ECC_In			= out_ref_ECC_av;
+				[out_av, out_ref_ECC_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+			else if with_water
+					% If no reference signals, use water signals for ECC, if acquired
+					out_water_av_ECC_In		= out_w_av;
+					[out_av, out_w_av]		= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+				else
+					% No reference and no water signals => ECC not possible
+					error('%s: No reference and no water signals (dataType = %s) => ECC not possible!', sFunctionName, dataType);
+				end		% End of if with_water			
+			end		% End of if with_ref
+		end		% End of if bECC
+		
+		
+		%% Perform phase correction and frequency shifting
+		% Set parameters for phase correction and frequency shifting inluding reference 
+		% frequencies and factors for zeropadding
 		freqs_Cr		= [2.9; 3.1; 3.027];
 		freqs_w			= [4.0; 5.5; 4.65];
 		zp_factor		= 16;
