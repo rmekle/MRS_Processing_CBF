@@ -21,16 +21,20 @@ sMsg_newLines		= sprintf('\n\n');
 
 %% Init input parameters for preprocessing routine
 %dirString_In			= '';
-%outDirString_In			= '';
+%outDirString_In		= '';
 filename_In				= '';
 filename_w_In			= '';
-strVOI					= 'HC';			% 'HC';		% 'PCG';
-noSD_In					= 3.2;			% 2.6;		3.2;		4.0;
-%strOVS_In				='wOVS';
-%strMinUserIn_In			= 'y';
-%aaDomain_In				= 'f';
-seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';	% 'sLASER';
+strVOI					= 'PCG';			% 'HC';		% 'PCG';
+seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
+% strOVS_In				= 'wOVS';
+% strOVS_w_In				= 'wOVS';
+noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
+% strMinUserIn_In			= 'y';
+% aaDomain_In				= 'f';
+% tmaxin_In				= 0.2;
+% iterin_In				= 20;
+% alignSS_In				= 2;
 bECC_In					= 1;
 bCopyFiles				= 1;
 bCopyFiles_ref_ECC		= 0;
