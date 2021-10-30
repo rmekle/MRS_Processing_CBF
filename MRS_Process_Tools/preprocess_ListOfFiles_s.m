@@ -25,7 +25,7 @@ disp(sMsg_newLines);
 %dirString_Out			= '';
 filename_In				= '';
 filename_w_In			= '';
-strVOI					= 'HC';			% 'HC';		% 'PCG';
+strVOI					= 'PCG';			% 'HC';		% 'PCG';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
 strOVS_In				= 'wOVS';
@@ -36,6 +36,7 @@ aaDomain_In				= 'f';
 tmaxin_In				= 0.2;
 iterin_In				= 20;
 alignSS_In				= 2;
+bECC_In					= 1;
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
 
@@ -74,12 +75,40 @@ switch seqType_MRS
 		dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
 		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
 		
-		% Select directory for output data depending on # of SDs used for pre-processing
-		% of MR spectra
+		% Select directory for output data depending on # of SDs and other options used 
+		% for pre-processin of MR spectra
 		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
 		dirString_Out_AddOn1	= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
-		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, filesep];
+		dirString_Out_AddOn2	= '';
+		if bECC_In
+			% Use reference (water) signals for ECC, if acquired
+			% If not, then use an unsuppressed water signal, if acquired
+			% If no reference and no water signals are acquired, check whether MR spectrum
+			% is water signal itself; and if it is, use it for ECC
+			% Indicate different options for ECC in the corresponding directory name; for
+			% that, search for strings 'ref', 'w', and 'water' in string for MRS data type
+			refInd		= strfind(dataType_MRS, '_ref');
+			wInd		= strfind(dataType_MRS, '_w');
+			waterInd	= strfind(dataType_MRS, 'water');
+			if ~isempty(refInd)
+				dirString_Out_AddOn2	= '_ECCref';
+			else
+				if ~isempty(wInd)
+					dirString_Out_AddOn2	= '_ECCw';
+				else
+					if ~isempty(waterInd)
+						dirString_Out_AddOn2	= '_ECCwater';
+					else
+						% No reference and no water signals and MR spectrum is not water
+						% signal itself => ECC not possible
+						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
+					end		% End of if ~isempty(waterInd)
+				end		% End of if ~isempty(wInd)
+			end		% if ~isempty(refInd)
+			%dirString_Out_AddOn2	= '_ECC_Test';
+		end		% End of if bECC_In
+		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		
 		% If outout directory is non-existent, create it
 		if ~exist( dirString_Out, 'dir' )
@@ -190,13 +219,13 @@ switch seqType_MRS
 		%	coil phases from MR spectra for MR spectra
 		indexStart		= 1;
 		indexStep		= 2;	% For sLASER, since only one water signals exists
-		for ind=indexStart : indexStep : noEntriesListing		% noEntriesListing	% 4		% 2
+		for ind=indexStart : indexStep : 2		% noEntriesListing	% 4		% 2
 			% Preprocess MR spectrum and water
 			filename_In		= structFileListing(ind).name;
 			filename_w_In	= structFileListing(ind+1).name;
 			disp(sMsg_newLines);
 			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
-			[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
+			[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,bECC_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
 			
 			% Close all figures
 			%close all;
@@ -215,7 +244,7 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
 % workspace file with a "." in its filename)
 %strSavedWorkspaceFileName		= 'workspace_run_specialproc_CBF';
-strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dt];
+strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dataType_MRS, '_', dt];
 strSavedWorkspaceFileNameFull	= [dirString_Out, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'y';
