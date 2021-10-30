@@ -1040,9 +1040,9 @@ switch seqType
 			out_av_ECC_In			= out_av;
 			out_water_av_ECC_In		= struct([]);
 			% Use reference (water) signals for ECC, if acquired
-			% If not, then use an unsuppressed water signal
-			% If no reference and no water signals are acquired, check for special case
-			% that MR spectrum is water signal itself
+			% If not, then use an unsuppressed water signal, if acquired
+			% If no reference and no water signals are acquired, check whether MR spectrum
+			% is water signal itself; and if it is, use it for ECC
 			% (Same calls of ECC routine are used with same input variables, but different
 			% output arguments to facilitate correct assignment of output variables
 			% for further processing depending on which if case is actually invoked)
