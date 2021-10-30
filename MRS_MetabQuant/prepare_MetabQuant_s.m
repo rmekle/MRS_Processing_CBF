@@ -4,7 +4,7 @@
 %
 %% Script to prepare metabolite quantification of magnetic resonance spectroscopy (MRS) data
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2020; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2020, 2021; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -31,6 +31,7 @@ noSD_In					= 3.2;			% 2.6;		3.2;		4.0;
 %aaDomain_In				= 'f';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';	% 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
+bECC_In					= 1;
 bCopyFiles				= 1;
 bCopyFiles_ref_ECC		= 0;
 bCopyFiles_w			= 0;
@@ -63,16 +64,44 @@ switch seqType_MRS
 		textFileName_OFF_MRS	= 'list_filenames_MRS_editOFF_Spectra.txt';
 		textFileName_OFF_w		= 'list_filenames_MRS_editOFF_Water.txt';
 	case 'sLASER'
-		% Select directory for input data depending on # of SDs used for pre-processing
-		% of MR spectra
+		% Select directory for input data depending on # of SDs and other options used 
+		% for pre-processing of MR spectra
 		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
 		dirString_In_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
-		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
+		dirString_In_AddOn2		= '';
+		if bECC_In
+			% Use reference (water) signals for ECC, if acquired
+			% If not, then use an unsuppressed water signal, if acquired
+			% If no reference and no water signals are acquired, check whether MR spectrum
+			% is water signal itself; and if it is, use it for ECC
+			% Indicate different options for ECC in the corresponding directory name; for
+			% that, search for strings 'ref', 'w', and 'water' in string for MRS data type
+			refInd		= strfind(dataType_MRS, '_ref');
+			wInd		= strfind(dataType_MRS, '_w');
+			waterInd	= strfind(dataType_MRS, 'water');
+			if ~isempty(refInd)
+				dirString_In_AddOn2	= '_ECCref';
+			else
+				if ~isempty(wInd)
+					dirString_In_AddOn2	= '_ECCw';
+				else
+					if ~isempty(waterInd)
+						dirString_In_AddOn2	= '_ECCwater';
+					else
+						% No reference and no water signals and MR spectrum is not water
+						% signal itself => ECC not possible
+						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
+					end		% End of if ~isempty(waterInd)
+				end		% End of if ~isempty(wInd)
+			end		% if ~isempty(refInd)
+			%dirString_In_AddOn2	= '_ECC_Test';
+		end		% End of if bECC_In
+		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, dirString_In_AddOn2, filesep];
 		
-		% Create strings for output directoryx and list of filenames of MR spectra and 
+		% Create strings for output directory and list of filenames of MR spectra and 
 		% unsuppressed water signals
-		outDirString			= [dirString_In, strVOI, '_LCModel_Analysis_Data/'];
+		outDirString			= [dirString_In, strVOI, '_LCModel_Data/'];
 		textFileName_MRS 		= 'list_filenames_MRS_Spectra.txt';
 		textFileName_ref_ECC 	= 'list_filenames_MRS_Ref_ECC.txt';
 		textFileName_ref_Quant 	= 'list_filenames_MRS_Ref_Quant.txt';
