@@ -76,7 +76,7 @@ switch seqType_MRS
 		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
 		
 		% Select directory for output data depending on # of SDs and other options used 
-		% for pre-processin of MR spectra
+		% for pre-processing of MR spectra
 		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
 		dirString_Out_AddOn1	= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
