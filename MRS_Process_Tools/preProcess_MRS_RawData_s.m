@@ -1040,20 +1040,33 @@ switch seqType
 			out_av_ECC_In			= out_av;
 			out_water_av_ECC_In		= struct([]);
 			% Use reference (water) signals for ECC, if acquired
+			% If not, then use an unsuppressed water signal
+			% If no reference and no water signals are acquired, check for special case
+			% that MR spectrum is water signal itself
 			% (Same calls of ECC routine are used with same input variables, but different
 			% output arguments to facilitate correct assignment of output variables
 			% for further processing depending on which if case is actually invoked)
 			if with_ref
 				out_water_av_ECC_In			= out_ref_ECC_av;
 				[out_av, out_ref_ECC_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
-			else if with_water
+			else
+				if with_water
 					% If no reference signals, use water signals for ECC, if acquired
 					out_water_av_ECC_In		= out_w_av;
 					[out_av, out_w_av]		= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
 				else
-					% No reference and no water signals => ECC not possible
-					error('%s: No reference and no water signals (dataType = %s) => ECC not possible!', sFunctionName, dataType);
-				end		% End of if with_water			
+					if strcmp(dataType, 'water')
+						% (dataType = 'water_ref' is covered by 'with_ref')
+						% MR spectrum (= water signal itself) also used for ECC
+						% (Input and output arguments are both the same, respectively)
+						out_water_av_ECC_In		= out_av;
+						[out_av, out_av]		= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+					else
+						% No reference and no water signals and MR spectrum is not water
+						% signal itself => ECC not possible
+						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType = %s) => ECC not possible!', sFunctionName, dataType);
+					end		% End of if strcmp(dataType, 'water')
+				end		% End of if with_water
 			end		% End of if with_ref
 		end		% End of if bECC
 		
