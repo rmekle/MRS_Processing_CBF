@@ -14,7 +14,7 @@
 
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
-sFunctionName		= ' prepare_MetabQuant_s';
+sFunctionName		= 'prepare_MetabQuant_s';
 sMsg_newLines		= sprintf('\n\n');
 %disp(sMsg_newLines);
 
@@ -24,7 +24,7 @@ sMsg_newLines		= sprintf('\n\n');
 %outDirString_In		= '';
 filename_In				= '';
 filename_w_In			= '';
-strVOI					= 'PCG';			% 'HC';		% 'PCG';
+strVOI					= 'HC';			% 'HC';		% 'PCG';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
 % strOVS_In				= 'wOVS';
@@ -35,10 +35,10 @@ noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 % tmaxin_In				= 0.2;
 % iterin_In				= 20;
 % alignSS_In				= 2;
-bECC_In					= 1;
+bECC_In					= 0;
 bCopyFiles				= 1;
-bCopyFiles_ref_ECC		= 0;
-bCopyFiles_w			= 0;
+bCopyFiles_ref_ECC		= 1;
+bCopyFiles_w			= 1;
 bWriteFilenames			= 1;
 
 % Set (additional) parameters depending on sequence type
