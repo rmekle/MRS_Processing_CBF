@@ -17,14 +17,28 @@
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'run_LCModel_ListOfFiles_s';
 sMsg_newLines		= sprintf('\n\n');
+sMsg_newLine		= sprintf('\n');
 disp(sMsg_newLines);
 
 
 %% Init parameter settings
-charVecSaveWorkspace			= 'y';
-seqType							= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS';
-noSD_In							= 3.2;			% 2.6;		3.2;		4.0;
-strAnalysisData					= 'MRS_editOFF';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+strVOI					= 'HC';			% 'HC';		% 'PCG';
+seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+dataType_MRS			= 'mrs_w_ref';
+% strOVS_In				= 'wOVS';
+% strOVS_w_In				= 'wOVS';
+noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
+% strMinUserIn_In			= 'y';
+% aaDomain_In				= 'f';
+% tmaxin_In				= 0.2;
+% iterin_In				= 20;
+% alignSS_In				= 2;
+bECC_In					= 0;
+strTissue				= 'GM';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
+strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
+b0nratio				= 1;
+strAnalysisData			= 'MRS_editOFF';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+charVecSaveWorkspace	= 'y';
 
 
 %% Set directories for data, results, and filenames for lists of data files 
@@ -35,7 +49,7 @@ filename_MRS_noExt				= '';
 filename_MRS_w_noExt			= '';
 
 % Settings depending on sequence type
-switch seqType
+switch seqType_MRS
 	case 'SPECIAL'
 		dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Processed_forLCModel_SD_3_2/LCModel_Analysis_Data/';
 		outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Processed_forLCModel_SD_3_2/LCModel_Results_nratio0/';
@@ -115,9 +129,66 @@ switch seqType
 			fullFilename_listOfFiles_MRS	= [dirData, 'list_filenames_MRS_editOFF_Spectra.txt'];
 			fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
 		end
+	case 'sLASER'
+		% Select directories for (input) data files and for output data depending on # of
+		% SDs and other options used for pre-processing of MR spectra and on settings for 
+		% LCModel analysis
+		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+		dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+		dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+		dirData_AddOn2		= '';
+		if bECC_In
+			% Use reference (water) signals for ECC, if acquired
+			% If not, then use an unsuppressed water signal, if acquired
+			% If no reference and no water signals are acquired, check whether MR spectrum
+			% is water signal itself; and if it is, use it for ECC
+			% Indicate different options for ECC in the corresponding directory name; for
+			% that, search for strings 'ref', 'w', and 'water' in string for MRS data type
+			refInd		= strfind(dataType_MRS, '_ref');
+			wInd		= strfind(dataType_MRS, '_w');
+			waterInd	= strfind(dataType_MRS, 'water');
+			if ~isempty(refInd)
+				dirData_AddOn2	= '_ECCref';
+			else
+				if ~isempty(wInd)
+					dirData_AddOn2	= '_ECCw';
+				else
+					if ~isempty(waterInd)
+						dirData_AddOn2	= '_ECCwater';
+					else
+						% No reference and no water signals and MR spectrum is not water
+						% signal itself => ECC not possible
+						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
+					end		% End of if ~isempty(waterInd)
+				end		% End of if ~isempty(wInd)
+			end		% if ~isempty(refInd)
+			%dirData_AddOn2	= '_ECC_Test';
+		end		% End of if bECC_In
+		dirData_Processed	= [dirData_Base, dirData_AddOn1, dirData_AddOn2, filesep];
+		% Add elements for voxel location and quantification analysis to input directory
+		% name
+		dirData				= [dirData_Processed, strVOI, '_LCModel_Data/'];
+		
+		% Lists of filenames for MRS spectra and (unsuppresed) water signals depending on 
+		% type of data (spectra) used for analysis
+		textFileName_MRS 		= 'list_filenames_MRS_Spectra.txt';
+		textFileName_ref_ECC 	= 'list_filenames_MRS_Ref_ECC.txt';
+		textFileName_ref_Quant 	= 'list_filenames_MRS_Ref_Quant.txt';
+		textFileName_w 			= 'list_filenames_MRS_Water.txt';
+		fullFilename_listOfFiles_MRS		= [dirData, textFileName_MRS];
+		fullFilename_listOfFiles_ref_ECC	= [dirData, textFileName_ref_ECC];
+		fullFilename_listOfFiles_ref_Quant	= [dirData, textFileName_ref_Quant];
+		fullFilename_listOfFiles_w			= [dirData, textFileName_w];
+		
+		% Select output directory based on type of data and type of analysis being used
+		outDir		= [dirData_Processed, strVOI, '_LCM_Out_', strTissue, strWaterQuant];
+		if b0nratio
+			outDir		= [outDir, '_0nratio'];
+		end
+		outDir		= [outDir, filesep];
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
 
 % Check whether directories for data or results exist
@@ -139,7 +210,7 @@ end
 
 
 %% Select basis set and control file for LCModel analysis depending on sequence type
-switch seqType
+switch seqType_MRS
 	case 'SPECIAL'
 		% For 3T Potsdam pain study and SPECIAL
 		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
@@ -168,9 +239,14 @@ switch seqType
 			LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water';
 		end
+	case 'sLASER'
+		% TE = 23 ms
+		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_DineshKD/sLASER/';
+		LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
+		LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
 % Sequence independent settings
 dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
@@ -184,6 +260,20 @@ fullFileName_LCM_Control_case	= [outDir, LCM_Control, '_case.control'];
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
 charWaterScaling				= 'Yes';		% 'Yes';	'No';
+% Select water signals used for water scaling
+if strcmp(charWaterScaling, 'Yes')
+	switch strWaterQuant
+		case '_ref_Quant'
+			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_ref_Quant;
+		case '_ref_ECC'
+			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_ref_ECC;
+		case '_w'
+			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_w;
+			
+		otherwise
+			error('%s: ERROR: water quantification option strWaterQuant = %s!', sFunctionName, strWaterQuant);
+	end		% End of switch strWaterQuant
+end		% End of if strcmp(charWaterScaling, 'Yes')
 
 
 %% Check whether computer is system with LCModel installed
@@ -246,7 +336,7 @@ status_1						= fclose(fileID_1);
 
 % Load list of filenames for water, if selected
 if strcmp(charWaterScaling, 'Yes')
-	fileID_2						= fopen(fullFilename_listOfFiles_MRS_w);
+	fileID_2						= fopen(fullFilename_listOfFiles_MRS_water);
 	cell_listOfFiles_MRS_Water		= textscan(fileID_2, '%s');
 	status_2						= fclose(fileID_2);
 	sMsg = sprintf('%s: Water scaling is used ...\n', sFunctionName);
@@ -363,8 +453,8 @@ mydata					= {};
 noHeaderLines			= 7;
 charTmp					= fullfile(outDir, '*.table');
 listFiles_table			= dir(charTmp);
-%fullFileName_all		= fullfile(outDir, strcat('3T_', seqType, '_LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '_all.csv'));
-%fullFileName_all		= fullfile(outDir, strcat('3T_', seqType, '_LCModel_', LCM_Basis, '_', LCM_Control, '_all.csv'));
+%fullFileName_all		= fullfile(outDir, strcat('3T_', seqType_MRS, '_LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '_all.csv'));
+%fullFileName_all		= fullfile(outDir, strcat('3T_', seqType_MRS, '_LCModel_', LCM_Basis, '_', LCM_Control, '_all.csv'));
 fullFileName_all		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', LCM_Control, '_all.csv'));
 noFiles_table			= numel(listFiles_table);
 selectedTypesMetabConc	= [1; 2; 3;];
@@ -485,7 +575,7 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
 % workspace file with a "." in its filename)
 %fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_LCModel_', LCM_Basis, '_', LCM_Control, '.mat'));
-%fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_', seqType, '_LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '.mat'));
+%fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_', seqType_MRS, '_LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '.mat'));
 fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '.mat'));
 %charVecSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 if strcmp(charVecSaveWorkspace,'y') || strcmp(charVecSaveWorkspace,'Y')
