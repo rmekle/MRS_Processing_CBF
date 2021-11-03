@@ -4,7 +4,7 @@
 %
 %% Script to convert a list of DICOM files of into NIfTI format and segment them
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2021; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -16,6 +16,7 @@
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'dicom2nifti_and_segment_ListOfFiles_s';
 sMsg_newLines		= sprintf('\n\n');
+sMsg_newLine		= sprintf('\n');
 disp(sMsg_newLines);
 
 
@@ -23,7 +24,8 @@ disp(sMsg_newLines);
 inputDir				= '';
 command					= '';
 status					= 0;
-bConvert_dcm2nii		= 'Yes';			% 'Yes';		% 'No';
+bProcessNewFiles		= 0;
+bConvert_dcm2nii		= 'Yes';		% 'Yes';		% 'No';
 bSegmentImages			= 'No';			% 'Yes';		% 'No';
 
 % Set (additional) parameters
@@ -33,14 +35,29 @@ bSegmentImages			= 'No';			% 'Yes';		% 'No';
 % dirData_NIfTI			= outputDir_NIfTI;
 % outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented/';
 
-% 3T BCAN MRS_and_Dopamin study
-%dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files/';
-dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files_New/';
-%outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files/';
-outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_New/';
+% % 3T BCAN MRS_and_Dopamin study
+% %dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files/';
+% dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files_New/';
+% %outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files/';
+% outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_New/';
+% dirData_NIfTI			= outputDir_NIfTI;
+% %outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/';
+% outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented_New/';
+
+% 3T BCAN MRS_and_Trauma study
+dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
+outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
+outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
+% Adjust directory names, if only new (newly acquired) data should be processed
+if bProcessNewFiles
+	dirData_DICOM		= [dirData_DICOM, '_New'];
+	outputDir_NIfTI		= [outputDir_NIfTI, '_New'];
+	outputDir_Seg		= [outputDir_Seg, '_New'];
+end
+dirData_DICOM			= [dirData_DICOM, filesep];
+outputDir_NIfTI			= [outputDir_NIfTI, filesep];
 dirData_NIfTI			= outputDir_NIfTI;
-%outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/';
-outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented_New/';
+outputDir_Seg			= [outputDir_Seg, filesep];
 
 
 % Set parameters for brain extraction and segmentation
@@ -88,7 +105,7 @@ if(strcmp(bConvert_dcm2nii, 'Yes'))
 	fprintf('%s: Conversion of DICOM data into NIfTI format ...\n', sFunctionName);
 	for ind=indexStart : indexStep : noEntriesListing_DICOM		% noEntriesListing_DICOM	% 3		% 4
 		subDirData_DICOM	= structFileListing_DICOM(ind).name;
-		inputDir			= fullfile(dirData_DICOM, subDirData_DICOM, '/');
+		inputDir			= fullfile(dirData_DICOM, subDirData_DICOM, filesep);
 		disp(sMsg_newLines);
 		disp([sprintf('ind = %d\t', ind), sprintf('\t'), subDirData_DICOM, sprintf('\n\n')]);
 		
