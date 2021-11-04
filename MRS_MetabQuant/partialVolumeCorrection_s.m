@@ -4,7 +4,7 @@
 %
 %% Script to calculate partial volume correction tissue coefficients in MRS for brain
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020, 2021; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -16,7 +16,8 @@
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'partialVolumeCorrection_s';
 sMsg_newLines		= sprintf('\n\n');
-disp(sMsg_newLines);
+sMsg_newLine		= sprintf('\n');
+disp(sMsg_newLines);;
 
 
 %% Init input parameters
@@ -25,7 +26,9 @@ status					= 0;
 noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
-seqType					= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS';
+seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
+strVOI					= 'PCG';			% 'HC';		% 'PCG';
+strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
 
 % Set (additional) parameters depending on sequence type 
 switch seqType
@@ -42,6 +45,18 @@ switch seqType
 		dirData_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_DistCorr/';
 		dirData_Seg				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/DOPA_bet_CenterOfBrain_87_115_180_fractThresh_0_3_DistCorr/';
 		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_PartialVolumeCorrection/PVCorr_bet_87_115_180_fractThresh_0_3_DistCorr/';
+	case 'sLASER'
+		outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
+		dirData_MRS_rda			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_', strVOI, filesep];
+		dirData_NIfTI 			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI/';
+		outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
+		if ~isempty(strPVCorr)
+			% Append name of subdirectory 
+			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, filesep];
+		else
+			% Empty string strPVCorr, use base directorey 
+			outputDir_PVCorr 	= outputDir_PVCorr_Base;
+		end
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
