@@ -89,7 +89,7 @@ structFileListing_Overlays	= structFileListing_Overlays(sortInd);
 % Display overlays (from brain extraction) onto (NIfTI) source images, if desired 
 % using a system call that invokes the fsl utility "fsleyes"
 indexStart		= 1;	
-indexStep		= 1;	% Optionally adjustable step size
+indexStep		= 4;	% Optionally adjustable step size
 disp(sMsg_newLines);
 if(strcmp(bShowOverlays, 'Yes'))
 	fprintf('%s: Displaying overlays onto source images ...\n', sFunctionName);
