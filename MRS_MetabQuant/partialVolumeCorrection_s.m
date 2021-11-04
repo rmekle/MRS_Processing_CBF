@@ -29,6 +29,7 @@ winnerFileName			= 'winner.nii';
 seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
 strVOI					= 'PCG';			% 'HC';		% 'PCG';
 strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
+strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
 
 % Set (additional) parameters depending on sequence type 
 switch seqType
@@ -47,8 +48,9 @@ switch seqType
 		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_PartialVolumeCorrection/PVCorr_bet_87_115_180_fractThresh_0_3_DistCorr/';
 	case 'sLASER'
 		outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
-		dirData_MRS_rda			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_', strVOI, filesep];
-		dirData_NIfTI 			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI/';
+		dirData_MRS_rda			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI, filesep];
+		dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI, filesep];
+		dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
 		outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
@@ -62,6 +64,21 @@ switch seqType
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 end
 fullOutFileName_PVCorr	= fullfile(outputDir_PVCorr, outFileName_PVCorr);
+
+
+%% Add path to PTB tools used for calculation of partial volume coefficients (e.g. 
+% pvoxel3.py) to Linux/Ubuntu environment PATH variable via system call
+% DOES NOT WORK YET! Syntax incorrect? NEEDS TO BE DONE in .bashrc to work here
+% command				= sprintf('export PATH="$PATH:/data01/MRI_MRS_Software/PTB_Tools/bin/"');
+% [status,cmdout]		= system(command);
+% if status ~= 0
+% 	error('%s: Error when setting PATH variable to include tools for partial volume calculations!\n\n%s', sFunctionName, cmdout);
+% end
+%
+% % If adding path to PTB tolld does not work, test system call that uses absolute path to
+% % routine that should be executed
+% command = sprintf('/data01/MRI_MRS_Software/PTB_Tools/bin/pvoxel3.py');
+% system(command);
 
 
 %% Obtain information about the list of rda files for MR spectra
@@ -155,8 +172,17 @@ if(strcmp(bCalcPartialVolCoeffs, 'Yes'))
 		fullInFileName_GM		= fullfile(dirData_Seg, inFileName_GM);
 		fullInFileName_CSF		= fullfile(dirData_Seg, inFileName_CSF);
 		
+		% If routines to be executed via system call cannot be found in Matlab, check
+		% .bashrc file, where the path to these routines should be added to PATH
+		% environment variable of system
+		% NOTE that using absolute paths of routines to be executed via system call does
+		% NOT work, since routine pvoxel3.py calls routine rpnND, which is not found if
+		% PATH variable of system environment doe not include the path to all these tools
+% 		command				= sprintf('/data01/MRI_MRS_Software/PTB_Tools/bin/pvoxel3.py -w -d -e %s %s %s %s %s | /data01/MRI_MRS_Software/PTB_Tools/bin/transpose.py | tee -a %s', ...
+% 			fullInFileName_NIfTI, fullInFileName_rda, fullInFileName_WM, fullInFileName_GM, fullInFileName_CSF, fullOutFileName_PVCorr);
 		command				= sprintf('pvoxel3.py -w -d -e %s %s %s %s %s | transpose.py | tee -a %s', ...
 			fullInFileName_NIfTI, fullInFileName_rda, fullInFileName_WM, fullInFileName_GM, fullInFileName_CSF, fullOutFileName_PVCorr);
+
 		[status,cmdout]		= system(command);
 		if status ~= 0
 			error('%s: Error in calculation of tissue volume coefficients for case %s!\n\n%s', sFunctionName, inFileName_rda, cmdout);
