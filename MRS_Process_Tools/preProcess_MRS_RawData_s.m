@@ -1112,18 +1112,35 @@ switch seqType
 		% Left shift the MRS signals to eliminate first order phase, perform zero-order 
 		% phase correction, and shift data in frequency to obtain reference peaks at known
 		% positions
-		% Now left shift
+		% Now left shift, if not already done before
 		% MR spectrum
-		out_ls		= op_leftshift(out_av,out_av.pointsToLeftshift);
+		if out_av.flags.leftshifted == 0
+			out_ls					= op_leftshift(out_av,out_av.pointsToLeftshift);
+		else
+			out_ls					= out_av;
+		end
+		
 		if with_water
 			% Water signal
-			out_w_ls				= op_leftshift(out_w_av,out_w_av.pointsToLeftshift);
-		end
+			if out_w_av.flags.leftshifted == 0
+				out_w_ls			= op_leftshift(out_w_av,out_w_av.pointsToLeftshift);
+			else
+				out_w_ls			= out_w_av;
+			end
+		end		% End of if with_water
 		
 		if with_ref
 			% Reference (water) signals
-			out_ref_ECC_ls		= op_leftshift(out_ref_ECC_av,out_ref_ECC_av.pointsToLeftshift);
-			out_ref_Quant_ls	= op_leftshift(out_ref_Quant_av,out_ref_Quant_av.pointsToLeftshift);
+			if out_ref_ECC_av.flags.leftshifted == 0
+				out_ref_ECC_ls		= op_leftshift(out_ref_ECC_av,out_ref_ECC_av.pointsToLeftshift);
+			else
+				out_ref_ECC_ls		= out_ref_ECC_av;
+			end
+			if out_ref_Quant_av.flags.leftshifted == 0
+				out_ref_Quant_ls	= op_leftshift(out_ref_Quant_av,out_ref_Quant_av.pointsToLeftshift);
+			else
+				out_ref_Quant_ls	= out_ref_Quant_av;
+			end
 		end		% End of if with_ref
 		
 		% Perform automatic zero-order phase correction
@@ -1176,17 +1193,34 @@ switch seqType
 		end		% End of if with_ref
 		
 		% Perform same phase corection (left shift and zero-order) on unprocessed data
+		% Left shift only, if not already done before
 		% MR spectrum
-		out_noproc		= op_addphase(op_leftshift(out_noproc,out_noproc.pointsToLeftshift),ph0);
+		if out_noproc.flags.leftshifted == 0
+			out_noproc					= op_addphase(op_leftshift(out_noproc,out_noproc.pointsToLeftshift),ph0);
+		else
+			out_noproc					= op_addphase(out_noproc,ph0);
+		end
 		if with_water
 			% Water signal
-			out_w_noproc		= op_addphase(op_leftshift(out_w_noproc,out_w_noproc.pointsToLeftshift),ph0_w);
-		end
+			if out_w_noproc.flags.leftshifted == 0
+				out_w_noproc			= op_addphase(op_leftshift(out_w_noproc,out_w_noproc.pointsToLeftshift),ph0_w);
+			else
+				out_w_noproc			= op_addphase(out_w_noproc,ph0_w);
+			end
+		end		% End of if with_water
 
 		if with_ref
 			% Reference (water) signals
-			out_ref_ECC_noproc		= op_addphase(op_leftshift(out_ref_ECC_noproc,out_ref_ECC_noproc.pointsToLeftshift),ph0_ref_ECC);
-			out_ref_Quant_noproc	= op_addphase(op_leftshift(out_ref_Quant_noproc,out_ref_Quant_noproc.pointsToLeftshift),ph0_ref_Quant);
+			if out_ref_ECC_noproc.flags.leftshifted == 0
+				out_ref_ECC_noproc		= op_addphase(op_leftshift(out_ref_ECC_noproc,out_ref_ECC_noproc.pointsToLeftshift),ph0_ref_ECC);
+			else
+				out_ref_ECC_noproc		= op_addphase(out_ref_ECC_noproc,ph0_ref_ECC);
+			end
+			if out_ref_Quant_noproc.flags.leftshifted == 0
+				out_ref_Quant_noproc	= op_addphase(op_leftshift(out_ref_Quant_noproc,out_ref_Quant_noproc.pointsToLeftshift),ph0_ref_Quant);
+			else
+				out_ref_Quant_noproc	= op_addphase(out_ref_Quant_noproc,ph0_ref_Quant);
+			end
 		end		% End of if with_ref
 		
 		% Frequency shift all spectra
