@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,bECC,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
 % Processing script for Siemens MRS data in .dat format (twix raw data).  
@@ -42,8 +42,10 @@
 %					 with OVS ('wOVS') or withoutOVS ('woutOVS') is used for processing. 
 %					 Default is 'woutOVS', which means that OVS was not used.
 % strOVS_w	   = (optional) String that specifies whether water acquired with OVS ('wOVS')
-%					 or withoutOVS ('woutOVS') is used for processing. 
+%					 or withoutOVS ('woutOVS') is used for processing.
 %					 Default is 'woutOVS', which means that OVS was not used.
+% leftshift	   = (optional) # of points to leftshift all FIDs, i.e. to remove leading 
+%					 datapoints from the FID  to get rid of 1st order phase. Default is 0.
 % nSD		   = (Optional) # of standard deviations for bad average removal. Default
 %					value is 3.2.
 % aaDomain     = (Optional) Perform the spectral registration (drift correction) using
@@ -84,7 +86,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,nSD,aaDomain,tmaxin,iterin,bECC,plotSwitch,strMinUserIn,reportSwitch)
+function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,plotSwitch,strMinUserIn,reportSwitch)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -99,7 +101,7 @@ disp(sMsg_newLines);
 
 
 %% Check on # of input arguments and assign default values to variables, if required
-maxNargin	= 16;
+maxNargin	= 17;
 if nargin<maxNargin
 	reportSwitch = 1;
 	if nargin<(maxNargin-1)
@@ -117,9 +119,12 @@ if nargin<maxNargin
 							if nargin<(maxNargin-7)
 								nSD = 3.2;
 								if nargin<(maxNargin-8)
-									strOVS_w = 'woutOVS';
+									leftshift = 0;
 									if nargin<(maxNargin-9)
-										strOVS = 'woutOVS';
+										strOVS_w = 'woutOVS';
+										if nargin<(maxNargin-10)
+											strOVS = 'woutOVS';
+										end
 									end
 								end
 							end
@@ -344,6 +349,22 @@ switch seqType
 		%% Is this Dinesh K. Deelchand's single voxel (sLaser) sequence from CMRR, U Minnesota
 		isSVSdkd_seq = contains(out_raw.seq,'svs_slaser_dkd');
 		
+		% NOTE:
+		% If it is Dinesh's sequence , leftshift all FIDs, i.e. remove specifc # of 
+		% points from the beginning of each FID (it is programmed this way to avoid
+		% effect of digital filter on top of echo (first point of FID) by staritng data
+		% acquisition slightly earlier)
+		% Specific # of points in this case should be equal to 3 for oversampled raw 
+		% data (.dat on Siemens)
+		% Leftshift MR spectrum and, if existent, als the unsuppresed water signal
+		if isSVSdkd_seq
+			%leftshift	= 3;
+			out_raw		= op_leftshift(out_raw, leftshift);
+			if with_water
+				out_w_raw		= op_leftshift(out_w_raw, leftshift);
+			end		% End of if with_water			
+		end		% End of if isSVSdkd_seq
+		
 		
 		%% Check whether reference scans are included in the MRS data
 		if with_ref
@@ -418,6 +439,10 @@ switch seqType
 				out_ref_Quant_raw.averages		= out_ref_raw.averages/2;
 				out_ref_Quant_raw.rawAverages	= out_ref_raw.rawAverages/2;
 				noAvg_ref_Quant					= out_ref_Quant_raw.averages;
+				
+				% Leftshift FIDs of all reference scans by specific # of points
+				out_ref_ECC_raw		= op_leftshift(out_ref_ECC_raw, leftshift);
+				out_ref_Quant_raw	= op_leftshift(out_ref_Quant_raw, leftshift);
 				
 			else
 				warning('%s: Reference scans option for sequence "%s" not yet implemented!\nReference scans will NOT be processed!', sFunctionName, out_raw.seq);
