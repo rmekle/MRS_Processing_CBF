@@ -54,10 +54,10 @@ switch seqType
 		outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
-			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, filesep];
+			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
 		else
 			% Empty string strPVCorr, use base directorey 
-			outputDir_PVCorr 	= outputDir_PVCorr_Base;
+			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strVOI, filessep];
 		end
 		
 	otherwise
@@ -132,6 +132,14 @@ indexStep		= 1;	% Optionally adjustable step size
 disp(sMsg_newLines);
 if(strcmp(bCalcPartialVolCoeffs, 'Yes'))
 	fprintf('%s: Calculation of tissue volume coefficients for partial volume correction ...\n', sFunctionName);
+	% If output directory(ies) for file output does (do) not exist, create it (them)
+	if not(isfolder(outputDir_PVCorr))
+		sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outputDir_PVCorr);
+		disp(sMsg);
+		if ~mkdir(outputDir_PVCorr)
+			error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outputDir_PVCorr);
+		end
+	end
 	% If file with resulting tissue volume coefficients already exists, rename it
 	if exist(fullOutFileName_PVCorr, 'file')
 		% File exists, display warning message and rename file
