@@ -24,8 +24,8 @@ disp(sMsg_newLines);
 inputDir				= '';
 command					= '';
 status					= 0;
-bProcessNewFiles		= 0;
-bConvert_dcm2nii		= 'No';		% 'Yes';		% 'No';
+bProcessNewFiles		= 1;
+bConvert_dcm2nii		= 'Yes';		% 'Yes';		% 'No';
 bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
 
 % Set (additional) parameters
@@ -66,7 +66,7 @@ outputDir_Seg			= [outputDir_Seg, filesep];
 %	-f <f>      fractional intensity threshold (0->1); default=0.5; smaller values give larger brain outline estimates
 %	-R          robust brain centre estimation (iterates BET several times)
 % [85 107 175];		[89 113 142];	[87 110 160];	[87 115 180];	[87 115 150];	[87 115 170];
-coordCenterOfBrain		= [87 115 150];	
+coordCenterOfBrain		= [87 115 180];	
 fractIntensThresh		= 0.3;			% 0.5;		0.4;	0.3;	0.25;	0.2;
 
 % FSL fast routine: options
@@ -188,6 +188,8 @@ end		% End of if(strcmp(bSegmentImages, 'Yes'))
 
 
 %% Save variables of workspace to file
+
+
 % Obtain current date and time in specific format
 dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 
