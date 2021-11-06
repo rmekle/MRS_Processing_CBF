@@ -19,7 +19,9 @@ end
 
 % DC correction
 % set glitch to zero - 15 July 2014
-glitchPts = 200;
+% RM: Use twice # of glitch points for raw data (oversampling not removed)
+%glitchPts = 200;
+glitchPts = 400;
 fidw (end-glitchPts:end,:,:) = 0;
 
 [npX,nt,nbCoils] =size(fidm);
