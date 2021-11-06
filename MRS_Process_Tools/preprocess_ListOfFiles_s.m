@@ -25,18 +25,20 @@ disp(sMsg_newLines);
 %dirString_Out			= '';
 filename_In				= '';
 filename_w_In			= '';
-strVOI					= 'PCG';			% 'HC';		% 'PCG';
+strVOI					= 'HC';			% 'HC';		% 'PCG';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
 strOVS_In				= 'wOVS';
 strOVS_w_In				= 'wOVS';
+leftshift_In			= 3;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 strMinUserIn_In			= 'y';
 aaDomain_In				= 'f';
 tmaxin_In				= 0.2;
 iterin_In				= 20;
 alignSS_In				= 2;
-bECC_In					= 1;
+bECC_In					= 0;
+bPhaseCorrFreqShift_In	= 0;
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
 
@@ -106,9 +108,9 @@ switch seqType_MRS
 					end		% End of if ~isempty(waterInd)
 				end		% End of if ~isempty(wInd)
 			end		% if ~isempty(refInd)
-			%dirString_Out_AddOn2	= '_ECC_Test';
 		end		% End of if bECC_In
-		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
+		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
+		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
 		
 		% If outout directory is non-existent, create it
 		if ~exist( dirString_Out, 'dir' )
@@ -219,13 +221,13 @@ switch seqType_MRS
 		%	coil phases from MR spectra for MR spectra
 		indexStart		= 1;
 		indexStep		= 2;	% For sLASER, since only one water signals exists
-		for ind=indexStart : indexStep : 2		% noEntriesListing	% 4		% 2
+		for ind=indexStart : indexStep : noEntriesListing		% noEntriesListing	% 4		% 2
 			% Preprocess MR spectrum and water
 			filename_In		= structFileListing(ind).name;
 			filename_w_In	= structFileListing(ind+1).name;
 			disp(sMsg_newLines);
 			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
-			[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,bECC_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
+			[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,leftshift_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,bECC_In,bPhaseCorrFreqShift_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
 			
 			% Close all figures
 			%close all;
