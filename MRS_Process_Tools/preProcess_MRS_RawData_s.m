@@ -1079,6 +1079,14 @@ switch seqType
 			if with_ref
 				out_water_av_ECC_In			= out_ref_ECC_av;
 				[out_av, out_ref_ECC_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+				% Perform ECC for water reference signals for quantification usinmg these
+				% signals themselves
+				% (output signals are then also both the same, since ECC is performed on
+				% both input signals)
+				%out_av_ECC_In				= out_ref_Quant_av;
+				%out_water_av_ECC_In			= out_ref_Quant_av;
+				%[out_ref_Quant_av, out_ref_Quant_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+				[out_ref_Quant_av, out_ref_Quant_av]	= op_ecc_s(out_ref_Quant_av, out_ref_Quant_av);
 			else
 				if with_water
 					% If no reference signals, use water signals for ECC, if acquired

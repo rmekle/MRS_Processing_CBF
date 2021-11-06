@@ -25,7 +25,7 @@ disp(sMsg_newLines);
 %dirString_Out			= '';
 filename_In				= '';
 filename_w_In			= '';
-strVOI					= 'HC';			% 'HC';		% 'PCG';
+strVOI					= 'PCG';			% 'HC';		% 'PCG';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
 strOVS_In				= 'wOVS';
@@ -37,7 +37,7 @@ aaDomain_In				= 'f';
 tmaxin_In				= 0.2;
 iterin_In				= 20;
 alignSS_In				= 2;
-bECC_In					= 0;
+bECC_In					= 1;
 bPhaseCorrFreqShift_In	= 0;
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
@@ -109,8 +109,8 @@ switch seqType_MRS
 				end		% End of if ~isempty(wInd)
 			end		% if ~isempty(refInd)
 		end		% End of if bECC_In
-		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
-		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
+		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
+		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
 		
 		% If outout directory is non-existent, create it
 		if ~exist( dirString_Out, 'dir' )
