@@ -1079,14 +1079,15 @@ switch seqType
 			if with_ref
 				out_water_av_ECC_In			= out_ref_ECC_av;
 				[out_av, out_ref_ECC_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
-				% Perform ECC for water reference signals for quantification usinmg these
+				% Perform ECC for water reference signals for quantification using these
 				% signals themselves
 				% (output signals are then also both the same, since ECC is performed on
-				% both input signals)
-				%out_av_ECC_In				= out_ref_Quant_av;
-				%out_water_av_ECC_In			= out_ref_Quant_av;
-				%[out_ref_Quant_av, out_ref_Quant_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
-				[out_ref_Quant_av, out_ref_Quant_av]	= op_ecc_s(out_ref_Quant_av, out_ref_Quant_av);
+				% both input signals;
+				% use different output variables to avoid confusion, though  
+				% second one is unused)) 
+				out_ref_Quant_av_ECC_In			= out_ref_Quant_av;
+				out_ref_Quant_water_av_ECC_In	= out_ref_Quant_av;
+				[out_ref_Quant_av, out_ref_Quant_av_ECC_w]	= op_ecc_s(out_ref_Quant_av_ECC_In, out_ref_Quant_water_av_ECC_In);
 			else
 				if with_water
 					% If no reference signals, use water signals for ECC, if acquired
@@ -1096,9 +1097,11 @@ switch seqType
 					if strcmp(dataType, 'water')
 						% (dataType = 'water_ref' is covered by 'with_ref')
 						% MR spectrum (= water signal itself) also used for ECC
-						% (Input and output arguments are both the same, respectively)
+						% (Input and output arguments are both the same, respectively; 
+						% use different output variables to avoid confusion, though  
+						% second one is unused)) 
 						out_water_av_ECC_In		= out_av;
-						[out_av, out_av]		= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+						[out_av, out_av_ECC_w]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
 					else
 						% No reference and no water signals and MR spectrum is not water
 						% signal itself => ECC not possible
