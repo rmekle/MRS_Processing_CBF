@@ -33,8 +33,8 @@ noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 % tmaxin_In				= 0.2;
 % iterin_In				= 20;
 % alignSS_In				= 2;
-bECC_In					= 0;
-strTissue				= 'GM';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
+bECC_In					= 1;
+strTissue				= 'HC';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
 strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 b0nratio				= 1;
 strAnalysisData			= 'MRS_editOFF';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
@@ -243,11 +243,30 @@ switch seqType_MRS
 		% TE = 23 ms
 		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_DineshKD/sLASER/';
 		LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
-		LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
+		switch strTissue
+			case 'GM'
+				LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
+			case 'HC'
+				%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+				LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
+			case 'PCG'
+				%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
+				LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+				
+				
+			otherwise
+				error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+		end		% End of switch strTissue
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end
+end		% End of switch seqType_MRS
 % Sequence independent settings
 dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
 fullFileName_LCM_Basis			= [dirBasis, LCM_Basis];
