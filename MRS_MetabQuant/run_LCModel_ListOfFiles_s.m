@@ -478,6 +478,7 @@ fullFileName_all		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', L
 noFiles_table			= numel(listFiles_table);
 selectedTypesMetabConc	= [1; 2; 3;];
 noTypesMetabConc		= numel(selectedTypesMetabConc);
+noMet					= 0;
 
 % From SC_GUI.m -> function finish_lcm:
 %selectedTypesMetabConc	= handles.batch_selected_types_of_metabolite_concentrations;
@@ -491,8 +492,20 @@ if( noFiles_table > 0 )
 	charTmp		= fullfile(outDir, listFiles_table(1).name);
 	
 	txt			= fileread( charTmp );
+	
+	% Check whether .table file contains any information about concentrations of 
+	% metabolites
+	% If LCModel fit fails, which is rare, but can happen, e.g. if data are corrupted and
+	% restrictions on the degrees of freedom for fitting, e.g. by setting the parameter
+	% dknmtn to a specific value, are imposed, no metabolite concentrations are reported
+	% in the corresponding .table file; the index 'tokens' is then empty
 	tokens		= strfind( txt, '$$CONC' );
-	noMet		= sscanf(txt(tokens+6:tokens+9),'%d') - 1;    % Number of metabolites
+	if isempty(tokens)
+		% No metabolite concentrations found, exit with error
+		error('%s: tokens = %d (empty) => No metabolite concentrations found in %s!\n Check on other .table files!\n', sFunctionName, tokens, charTmp);
+	else
+		noMet		= sscanf(txt(tokens+6:tokens+9),'%d') - 1;    % Number of metabolites
+	end
 	
 	% Collect information about metabolites, concentrations, and Cramer-Rao Lower Bounds
 	% (CRLBs)/%SD from LCModel output from all .table files into one data structure
@@ -541,12 +554,38 @@ if( noFiles_table > 0 )
 	for inr=1 : 1 : noFiles_table
 		% Write filename of .table file into new .csv file
 		nbytes		= fprintf(fid_all, '%s  \t', listFiles_table(inr).name);
-		for im = 1: 1 : noMet
-			for ic = 1: 1 : noTypesMetabConc
-				nbytes	= fprintf(fid_all, '  %0.5e   \t', mydata{inr}{selectedTypesMetabConc(ic)}(im));			
-				faverage(selectedTypesMetabConc(ic),(im),(inr)) = ...
-					mydata{inr}{selectedTypesMetabConc(ic)}((im));
+		
+		% If concentration values exist, write them into new .csv file; if not, i.e. if 
+		% fit for metabolite quantification failed for some reason,
+		% insert zeros into new .csv file and into array of average values, so that 
+		% routine continues to write information from subsequent .table files to file and 
+		% does not issue an error
+		% Concentration values exist, if last (fourth) cell array of data structure is 
+		% non-empty and if correct # of metabolites that was determined from # of 
+		% metabolites in first .table file was read into first cell array of data
+		% structure
+		listMet_tableFile	= mydata{1,inr}{1,4};
+		noMet_tableFile		= length(mydata{1,inr}{1,1});
+		if ~isempty(listMet_tableFile) && noMet_tableFile == noMet
+			% Write concentration and other values into new .csv file
+			for im = 1: 1 : noMet
+				for ic = 1: 1 : noTypesMetabConc
+					nbytes	= fprintf(fid_all, '  %0.5e   \t', mydata{inr}{selectedTypesMetabConc(ic)}(im));
+					faverage(selectedTypesMetabConc(ic),(im),(inr)) = ...
+						mydata{inr}{selectedTypesMetabConc(ic)}((im));
+				end
 			end
+		else	% Concentration information not found or incomplete (fit probably failed)
+			% Issue warning and fFor all values, insert zeros into new .csv files and 
+			% into array for averaging
+			warning('%s: .table file = %s\n\nEither empty cell array of concentrations isempty(listMet_tableFile) = %d and/or # of metabolite concentrations in this table file = noMet_tableFile = %d   ~=    noMet = %d = # of expected metabolite concentrations!\n\n=> Inserting zeros into file for all values\n\n', ...
+				sFunctionName, listFiles_table(inr).name, isempty(listMet_tableFile), noMet_tableFile, noMet);
+			for im = 1: 1 : noMet
+				for ic = 1: 1 : noTypesMetabConc
+					nbytes	= fprintf(fid_all, '  %0.5e   \t', 0);
+					faverage(selectedTypesMetabConc(ic),(im),(inr)) = 0;
+				end
+			end		
 		end
 		nbytes		= fprintf(fid_all, '\n');
 	end
