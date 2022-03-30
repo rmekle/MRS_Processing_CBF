@@ -5,7 +5,7 @@ function saveFigure_s(h_fig, dir, figureName, format, resolution);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Usage
-%	saveFigure_s(h_figs, dir, filename, format)
+%	saveFigure_s(h_fig, dir, filename, format, resolution)
 %
 %  Inputs
 %	h_fig			handle of figure to be saved
