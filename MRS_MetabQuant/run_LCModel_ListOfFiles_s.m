@@ -22,7 +22,7 @@ disp(sMsg_newLines);
 
 
 %% Init parameter settings
-strVOI					= 'HC';			% 'HC';		% 'PCG';
+strVOI					= 'PCG';			% 'HC';		% 'PCG';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';
 % strOVS_In				= 'wOVS';
@@ -34,7 +34,7 @@ noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 % iterin_In				= 20;
 % alignSS_In				= 2;
 bECC_In					= 1;
-strTissue				= 'HC';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
+strTissue				= 'PCG';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
 strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 b0nratio				= 1;
 strAnalysisData			= 'MRS_editOFF';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
