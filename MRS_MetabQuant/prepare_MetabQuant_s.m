@@ -35,10 +35,10 @@ noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 % tmaxin_In				= 0.2;
 % iterin_In				= 20;
 % alignSS_In				= 2;
-bECC_In					= 0;
+bECC_In					= 1;
 bCopyFiles				= 1;
-bCopyFiles_ref_ECC		= 1;
-bCopyFiles_w			= 1;
+bCopyFiles_ref_ECC		= 0;
+bCopyFiles_w			= 0;
 bWriteFilenames			= 1;
 
 % Set (additional) parameters depending on sequence type
