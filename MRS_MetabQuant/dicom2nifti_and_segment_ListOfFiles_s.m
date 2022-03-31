@@ -81,7 +81,7 @@ end		% End of if bConvert_dcm2ni
 
 if bSegmentImages
 	if not(isfolder(outputDir_Seg))
-		sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outputDir_Seg;
+		sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outputDir_Seg);
 		disp(sMsg);
 		if ~mkdir(outputDir_Seg)
 			error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outputDir_Seg);
