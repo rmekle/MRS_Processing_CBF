@@ -25,10 +25,19 @@ inputDir				= '';
 command					= '';
 status					= 0;
 bProcessNewFiles		= 0;
-bConvert_dcm2nii		= 'Yes';		% 'Yes';		% 'No';
-bSegmentImages			= 'No';			% 'Yes';		% 'No';
+bConvert_dcm2nii		= 'No';			% 'Yes';		% 'No';
+bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
 seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 
+% Init parameters for brain extraction and segmentation
+% (parameters can be adjusted for each sequence type depending on specific voxel location)
+% FSL bet routine: options
+%	-c <x y z>  centre-of-gravity (voxels not mm) of initial mesh surface
+%	-f <f>      fractional intensity threshold (0->1); default=0.5; smaller values give larger brain outline estimates
+%	-R          robust brain centre estimation (iterates BET several times)
+% [85 107 175];		[89 113 142];	[87 110 160];	[87 115 180];	[87 115 150];	[87 115 170];
+coordCenterOfBrain		= [87 115 180];	
+fractIntensThresh		= 0.3;			% 0.5;		0.4;	0.3;	0.25;	0.2;
 
 % Set (additional) parameters depending on sequence type
 switch seqType_MRS
@@ -38,6 +47,9 @@ switch seqType_MRS
 		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_NIfTI_Files/';
 		dirData_NIfTI			= outputDir_NIfTI;
 		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented/';
+		% Set parameters for brain extraction and segmentation depending on voxel location
+		coordCenterOfBrain		= [87 115 180];	
+		fractIntensThresh		= 0.3;
 	case 'MEGA-PRESS'
 		% 3T BCAN MRS_and_Dopamin study
 		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files/';
@@ -47,12 +59,18 @@ switch seqType_MRS
 		dirData_NIfTI			= outputDir_NIfTI;
 		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/';
 		%outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented_New/';
+		% Set parameters for brain extraction and segmentation depending on voxel location
+		coordCenterOfBrain		= [87 115 180];	
+		fractIntensThresh		= 0.3;
 	case 'sLASER'
 		% 3T BCAN MRS_and_Trauma study
 		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
 		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
 		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
-
+		% Set parameters for brain extraction and segmentation depending on voxel location
+		coordCenterOfBrain		= [87 115 180];	
+		fractIntensThresh		= 0.3;
+		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
@@ -88,24 +106,6 @@ if bSegmentImages
 		end
 	end
 end		% End of if bSegmentImages
-
-
-% Set parameters for brain extraction and segmentation
-% FSL bet routine: options
-%	-c <x y z>  centre-of-gravity (voxels not mm) of initial mesh surface
-%	-f <f>      fractional intensity threshold (0->1); default=0.5; smaller values give larger brain outline estimates
-%	-R          robust brain centre estimation (iterates BET several times)
-% [85 107 175];		[89 113 142];	[87 110 160];	[87 115 180];	[87 115 150];	[87 115 170];
-coordCenterOfBrain		= [87 115 180];	
-fractIntensThresh		= 0.3;			% 0.5;		0.4;	0.3;	0.25;	0.2;
-
-% FSL fast routine: options
-% 	-t,--type       type of image 1=T1, 2=T2, 3=PD; default=T1
-% 	-n,--class      number of tissue-type classes; default=3
-%	-H,--Hyper      segmentation spatial smoothness; default=0.1
-%	-I,--iter       number of main-loop iterations during bias-field removal; default=4
-%	-l,--lowpass    bias field smoothing extent (FWHM) in mm; default=20
-%	-o,--out        output basename
 
 
 %% Obtain information about the list of DICOM files or list of directories, respectively
@@ -154,6 +154,16 @@ end		% End of if(strcmp(bConvert_dcm2nii, 'Yes'))
 
 
 %% Segment NIfTI brain imaging data files into tissues WM, GM, and CSF. if desired
+
+% FSL fast routine: options
+% 	-t,--type       type of image 1=T1, 2=T2, 3=PD; default=T1
+% 	-n,--class      number of tissue-type classes; default=3
+%	-H,--Hyper      segmentation spatial smoothness; default=0.1
+%	-I,--iter       number of main-loop iterations during bias-field removal; default=4
+%	-l,--lowpass    bias field smoothing extent (FWHM) in mm; default=20
+%	-o,--out        output basename
+
+
 %% Obtain information about the list of NIfTI files to be segmented
 % (assuming that all data files are included in the same directory)
 % (On Linux, file list in Matlab also includes the two directories "." and "..", which
