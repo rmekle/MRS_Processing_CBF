@@ -4,7 +4,7 @@
 %
 %% Script to convert a list of DICOM files of into NIfTI format and segment them
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2021; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2021, 2022; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -24,30 +24,39 @@ disp(sMsg_newLines);
 inputDir				= '';
 command					= '';
 status					= 0;
-bProcessNewFiles		= 1;
+bProcessNewFiles		= 0;
 bConvert_dcm2nii		= 'Yes';		% 'Yes';		% 'No';
-bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
+bSegmentImages			= 'No';			% 'Yes';		% 'No';
+seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 
-% Set (additional) parameters
-% % 3T Potsdam_Pain study
-% dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_DICOM_Files/';
-% outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_NIfTI_Files/';
-% dirData_NIfTI			= outputDir_NIfTI;
-% outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented/';
 
-% % 3T BCAN MRS_and_Dopamin study
-% %dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files/';
-% dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files_New/';
-% %outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files/';
-% outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_New/';
-% dirData_NIfTI			= outputDir_NIfTI;
-% %outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/';
-% outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented_New/';
+% Set (additional) parameters depending on sequence type
+switch seqType_MRS
+	case 'SPECIAL'
+		% % 3T CBF Potsdam_Pain study
+		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_DICOM_Files/';
+		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_NIfTI_Files/';
+		dirData_NIfTI			= outputDir_NIfTI;
+		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented/';
+	case 'MEGA-PRESS'
+		% 3T BCAN MRS_and_Dopamin study
+		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files/';
+		%dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files_New/';
+		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files/';
+		%outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_New/';
+		dirData_NIfTI			= outputDir_NIfTI;
+		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/';
+		%outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented_New/';
+	case 'sLASER'
+		% 3T BCAN MRS_and_Trauma study
+		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
+		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
+		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
 
-% 3T BCAN MRS_and_Trauma study
-dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
-outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
-outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
+	otherwise
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
+end
+
 % Adjust directory names, if only new (newly acquired) data should be processed
 if bProcessNewFiles
 	dirData_DICOM		= [dirData_DICOM, '_New'];
@@ -58,6 +67,27 @@ dirData_DICOM			= [dirData_DICOM, filesep];
 outputDir_NIfTI			= [outputDir_NIfTI, filesep];
 dirData_NIfTI			= outputDir_NIfTI;
 outputDir_Seg			= [outputDir_Seg, filesep];
+
+% If output directories for specific processing opitions do not exist, create them
+if bConvert_dcm2nii
+	if not(isfolder(outputDir_NIfTI))
+		sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outputDir_NIfTI);
+		disp(sMsg);
+		if ~mkdir(outputDir_NIfTI)
+			error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outputDir_NIfTI);
+		end
+	end
+end		% End of if bConvert_dcm2ni
+
+if bSegmentImages
+	if not(isfolder(outputDir_Seg))
+		sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outputDir_Seg;
+		disp(sMsg);
+		if ~mkdir(outputDir_Seg)
+			error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outputDir_Seg);
+		end
+	end
+end		% End of if bSegmentImages
 
 
 % Set parameters for brain extraction and segmentation
