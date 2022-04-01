@@ -4,7 +4,7 @@
 %
 %% Script to calculate partial volume correction tissue coefficients in MRS for brain
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020, 2021; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020, 2021, 2022; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,10 +26,11 @@ status					= 0;
 noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
-seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
+seqType					= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
 strVOI					= 'PCG';			% 'HC';		% 'PCG';
 strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
 strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
+strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
 
 % Set (additional) parameters depending on sequence type 
 switch seqType
