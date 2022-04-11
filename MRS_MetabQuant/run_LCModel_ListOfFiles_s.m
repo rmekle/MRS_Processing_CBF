@@ -5,7 +5,7 @@
 %% Script to run LCModel quantification on a list of files of magnetic resonance 
 %% spectroscopy (MRS) data
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -23,8 +23,9 @@ disp(sMsg_newLines);
 
 %% Init parameter settings
 strVOI					= 'PCG';			% 'HC';		% 'PCG';
-seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w_ref';
+seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+dataType_MRS			= 'mrs_w';		% 'mrs';		% 'mrs_w';	% 'mrs_w_ref;		
+%										% 'mrs_ref';	% 'water';	% 'water_ref';
 % strOVS_In				= 'wOVS';
 % strOVS_w_In				= 'wOVS';
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
@@ -35,9 +36,12 @@ noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 % alignSS_In				= 2;
 bECC_In					= 1;
 strTissue				= 'PCG';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
-strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
+strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
+% Indicate whether water scaling is used
+% (in later version, this should be determined from loaded control file)
+charWaterScaling		= 'Yes';		% 'Yes';	'No';
 b0nratio				= 1;
-strAnalysisData			= 'MRS_editOFF';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 charVecSaveWorkspace	= 'y';
 
 
@@ -55,27 +59,29 @@ switch seqType_MRS
 		outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Processed_forLCModel_SD_3_2/LCModel_Results_nratio0/';
 		%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Processed_forLCModel_SD_3_2/LCModel_Results/';
 		fullFilename_listOfFiles_MRS	= [dirData, 'list_filenames_MRS_Spectra.txt'];
-		fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_Water.txt'];
-		
+		fullFilename_listOfFiles_w		= [dirData, 'list_filenames_MRS_Water.txt'];
+		%fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_Water.txt'];	
 	case 'MEGA-PRESS'
 		% Select directories for (input) data files and for output data depending on # of 
 		% SDs used for pre-processing of MR spectra and on analysis settings
 		switch(noSD_In)
 			case(2.6)
-				dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_2_6/DOPA_LCModel_Analysis_Data/';
+				dirData							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_2_6/DOPA_LCModel_Analysis_Data/';
 				
 				% Select output directory depending on type of data (spectra) used for
 				% analysis
 				if strcmp(strAnalysisData, 'MRS_diff')
 					% MRS_diff
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_2_6/DOPA_LCM_Out_noECC/';
-					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_2_6/DOPA_LCM_Out_noECC_0nratio/';
+					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_2_6/DOPA_LCM_Out_noECC_0nratio/';
+					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_2_6/DOPA_LCM_Out_noECC/';
+					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_2_6/DOPA_LCM_Out_noECC_0nratio/';
 				else
 					% MRS_editOFF
-					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_2_6/DOPA_LCM_Out_editOFF_GM_w_0nratio/';
+					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_2_6/DOPA_LCM_Out_editOFF_GM_w_0nratio/';
 				end
 			case(3.2)
-				dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/DOPA_LCModel_Analysis_Data/';
+				dirData							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_3_2/DOPA_LCModel_Analysis_Data/';
 				%dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2_New/DOPA_LCModel_Analysis_Data/';
 				%dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_3_2/DOPA_LCModel_Analysis_Data/';
 				
@@ -85,20 +91,24 @@ switch seqType_MRS
 					% MRS_diff
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/DOPA_LCM_Out_noECC/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/DOPA_LCM_Out_noECC_0nratio/';
-					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2_New/DOPA_LCM_Out_noECC/';
+					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2_New/DOPA_LCM_Out_noECC/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2_New/DOPA_LCM_Out_noECC_0nratio/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_forLCModel_SD_3_2/DOPA_LCModel_Results_noECC/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_3_2/DOPA_LCModel_Results_noECC/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_3_2/DOPA_LCModel_Results_noECC_0nratio/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_3_2/DOPA_LCModel_Results_noECC_noWS/';
+					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_3_2/DOPA_LCM_Out_noECC/';
+					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_3_2/DOPA_LCM_Out_noECC_0nratio/';
 				else
 					% MRS_editOFF
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/DOPA_LCM_Out_editOFF_GM_w_0nratio_noECC/';
-					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/DOPA_LCM_Out_editOFF_GM_w_0nratio/';
+					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/DOPA_LCM_Out_editOFF_GM_w_0nratio/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2/DOPA_LCM_Out_editOFF_GM_w/';
+					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_3_2/DOPA_LCM_Out_editOFF_GM_w_0nratio/';
 				end
 			case(4.0)
-				dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/DOPA_LCModel_Analysis_Data/';
+				dirData							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_4_0/DOPA_LCModel_Analysis_Data/';
+				%dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/DOPA_LCModel_Analysis_Data/';
 				%dirData							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_4_0/DOPA_LCModel_Analysis_Data/';
 
 				% Select output directory depending on type of data (spectra) used for
@@ -106,13 +116,15 @@ switch seqType_MRS
 				if strcmp(strAnalysisData, 'MRS_diff')
 					% MRS_diff
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/DOPA_LCM_Out_noECC/';
-					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/DOPA_LCM_Out_noECC_0nratio/';
+					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/DOPA_LCM_Out_noECC_0nratio/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_4_0/DOPA_LCModel_Results/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_4_0/DOPA_LCModel_Results_noECC/';
 					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/DOPA_FID-A_forLCModel_SD_4_0/DOPA_LCModel_Results_noECC_noWS/';
+					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_4_0/DOPA_LCM_Out_noECC/';
+					%outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_4_0/DOPA_LCM_Out_noECC_0nratio/';
 				else
 					% MRS_editOFF
-					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/DOPA_LCM_Out_editOFF_GM_w_0nratio/';
+					outDir							= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_4_0/DOPA_LCM_Out_editOFF_GM_w_0nratio/';
 				end
 				
 			otherwise
@@ -123,11 +135,13 @@ switch seqType_MRS
 		if strcmp(strAnalysisData, 'MRS_diff')
 			% MRS_diff
 			fullFilename_listOfFiles_MRS	= [dirData, 'list_filenames_MRS_Diff_Spectra.txt'];
-			fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
+			fullFilename_listOfFiles_w		= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
+			%fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
 		else
 			% MRS_editOFF
 			fullFilename_listOfFiles_MRS	= [dirData, 'list_filenames_MRS_editOFF_Spectra.txt'];
-			fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
+			fullFilename_listOfFiles_w		= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
+			%fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
 		end
 	case 'sLASER'
 		% Select directories for (input) data files and for output data depending on # of
@@ -210,15 +224,19 @@ end
 
 
 %% Select basis set and control file for LCModel analysis depending on sequence type
+% Init directory for control files
+dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
 switch seqType_MRS
 	case 'SPECIAL'
 		% For 3T Potsdam pain study and SPECIAL
 		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
 		LCM_Basis						= '3T_sim_TE8-5_mac_ac.basis';
+		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/Other/';
 		LCM_Control						= '3T_RAW_mac_shortTE_ACC_water_nratio0';
-		%LCM_Control						= '3T_RAW_mac_shortTE_ACC_water';
-		
+		%LCM_Control						= '3T_RAW_mac_shortTE_ACC_water';	
 	case 'MEGA-PRESS'
+		% Control files for MEGA-PRESS
+		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/MEGA-PRESS/';
 		% For 3T BCAN Dopamin study and MEGA-PRESS depending on type of data (spectra) 
 		% used for analysis
 		if strcmp(strAnalysisData, 'MRS_diff')
@@ -226,8 +244,8 @@ switch seqType_MRS
 			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_PurdueU/';
 			LCM_Basis						= '3t_IU_MP_te68_diff_yesNAAG_noLac_Kaiser.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method2';
@@ -243,6 +261,7 @@ switch seqType_MRS
 		% TE = 23 ms
 		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_DineshKD/sLASER/';
 		LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
+		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/sLASER_dkd_TE23/';
 		switch strTissue
 			case 'GM'
 				LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
@@ -267,8 +286,9 @@ switch seqType_MRS
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end		% End of switch seqType_MRS
+
 % Sequence independent settings
-dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
+%dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
 fullFileName_LCM_Basis			= [dirBasis, LCM_Basis];
 fullFileName_LCM_Control		= [dirControl, LCM_Control];
 fullFileName_LCM_Control_New	= [outDir, LCM_Control, '_template.control'];
@@ -276,9 +296,6 @@ fullFileName_LCM_Control_case	= [outDir, LCM_Control, '_case.control'];
 
 
 %% Select additional parameters for LCModel analysis or processing options 
-% Indicate whether water scaling is used
-% (in later version, this should be determined from loaded control file)
-charWaterScaling				= 'Yes';		% 'Yes';	'No';
 % Select water signals used for water scaling
 if strcmp(charWaterScaling, 'Yes')
 	switch strWaterQuant
@@ -372,7 +389,7 @@ disp(sMsg);
 % and invoke LCModel anlysis via command line
 noFiles_MRS			= length(cell_listOfFiles_MRS_Spectra{1, 1});
 %disp(['List of MRS Spectra Files', sprintf('\t\t\t\t\t\t'), ' List of MRS Water Files']);
-for Ind=1 :1 : noFiles_MRS			% noFiles_MRS	% 2		% 0
+for Ind=1 : 1 : noFiles_MRS			% noFiles_MRS	% 2		% 0
 	% Obtain filename for MR spectrum with and without extension
 	filename_MRS						= cell_listOfFiles_MRS_Spectra{1}{Ind};
 	[pathstr, filename_MRS_noExt, ext]	= fileparts(filename_MRS);
