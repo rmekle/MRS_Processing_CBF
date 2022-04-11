@@ -22,6 +22,7 @@ disp(sMsg_newLines);
 
 
 %% Init parameter settings
+charVecSaveWorkspace	= 'y';
 strVOI					= 'PCG';			% 'HC';		% 'PCG';
 seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w';		% 'mrs';		% 'mrs_w';	% 'mrs_w_ref;		
@@ -36,13 +37,13 @@ noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 % alignSS_In				= 2;
 bECC_In					= 1;
 strTissue				= 'PCG';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
-strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
+strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+b0nratio				= 1;
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
 charWaterScaling		= 'Yes';		% 'Yes';	'No';
-b0nratio				= 1;
-strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
-charVecSaveWorkspace	= 'y';
+strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
+
 
 
 %% Set directories for data, results, and filenames for lists of data files 
@@ -241,16 +242,23 @@ switch seqType_MRS
 		% used for analysis
 		if strcmp(strAnalysisData, 'MRS_diff')
 			% MRS_diff
-			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_PurdueU/';
-			LCM_Basis						= '3t_IU_MP_te68_diff_yesNAAG_noLac_Kaiser.basis';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4';
+			% Basis sets and control files for water-symmetric editing
+			%dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_PurdueU/';
+			%LCM_Basis						= '3t_IU_MP_te68_diff_yesNAAG_noLac_Kaiser.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method2';
+			
+			% Basis sets and control files for MM-suppressed (symmetric) editing
+			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_JimMurdoch/';
+			LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
 		else
 			% MRS_editOFF
+			% Basis sets and control files for water-symmetric editing
 			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_PurdueU/';
 			LCM_Basis						= '3t_IU_MP_te68_748_ppm_inv_Edit-Off.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0_noECC';
