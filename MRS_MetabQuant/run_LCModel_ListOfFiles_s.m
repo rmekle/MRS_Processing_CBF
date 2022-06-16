@@ -45,6 +45,105 @@ charWaterScaling		= 'Yes';		% 'Yes';	'No';
 strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 
 
+%% Select basis set and control file for LCModel analysis depending on sequence type
+% Init directory for control files
+dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
+switch seqType_MRS
+	case 'SPECIAL'
+		% For 3T Potsdam pain study and SPECIAL
+		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
+		LCM_Basis						= '3T_sim_TE8-5_mac_ac.basis';
+		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/Other/';
+		LCM_Control						= '3T_RAW_mac_shortTE_ACC_water_nratio0';
+		%LCM_Control						= '3T_RAW_mac_shortTE_ACC_water';	
+	case 'MEGA-PRESS'
+		% Control files for MEGA-PRESS
+		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/LCM_Control_MEGA-PRESS/';
+		% For 3T BCAN Dopamin study and MEGA-PRESS depending on type of data (spectra) 
+		% used for analysis
+		if strcmp(strAnalysisData, 'MRS_diff')
+			% MRS_diff
+			% Basis sets and control files for water-symmetric editing
+			%dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_PurdueU/';
+			%LCM_Basis						= '3t_IU_MP_te68_diff_yesNAAG_noLac_Kaiser.basis';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method2';
+			
+			% Basis sets and control files for MM-suppressed (symmetric) editing
+			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_JimMurdoch/';
+			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
+			LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Basis_Config1_1_85-4_1ppm';
+		else
+			% MRS_editOFF
+			% Basis sets and control files for water-symmetric editing
+			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_PurdueU/';
+			LCM_Basis						= '3t_IU_MP_te68_748_ppm_inv_Edit-Off.basis';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0_noECC';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water';
+		end
+	case 'sLASER'
+		% TE = 23 ms
+		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_DineshKD/Basis_sLASER/';
+		LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
+		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/LCM_Control_sLASER_dkd_TE23/';
+		switch strTissue
+			case 'GM'
+				LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
+			case 'HC'
+				%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+				LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
+			case 'PCG'
+				%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
+				LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
+				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+				
+				
+			otherwise
+				error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+		end		% End of switch strTissue
+		
+	otherwise
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
+end		% End of switch seqType_MRS
+
+% Sequence independent settings
+%dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
+fullFileName_LCM_Basis			= [dirBasis, LCM_Basis];
+fullFileName_LCM_Control		= [dirControl, LCM_Control];
+fullFileName_LCM_Control_New	= [outDir, LCM_Control, '_template.control'];
+fullFileName_LCM_Control_case	= [outDir, LCM_Control, '_case.control'];
+strControlFile = '';
+
+
+%% Select additional parameters for LCModel analysis or processing options 
+% Select water signals used for water scaling
+if strcmp(charWaterScaling, 'Yes')
+	switch strWaterQuant
+		case '_ref_Quant'
+			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_ref_Quant;
+		case '_ref_ECC'
+			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_ref_ECC;
+		case '_w'
+			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_w;
+			
+		otherwise
+			error('%s: ERROR: water quantification option strWaterQuant = %s!', sFunctionName, strWaterQuant);
+	end		% End of switch strWaterQuant
+end		% End of if strcmp(charWaterScaling, 'Yes')
+
+
 
 %% Set directories for data, results, and filenames for lists of data files 
 % Sequence independent settings
@@ -221,103 +320,6 @@ if not(isfolder(outDir))
 		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outDir);
 	end
 end
-
-
-
-%% Select basis set and control file for LCModel analysis depending on sequence type
-% Init directory for control files
-dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
-switch seqType_MRS
-	case 'SPECIAL'
-		% For 3T Potsdam pain study and SPECIAL
-		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
-		LCM_Basis						= '3T_sim_TE8-5_mac_ac.basis';
-		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/Other/';
-		LCM_Control						= '3T_RAW_mac_shortTE_ACC_water_nratio0';
-		%LCM_Control						= '3T_RAW_mac_shortTE_ACC_water';	
-	case 'MEGA-PRESS'
-		% Control files for MEGA-PRESS
-		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/MEGA-PRESS/';
-		% For 3T BCAN Dopamin study and MEGA-PRESS depending on type of data (spectra) 
-		% used for analysis
-		if strcmp(strAnalysisData, 'MRS_diff')
-			% MRS_diff
-			% Basis sets and control files for water-symmetric editing
-			%dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_PurdueU/';
-			%LCM_Basis						= '3t_IU_MP_te68_diff_yesNAAG_noLac_Kaiser.basis';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale_nratio0';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method2';
-			
-			% Basis sets and control files for MM-suppressed (symmetric) editing
-			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_JimMurdoch/';
-			LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
-		else
-			% MRS_editOFF
-			% Basis sets and control files for water-symmetric editing
-			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/MEGA-PRESS/3TBasis_PurdueU/';
-			LCM_Basis						= '3t_IU_MP_te68_748_ppm_inv_Edit-Off.basis';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0_noECC';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water';
-		end
-	case 'sLASER'
-		% TE = 23 ms
-		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_DineshKD/sLASER/';
-		LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
-		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/sLASER_dkd_TE23/';
-		switch strTissue
-			case 'GM'
-				LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
-			case 'HC'
-				%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-				LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
-			case 'PCG'
-				%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
-				LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-				
-				
-			otherwise
-				error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
-		end		% End of switch strTissue
-		
-	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end		% End of switch seqType_MRS
-
-% Sequence independent settings
-%dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
-fullFileName_LCM_Basis			= [dirBasis, LCM_Basis];
-fullFileName_LCM_Control		= [dirControl, LCM_Control];
-fullFileName_LCM_Control_New	= [outDir, LCM_Control, '_template.control'];
-fullFileName_LCM_Control_case	= [outDir, LCM_Control, '_case.control'];
-
-
-%% Select additional parameters for LCModel analysis or processing options 
-% Select water signals used for water scaling
-if strcmp(charWaterScaling, 'Yes')
-	switch strWaterQuant
-		case '_ref_Quant'
-			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_ref_Quant;
-		case '_ref_ECC'
-			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_ref_ECC;
-		case '_w'
-			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_w;
-			
-		otherwise
-			error('%s: ERROR: water quantification option strWaterQuant = %s!', sFunctionName, strWaterQuant);
-	end		% End of switch strWaterQuant
-end		% End of if strcmp(charWaterScaling, 'Yes')
 
 
 %% Check whether computer is system with LCModel installed
