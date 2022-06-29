@@ -27,11 +27,11 @@ filename_In				= '';
 filename_w_In			= '';
 strVOI					= 'HC';			% 'HC';		% 'PCG';
 seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w_ref';
-strOVS_In				= 'wOVS';			% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
+strOVS_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
+strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 2;
-noSD_In					= 2.6;			% 3.2;		2.6;		4.0;
+noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 strMinUserIn_In			= 'y';
 aaDomain_In				= 'f';
 tmaxin_In				= 0.2;
@@ -52,20 +52,22 @@ switch seqType_MRS
 		%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_2_6/';
 	case 'MEGA-PRESS'
 		% Data (input) directories
-		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_RawData_dat_Files_MRS/';
-		%dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_RawData_dat_Files_MRS_New/';
+		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopa/MRS_Dopamin_00_All_RawData_dat_Files_MRS/';
+		%dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopa/MRS_Dopamin_00_All_RawData_dat_Files_MRS_New/';
 		
 		% Select directories for output data depending on # of SDs used for pre-processing
 		% of MR spectra
 		switch(noSD_In)
 			case(2.6)
-				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_2_6/';
+				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_2_6/';
 			case(3.2)
-				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_3_2/';
-				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_3_2_New/';
+				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2/';
+				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2_II/';
+				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2_III/';
+				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2_New/';
 				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_3_2_New/';
 			case(4.0)
-				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopamin_Analysis/Z_DOPA_FID-A_SD_4_0/';
+				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_4_0/';
 				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_Z_Analysis/DOPA_FID-A_SD_4_0/';
 			
 			otherwise
