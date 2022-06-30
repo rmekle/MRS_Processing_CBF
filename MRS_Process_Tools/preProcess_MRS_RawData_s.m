@@ -12,7 +12,8 @@
 % [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,bPhaseCorrFreqShift,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
-% Processing script for Siemens MRS data in .dat format (twix raw data).  
+% Function for processing Siemens MRS data in .dat format (twix raw data) 
+% using functions from the MRS processing toolkit FID-A
 % Includes combination of receiver channels, removal of bad averages, 
 % frequency drift correction, phase and frequency correction.
 % 
