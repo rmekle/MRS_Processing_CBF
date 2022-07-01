@@ -66,7 +66,7 @@ end
 
 % Logical check on input arguments
 if bUseTemplate && isempty(fullPath_Template)
-	
+	error('%s: ERROR: bUseTemplate = %d, but empty fullPath_Template = %s!', sFunctionName, bUseTemplate, fullPath_Template);
 end
 
 
@@ -80,7 +80,7 @@ resultsTable				= readtable(fullFileName_In, opts_read);
 
 % Delete selected # of last rows in table of results, e.g rows that contain a blank line, 
 % mean and STD computed by Matlab, since this information should be recomputed in Excel
-sz_Results				= size(resultsTable);
+sz_Results					= size(resultsTable);
 % resultsTable_withSD		= resultsTable;
 resultsTable([(sz_table(1)-(noLastRowsToDel-1)):sz_Results(1)], :)		= [];
 
