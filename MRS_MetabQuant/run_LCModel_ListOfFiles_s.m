@@ -471,7 +471,9 @@ charTmp					= fullfile(outDir, '*.table');
 listFiles_table			= dir(charTmp);
 %fullFileName_all		= fullfile(outDir, strcat('3T_', seqType_MRS, '_LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '_all.csv'));
 %fullFileName_all		= fullfile(outDir, strcat('3T_', seqType_MRS, '_LCModel_', LCM_Basis, '_', LCM_Control, '_all.csv'));
-fullFileName_all		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', LCM_Control, '_all.csv'));
+%fullFileName_all		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', LCM_Control, '_all.csv'));
+FileName_all			= strcat(str_noSD_In, '_LCModel_', LCM_Basis, '_', LCM_Control);
+fullFileName_all		= fullfile(outDir, [FileName_all '.csv']);
 noFiles_table			= numel(listFiles_table);
 selectedTypesMetabConc	= [1; 2; 3;];
 noTypesMetabConc		= numel(selectedTypesMetabConc);
@@ -686,7 +688,8 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % workspace file with a "." in its filename)
 %fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_LCModel_', LCM_Basis, '_', LCM_Control, '.mat'));
 %fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_', seqType_MRS, '_LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '.mat'));
-fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '.mat'));
+%fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '.mat'));
+fullFileName_SavedWorkspace		= fullfile(outDir, [FileName_all '_' dt '.mat']);
 %charVecSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 if strcmp(charVecSaveWorkspace,'y') || strcmp(charVecSaveWorkspace,'Y')
 	save(fullFileName_SavedWorkspace);
