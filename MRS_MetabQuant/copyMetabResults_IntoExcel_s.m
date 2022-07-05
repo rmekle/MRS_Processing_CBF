@@ -74,15 +74,16 @@ end
 % For that, read contents of .csv file into Matlab table and then write metabolite
 % information from table to (formatted) .xlsx file
 % Detect import options of input file and keep empty lines of file in table
-opts_read					= detectImportOptions(fullFileName_In);
-opts_read.EmptyLineRule		= 'read';
-resultsTable				= readtable(fullFileName_In, opts_read);
+opts_read						= detectImportOptions(fullFileName_In);
+opts_read.EmptyLineRule			= 'read';
+opts_read.VariableNamingRule	= 'preserve';
+resultsTable					= readtable(fullFileName_In, opts_read);
 
 % Delete selected # of last rows in table of results, e.g rows that contain a blank line, 
 % mean and STD computed by Matlab, since this information should be recomputed in Excel
 sz_Results					= size(resultsTable);
 % resultsTable_withSD		= resultsTable;
-resultsTable([(sz_table(1)-(noLastRowsToDel-1)):sz_Results(1)], :)		= [];
+resultsTable([(sz_Results(1)-(noLastRowsToDel-1)):sz_Results(1)], :)		= [];
 
 
 % Insert selected # of columns for additional parameters, e.g. water linewidth (LW_H2O),
@@ -93,12 +94,12 @@ sz_newCols			= size(newColsTable);
 noNewCols			= sz_newCols(2);
 resultsTable_final	= [newColsTable resultsTable];
 sz_final			= size(resultsTable_final);
-resultsTable_final	= resultsTable_final(:, [[noNewCols+(1:noColsToMove)] [1:noNewCols] [(noColsToMove+noNewCols+1):sz_final(2)]);
+resultsTable_final	= resultsTable_final(:, [[noNewCols+(1:noColsToMove)] [1:noNewCols] [(noColsToMove+noNewCols+1):sz_final(2)]]);
 
 % Write table of results to (formatted) Excel file
 % Determine filename for Excel file
 [filepath_In,name_In,ext_In]	= fileparts(fullFileName_In);
-fullFileName_Out				= fullfile(strOutDir, name_all, '.xlsx');
+fullFileName_Out				= fullfile(strOutDir, [name_In, '.xlsx']);
 
 % To use desired formatting in Excel, copy formatted Excel template to make it
 % formatted Excel file for results, if selected
