@@ -43,7 +43,7 @@ strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 b0nratio				= 1;
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
-charWaterScaling		= 'Yes';		% 'Yes';	'No';
+charWaterScaling		= 'No';		% 'Yes';	'No';
 strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 % Set parameters for copying results from .csv file into formatted Excel file
 bCopyIntoExcel			= 1;
@@ -70,21 +70,30 @@ switch seqType_MRS
 		if strcmp(strAnalysisData, 'MRS_diff')
 			% MRS_diff
 			% Basis sets and control files for water-symmetric editing
-			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_PurdueU/';
-			LCM_Basis						= '3t_IU_MP_te68_diff_yesNAAG_noLac_Kaiser.basis';
+			%dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_PurdueU/';
+			%LCM_Basis						= '3t_IU_MP_te68_diff_yesNAAG_noLac_Kaiser.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method4_noECC_noWScale_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method2';
 			
 			% Basis sets and control files for MM-suppressed (symmetric) editing
-			%dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_JimMurdoch/';
-			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
+			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_JimMurdoch/';
+			LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_1_85-4_1ppm';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK06';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41_DK06';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config3_185to41_mega-press-3';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config4_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41_DK06';
 			
 			% Set pattern to be searched for in filename of control file to shorten final
 			% name of output directory
