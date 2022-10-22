@@ -82,11 +82,14 @@ isSiemens=(~isempty(strfind(sequence,'svs_se')) ||... %Is this the Siemens PRESS
             isempty(strfind(sequence,'eja_svs'));    %And make sure it's not 'eja_svs_steam'.
 
 		
-%% CBF: Adjust routine for data acquired using 'svs_slaser_dkd' sequence from CMRR
+%% CBF: Adjust routine for data acquired using 'svs_slaser_dkd' and 'svs_eja_slaser' sequences from CMRR
 % CBF: Is this Dinesh K. Deelchand's single voxel (sLaser) sequence from CMRR, U Minnesota
 % and init # of reference scans
 isSVSdkdseq = contains(sequence,'svs_slaser_dkd');
 noRefScans	= 0;
+% For svs_eja sequences, init variable to indicate extraction of real/relevant data
+% points, which includes any leftshift
+bLeftshifted	= 0;
 
 %If this is the SPECIAL sequence, it probably contains both inversion-on
 %and inversion-off subspectra on a single dimension, unless it is the VB
@@ -116,31 +119,31 @@ if isSpecial ||... %Catches Ralf Mekle's and CIBM version of the SPECIAL sequenc
 		sqzDims{end+1}='Ida';
 	end
 elseif ishdSPECIAL %For Masoumeh Dehghani's hadamard-encoded dual-voxel SPECIAL sequence:
-    squeezedData=squeeze(dOut.data);
-    if twix_obj.image.NCol>1 && twix_obj.image.NCha>1
-        data(:,:,:,1)=squeezedData(:,:,[1:4:end-3]);
-        data(:,:,:,2)=squeezedData(:,:,[2:4:end-2]);
-        data(:,:,:,3)=squeezedData(:,:,[3:4:end-1]);
-        data(:,:,:,4)=squeezedData(:,:,[4:4:end]);
-        sqzSize=[sqzSize(1) sqzSize(2) sqzSize(3)/4 4];
-    elseif twix_obj.image.NCol>1 && twix_obj.image.NCha==1
-        data(:,:,1)=squeezedData(:,[1:4:end-3]);
-        data(:,:,2)=squeezedData(:,[2:4:end-2]);
-        data(:,:,3)=squeezedData(:,[3:4:end-1]);
-        data(:,:,4)=squeezedData(:,[4:4:end]);
-        sqzSize=[sqzSize(1) sqzSize(2)/4 4];
-    end    
-    if isjnseq
-        sqzDims{end+1}='Set';
-    else
-        sqzDims{end+1}='Ida';
+	squeezedData=squeeze(dOut.data);
+	if twix_obj.image.NCol>1 && twix_obj.image.NCha>1
+		data(:,:,:,1)=squeezedData(:,:,[1:4:end-3]);
+		data(:,:,:,2)=squeezedData(:,:,[2:4:end-2]);
+		data(:,:,:,3)=squeezedData(:,:,[3:4:end-1]);
+		data(:,:,:,4)=squeezedData(:,:,[4:4:end]);
+		sqzSize=[sqzSize(1) sqzSize(2) sqzSize(3)/4 4];
+	elseif twix_obj.image.NCol>1 && twix_obj.image.NCha==1
+		data(:,:,1)=squeezedData(:,[1:4:end-3]);
+		data(:,:,2)=squeezedData(:,[2:4:end-2]);
+		data(:,:,3)=squeezedData(:,[3:4:end-1]);
+		data(:,:,4)=squeezedData(:,[4:4:end]);
+		sqzSize=[sqzSize(1) sqzSize(2)/4 4];
+	end
+	if isjnseq
+		sqzDims{end+1}='Set';
+	else
+		sqzDims{end+1}='Ida';
 	end
 	
 	% CBF: If this is a dkd MRS sequence, check whether reference scans are present
 	% in the data and extract these into a separate data object
-% else
-% 	data=dOut.data;
-% end
+	% else
+	% 	data=dOut.data;
+	% end
 else if isSVSdkdseq
 		% All shots, i.e. reference scans and averages are stored in 'Set' dimension of
 		% twix object
@@ -166,46 +169,119 @@ else if isSVSdkdseq
 			
 			% Use substruct indexing to extract selected data independent of # of
 			% dimensions of squeezed data object
-			% NOTE: For this to work, 'indSet' must refer to 'Set' dimension in squeezed
-			% data object (array)
+			% NOTE: For this to work, 'indSet' must also refer to 'Set' dimension in 
+			% squeezed data object (array)
 			% Define indexing structure for squeezed data object (array)
-			% S.type is character vector or string scalar containing (), {}, or ., 
+			% S.type is character vector or string scalar containing (), {}, or .,
 			% specifying the subscript type; here it is '()' that is used for indexing
-			% S.subs is cell array, character vector, or string scalar containing the 
+			% S.subs is cell array, character vector, or string scalar containing the
 			% actual subscripts; here it is cell array of {':'} for each data dimension
 			S.type			= '()';
-			S.subs			= repmat({':'}, 1, ndims(squeezedData));			
+			S.subs			= repmat({':'}, 1, ndims(squeezedData));
 			
-			% Select subscripts (indices) in 'Set' dimension of squezzed data object 
+			% Select subscripts (indices) in 'Set' dimension of squezzed data object
 			% for reference data
 			S.subs{indSet}	= indicesRefScans;
 			refData			= subsref(squeezedData, S);
 			
-			% Select subscripts (indices) in 'Set' dimension of squezzed data object 
+			% Select subscripts (indices) in 'Set' dimension of squezzed data object
 			% for averages
 			S.subs{indSet}	= indicesAverages;
 			data			= subsref(squeezedData, S);
 			
-% 			% Check whether "Set' dimension is last dimension of data array and extract
-% 			% reference scans and averages according to # of non-singleton data dimensions
-% 			if indSet == sqz_ndims
-% 				% Use substruct indexing to extract selected data 
-% 				refData		= squeezedData(:, :, indicesRefScans);
-% 				data		= squeezedData(:, :, indicesAverages);
-% 			else
-% 				error('Set dimension in data array not last data dimension! indSet = %d \t sqz_ndims = %d', indSet, sqz_ndims);
-% 			end		% End of if indSet == sqz_ndims
+			% 			% Check whether "Set' dimension is last dimension of data array and extract
+			% 			% reference scans and averages according to # of non-singleton data dimensions
+			% 			if indSet == sqz_ndims
+			% 				% Use substruct indexing to extract selected data
+			% 				refData		= squeezedData(:, :, indicesRefScans);
+			% 				data		= squeezedData(:, :, indicesAverages);
+			% 			else
+			% 				error('Set dimension in data array not last data dimension! indSet = %d \t sqz_ndims = %d', indSet, sqz_ndims);
+			% 			end		% End of if indSet == sqz_ndims
 			
 			% Update information about data objects
+			% (correct, if indSet has NOT changed in squeezed data object)
 			sqzSize(indSet)		= sqzSize(indSet) - noRefScans;
 		else
 			% No reference scans, data only includes averages
 			data	= squeezedData;
-		end		% End of if noRefScans > 0	
-	else
-		data=dOut.data;
+		end		% End of if noRefScans > 0
+		% CBF: If this is a eja MRS sequence, i.e. from Minnesota (isMinn) determine
+		% relevant # of columns in the data and only pass on these columns as data object
+		% (In eja_svs sequences some additional samples before the echo (peak of FID) and
+		% at end of FID are acquired to avoid digital filtering effects; these samples can
+		% be discarded, their actual number depends on sequence parameter settings and TE)
+	else if isMinn
+			% Find index of col dimension within cell array of dimensions and use this
+			% index into array of sizes of dimensions assuming that only sizes of
+			% non-singleton dimensions are stored in array of sizes of dimensions
+			indCol	=  contains(sqzDims,'Col');
+			
+			% Squeeze data in twix object for easier processing
+			squeezedData	= squeeze(dOut.data);
+			%sqz_ndims		= ndims(squeezeData);
+			
+			% According to Eddie Auerbach, the author of eja_svs sequences,
+			% "MDH header parameters, but the one you need to look for is 
+			% KSpaceCenterColumn or ushKSpaceCentreColumn. This will tell you the position
+			% of the first true measured point of the FID. ...
+			% There will also be a few points left over at the end, but that number is not
+			% explicitly recorded anywhere. It is simply what is left over once you
+			% discard the initial dummy points and keep the number of expected measured
+			% points (there will typically be 8 left over). Those are meant to pad the end
+			% of the FID and absorb glitches that can appear when removing the 
+			% oversampling (actually it doesn’t really work)"
+			%
+			% In the twix_obj returned by mapVBVD, parameters kspaceCenterColumn are all 
+			% empty ([]), but the parameter array twix_obj.image.centerCol seems to store 
+			% the first real/relevant point of each FID/average (same value for all 
+			% averages)
+			indFID_first		= twix_obj.image.centerCol(1);
+			% Calculate index of last real/relevant point of FID using the index of the 
+			% first real/relavant point of FID and the expected vector size including 
+			% oversampling (subtract 1 to obtain correct vector size (length) of FID)
+			if isfield(twix_obj.hdr.Meas, 'ReadoutOSFactor')
+				indFID_last			= indFID_first + ...
+					(twix_obj.hdr.Meas.lVectorSize*twix_obj.hdr.Meas.ReadoutOSFactor) - 1;
+			else
+				% No oversampling (sometimes OS factor then not a field in header)
+				indFID_last			= indFID_first + twix_obj.hdr.Meas.lVectorSize - 1;
+			end		% End of if exist(twix_obj.hdr.Meas.ReadoutOSFactor)
+			
+			% Extract real/relevant samples of all FIDs into data object
+			% Determine indices of samples to be extracted
+			indicesFID	= [indFID_first:indFID_last];
+			
+			% Use substruct indexing to extract selected data independent of # of
+			% dimensions of squeezed data object
+			% NOTE: For this to work, 'indCol' must also refer to 'Col' dimension in 
+			% squeezed data object (array)
+			% Define indexing structure for squeezed data object (array)
+			% S.type is character vector or string scalar containing (), {}, or .,
+			% specifying the subscript type; here it is '()' that is used for indexing
+			% S.subs is cell array, character vector, or string scalar containing the
+			% actual subscripts; here it is cell array of {':'} for each data dimension
+			S.type			= '()';
+			S.subs			= repmat({':'}, 1, ndims(squeezedData));
+			
+			% Select subscripts (indices) in 'Col' dimension of squezzed data object
+			% for real/relevant points of all FIDs
+			S.subs{indCol}	= indicesFID;
+			data			= subsref(squeezedData, S);
+			
+			% Update information about data objects
+			% (correct, if indCol has NOT changed in squeezed data object)
+			% (here it could also be set to (Vector Size * OversamplingFactor))
+			new_data_size		= size(data);
+			sqzSize(indCol)		= new_data_size(indCol);
+			
+			% Indicate that data (FIDs) have already been left shifted
+			bLeftshifted	= 1;
+		else
+			data=dOut.data;
+		end		% End of else if isMinn
 	end		% End of else if isSVSdkdseq
-end
+end		% End of if isSpecial ||... %Catches Ralf Mekle's and CIBM version of the SPECIAL sequence
 
 
 %Squeeze the data to remove singleton dims
@@ -386,7 +462,7 @@ elseif length(sqzDims)==4
     elseif dims.averages==0
 		dimorder = [dims.t dims.coils dims.subSpecs dims.extras];
         fids=permute(fids,[dims.t dims.coils dims.subSpecs dims.extras]);
-        dims.t=1;dims.coils=2;dims;averages=0;dims.subSpecs=3;dims.extras=4;
+        dims.t=1;dims.coils=2;dims;averages=0;dims.subSpecs=3;dims.extras=4;twix_obj.image.centerCol
     elseif dims.coils==0
 		dimorder = [dims.t dims.averages dims.subSpecs dims.extras];
         fids=permute(fids,[dims.t dims.averages dims.subSpecs dims.extras]);
@@ -512,6 +588,13 @@ elseif isMinn || isSVSdkdseq
 	end
 else
     leftshift = twix_obj.image.freeParam(1);
+end
+
+% CBF Indicate for eja_svs sequences (isMinn) that left shift of data was already
+% performed to extract real/relevant points of all FIDs
+% (to avoid that a left shift is also incorrectly applied outside of this routine)
+if isMinn && bLeftshifted
+	leftshift = 0;
 end
 
 %****************************************************************
