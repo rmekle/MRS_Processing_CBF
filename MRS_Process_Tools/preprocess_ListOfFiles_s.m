@@ -26,7 +26,7 @@ disp(sMsg_newLines);
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '7T_KCL';		% '3T_Trauma';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'PCC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
