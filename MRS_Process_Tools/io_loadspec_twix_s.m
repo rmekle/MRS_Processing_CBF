@@ -592,7 +592,7 @@ end
 
 % CBF Indicate for eja_svs sequences (isMinn) that left shift of data was already
 % performed to extract real/relevant points of all FIDs
-% (to avoid that a left shift is also incorrectly applied outside of this routine)
+% (to avoid that a left shift is incorrectly applied once more outside of this routine)
 if isMinn && bLeftshifted
 	leftshift = 0;
 end
