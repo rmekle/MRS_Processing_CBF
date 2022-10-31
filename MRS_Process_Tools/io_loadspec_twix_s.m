@@ -236,7 +236,32 @@ else if isSVSdkdseq
 			% empty ([]), but the parameter array twix_obj.image.centerCol seems to store 
 			% the first real/relevant point of each FID/average (same value for all 
 			% averages)
-			indFID_first		= twix_obj.image.centerCol(1);
+			%
+			%indFID_first		= twix_obj.image.centerCol(1);
+			%indFID_first		= (twix_obj.image.centerCol(1)*twix_obj.hdr.Meas.ReadoutOSFactor) - 1;
+			%indFID_first		= (twix_obj.image.centerCol(1)*twix_obj.hdr.Meas.ReadoutOSFactor);
+			%indFID_first		= 1;
+			%
+			% Actually, using twix_obj.image.centerCol(...) did not seem to result in
+			% proper reading of these data; following the Python-based suspect package 
+			% from Benny Rowland, the # of points to left shift (in iceParam) is used as 
+			% offset for reading the FID, and an additional # of dummy points that might
+			% have been acquired before the first point of the FID is obtained from the 
+			% parameter .freeParam from struct twix_obj.image
+			% (the latter is inferred from the suspect code, but not yet fully verified!)
+			% +1 is added for the index, since Matalb indexing starts at 1
+			FID_offset			= twix_obj.image.iceParam(5,1);
+			num_dummy_points	= twix_obj.image.freeParam(1,1);
+			indFID_first		= FID_offset + num_dummy_points + 1;
+			
+			%% If # of dummy points is non-zero, indicate this
+			%if num_dummy_points ~= 0
+				% Display info
+				disp(sMsg_newLine);
+				fprintf('%s: Sequence isMinn = %d \t FID_offset = %d \t num_dummy_points = %d \t indFID_first = %d', sFunctionName, isMinn, FID_offset, num_dummy_points, indFID_first);
+				disp(sMsg_newLines);
+			%end
+			
 			% Calculate index of last real/relevant point of FID using the index of the 
 			% first real/relavant point of FID and the expected vector size including 
 			% oversampling (subtract 1 to obtain correct vector size (length) of FID)
