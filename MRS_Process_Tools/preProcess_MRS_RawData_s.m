@@ -895,7 +895,7 @@ switch seqType
 				box off;
 				legend('Frequency Drift','Location','SouthEast');
 				legend boxoff;
-				title('Estimated Freqeuncy Drift','FontSize',12);
+				title('Estimated Frequency Drift','FontSize',12);
 				set(h6,'PaperUnits','centimeters');
 				set(h6,'PaperPosition',[0 0 10 10]);
 				%saveas(h6,[outDirString nameSpec '/report/figs/freqDriftFig'],'jpg');
