@@ -249,7 +249,7 @@ else if isSVSdkdseq
 			% have been acquired before the first point of the FID is obtained from the 
 			% parameter .freeParam from struct twix_obj.image
 			% (the latter is inferred from the suspect code, but not yet fully verified!)
-			% +1 is added for the index, since Matalb indexing starts at 1
+			% +1 is added for the index, since Matlab indexing starts at 1
 			FID_offset			= twix_obj.image.iceParam(5,1);
 			num_dummy_points	= twix_obj.image.freeParam(1,1);
 			indFID_first		= FID_offset + num_dummy_points + 1;
