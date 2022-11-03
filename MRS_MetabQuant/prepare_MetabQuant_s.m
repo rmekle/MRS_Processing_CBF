@@ -42,7 +42,10 @@ bECC_In					= 0;
 % plotSwitch_In			= 0;
 % reportSwitch_In			= 1;
 % Additional input parameters specific to this routine
+% 'bCopyFiles' used to turn on/off any copying of files (mostly used for debugging)
 bCopyFiles				= 1;
+bCopyFiles_MRS			= 1;
+bCopyFiles_ref_Quant	= 0;
 bCopyFiles_ref_ECC		= 0;
 bCopyFiles_w			= 1;
 bWriteFilenames			= 1;
@@ -321,25 +324,29 @@ switch seqType_MRS
 		indexStart		= 1;
 		indexStep		= 1;
 		if bCopyFiles
-			% Copy (processed) MR spectra files
-			for ind=indexStart : indexStep : noEntriesListing_MRS
-				% Copy MR spectra file
-				[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_MRS(ind).name), outDirString_LCM);
-				if ~status
-					disp(msg);
-					error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_MRS(ind).name, outDirString_LCM);
+			% Copy (processed) MR spectra files, if selected
+			if bCopyFiles_MRS
+				for ind=indexStart : indexStep : noEntriesListing_MRS
+					% Copy MR spectra file
+					[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_MRS(ind).name), outDirString_LCM);
+					if ~status
+						disp(msg);
+						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_MRS(ind).name, outDirString_LCM);
+					end
 				end
-			end
+			end		% End of if bCopyFiles_MRS
 			
-			% Copy (processed) water reference files quantification (Quant)
-			for ind=indexStart : indexStep : noEntriesListing_ref_Quant
-				% Copy water reference file quantification (Quant)
-				[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_ref_Quant(ind).name), outDirString_LCM);
-				if ~status
-					disp(msg);
-					error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_ref_Quant(ind).name, outDirString_LCM);
+			% Copy (processed) water reference files quantification (Quant), if selected
+			if bCopyFiles_ref_Quant
+				for ind=indexStart : indexStep : noEntriesListing_ref_Quant
+					% Copy water reference file quantification (Quant)
+					[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_ref_Quant(ind).name), outDirString_LCM);
+					if ~status
+						disp(msg);
+						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_ref_Quant(ind).name, outDirString_LCM);
+					end
 				end
-			end
+			end		% End of if bCopyFiles_ref_Quant
 			
 			% Copy (processed) water reference files for ECC, if selected
 			if bCopyFiles_ref_ECC
@@ -374,60 +381,68 @@ switch seqType_MRS
 		istep		= 1;
 		if bWriteFilenames
 			% Filenames of (processed) MR spectra files
-			fid_MRS			= fopen(fullfile(outDirString_LCM, textFileName_MRS), 'wt+');
-			if fid_MRS == -1
-				error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_MRS, outDirString_LCM);
-			end
-			for i=istart : istep : (noEntriesListing_MRS-1)
-				nbytes	= fprintf(fid_MRS, '%s\n', structFileListing_MRS(i).name);
-			end
-			% Write last filename without new line character at end of line to textfile
-			nbytes	= fprintf(fid_MRS, '%s', structFileListing_MRS(noEntriesListing_MRS).name);
-			if fclose(fid_MRS) == -1
-				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_MRS, outDirString_LCM);
-			end
+			if bCopyFiles_MRS
+				fid_MRS			= fopen(fullfile(outDirString_LCM, textFileName_MRS), 'wt+');
+				if fid_MRS == -1
+					error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_MRS, outDirString_LCM);
+				end
+				for i=istart : istep : (noEntriesListing_MRS-1)
+					nbytes	= fprintf(fid_MRS, '%s\n', structFileListing_MRS(i).name);
+				end
+				% Write last filename without new line character at end of line to textfile
+				nbytes	= fprintf(fid_MRS, '%s', structFileListing_MRS(noEntriesListing_MRS).name);
+				if fclose(fid_MRS) == -1
+					error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_MRS, outDirString_LCM);
+				end
+			end		% End of if bCopyFiles_MRS
 			
 			% Filenames of (processed) water reference files for quantification (Quant)
-			fid_ref_Quant	= fopen(fullfile(outDirString_LCM, textFileName_ref_Quant), 'wt+');
-			if fid_ref_Quant == -1
-				error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_Quant, outDirString_LCM);
-			end
-			for i=istart : istep : (noEntriesListing_ref_Quant-1)
-				nbytes	= fprintf(fid_ref_Quant, '%s\n', structFileListing_ref_Quant(i).name);
-			end
-			% Write last filename without new line character at end of line to textfile
-			nbytes	= fprintf(fid_ref_Quant, '%s', structFileListing_ref_Quant(noEntriesListing_ref_Quant).name);
-			if fclose(fid_ref_Quant) == -1
-				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_Quant, outDirString_LCM);
-			end
+			if bCopyFiles_ref_Quant
+				fid_ref_Quant	= fopen(fullfile(outDirString_LCM, textFileName_ref_Quant), 'wt+');
+				if fid_ref_Quant == -1
+					error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_Quant, outDirString_LCM);
+				end
+				for i=istart : istep : (noEntriesListing_ref_Quant-1)
+					nbytes	= fprintf(fid_ref_Quant, '%s\n', structFileListing_ref_Quant(i).name);
+				end
+				% Write last filename without new line character at end of line to textfile
+				nbytes	= fprintf(fid_ref_Quant, '%s', structFileListing_ref_Quant(noEntriesListing_ref_Quant).name);
+				if fclose(fid_ref_Quant) == -1
+					error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_Quant, outDirString_LCM);
+				end
+			end		% End of if bCopyFiles_ref_Quant
 			
 			% Filenames of (processed) water reference files for ECC
-			fid_ref_ECC		= fopen(fullfile(outDirString_LCM, textFileName_ref_ECC), 'wt+');
-			if fid_ref_ECC == -1
-				error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString_LCM);
-			end
-			for i=istart : istep : (noEntriesListing_ref_ECC-1)
-				nbytes	= fprintf(fid_ref_ECC, '%s\n', structFileListing_ref_ECC(i).name);
-			end
-			% Write last filename without new line character at end of line to textfile
-			nbytes	= fprintf(fid_ref_ECC, '%s', structFileListing_ref_ECC(noEntriesListing_ref_ECC).name);
-			if fclose(fid_ref_ECC) == -1
-				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString_LCM);
-			end
+			if bCopyFiles_ref_ECC
+				fid_ref_ECC		= fopen(fullfile(outDirString_LCM, textFileName_ref_ECC), 'wt+');
+				if fid_ref_ECC == -1
+					error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString_LCM);
+				end
+				for i=istart : istep : (noEntriesListing_ref_ECC-1)
+					nbytes	= fprintf(fid_ref_ECC, '%s\n', structFileListing_ref_ECC(i).name);
+				end
+				% Write last filename without new line character at end of line to textfile
+				nbytes	= fprintf(fid_ref_ECC, '%s', structFileListing_ref_ECC(noEntriesListing_ref_ECC).name);
+				if fclose(fid_ref_ECC) == -1
+					error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_ref_ECC, outDirString_LCM);
+				end
+			end		% End of if bCopyFiles_ref_ECC
 			
 			% Filenames of (processed) unsuppressed water files
-			fid_w			= fopen(fullfile(outDirString_LCM, textFileName_w), 'wt+');
-			if fid_w == -1
-				error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_w, outDirString_LCM);
-			end
-			for i=istart : istep : (noEntriesListing_w-1)
-				nbytes	= fprintf(fid_w, '%s\n', structFileListing_w(i).name);
-			end
-			% Write last filename without new line character at end of line to textfile
-			nbytes	= fprintf(fid_w, '%s', structFileListing_w(noEntriesListing_w).name);
-			if fclose(fid_w) == -1
-				error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_w, outDirString_LCM);
-			end
+			if bCopyFiles_w
+				fid_w			= fopen(fullfile(outDirString_LCM, textFileName_w), 'wt+');
+				if fid_w == -1
+					error('%s: Could not open textfile %s in output directory %s!\n', sFunctionName, textFileName_w, outDirString_LCM);
+				end
+				for i=istart : istep : (noEntriesListing_w-1)
+					nbytes	= fprintf(fid_w, '%s\n', structFileListing_w(i).name);
+				end
+				% Write last filename without new line character at end of line to textfile
+				nbytes	= fprintf(fid_w, '%s', structFileListing_w(noEntriesListing_w).name);
+				if fclose(fid_w) == -1
+					error('%s: Could not close textfile %s in output directory %s!\n', sFunctionName, textFileName_w, outDirString_LCM);
+				end
+			end		% End of if bCopyFiles_w
 			
 		end		% End of if bWriteFilenames
 		
