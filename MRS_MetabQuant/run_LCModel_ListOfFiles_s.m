@@ -48,11 +48,11 @@ bECC_In					= 0;
 % Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
 strTissue				= 'HC';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
-strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 b0nratio				= 1;
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
-charWaterScaling		= 'No';		% 'Yes';	'No';
+charWaterScaling		= 'Yes';		% 'Yes';	'No';
 strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 % Set parameters for copying results from .csv file into formatted Excel file
 bCopyIntoExcel			= 1;
@@ -376,7 +376,7 @@ if not(isfolder(outDir))
     if ~mkdir(outDir)
 		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outDir);
 	end
-end
+end		% End of if not(isfolder(outDir))
 
 
 %% Select additional parameters for LCModel analysis or processing options 
@@ -594,8 +594,7 @@ noMet					= 0;
 if( noFiles_table > 0 )
 	
 	% Determine # of metabolites from contents of first .table file
-	charTmp		= fullfile(outDir, listFiles_table(1).name);
-	
+	charTmp		= fullfile(outDir, listFiles_table(1).name);	
 	txt			= fileread( charTmp );
 	
 	% Check whether .table file contains any information about concentrations of 
@@ -632,7 +631,7 @@ if( noFiles_table > 0 )
 		
 		% Close .table file
 		status_table	= fclose(fid_table);
-	end
+	end			% End of for inr=1 : 1 : noFiles_table
 
 	% Write metabolite quantification results from all .table files to new .csv file in
 	% text mode
@@ -650,8 +649,8 @@ if( noFiles_table > 0 )
 	for im=1: 1 : noMet
 		for ic=1 : 1 : noTypesMetabConc
 			nbytes	= fprintf(fid_all, '  %s   \t',mydata{1}{4}{im});
-		end
-	end
+		end				% End of for ic=1 : 1 : noTypesMetabConc
+	end			% End of for im=1: 1 : noMet
 	nbytes		= fprintf(fid_all, '\n');
 	
 	% Write concentration values and CRLBs/%SD from all .table files into new .csv file
@@ -693,9 +692,9 @@ if( noFiles_table > 0 )
 					faverage(selectedTypesMetabConc(ic),(im),(inr)) = 0;
 				end
 			end		
-		end
+		end			% End of if ~isempty(listMet_tableFile) && noMet_tableFile == noMet
 		nbytes		= fprintf(fid_all, '\n');
-	end
+	end			% End of for inr=1 : 1 : noFiles_table
 	
 	% Insert blank line into new .csv file using the same tab format as for the metabolite
 	% concentrations, which makes it later easy to read in the new .csv file into Excel
