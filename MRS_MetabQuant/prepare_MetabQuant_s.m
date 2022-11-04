@@ -19,7 +19,7 @@ sMsg_newLines		= sprintf('\n\n');
 %disp(sMsg_newLines);
 
 
-%% Init input parameters for preprocessing routine
+%% Init input parameters for preparing metabolite quantification
 %dirString_Out			= '';
 %dirString_Out			= '';
 filename_In				= '';
