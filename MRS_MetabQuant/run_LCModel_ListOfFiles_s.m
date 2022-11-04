@@ -176,7 +176,7 @@ switch seqType_MRS
 						
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
-				end		% End of switch strTissue			
+				end				% End of switch strTissue			
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirBasis_Add1					= 'Basis_Sets_Gosia/Basis_sLASER/';
@@ -226,11 +226,11 @@ switch seqType_MRS
 						
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
-				end		% End of switch strTissue
+				end				% End of switch strTissue
 				
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end
+		end			% End of switch strStudy
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
@@ -287,13 +287,27 @@ switch seqType_MRS
 			%fullFilename_listOfFiles_MRS_w	= [dirData, 'list_filenames_MRS_editOFF_Water.txt'];
 		end		% End of if strcmp(strAnalysisData, 'MRS_diff')
 	case 'sLASER'
-		% Select directories for (input) data files and for output data depending on # of
-		% SDs and other options used for pre-processing of MR spectra and on settings for 
-		% LCModel analysis
+		% Select directories for (input) data files and for output data depending on
+		% study, # of SDs and other options used for pre-processing of MR spectra and 
+		% on settings for LCModel analysis
 		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-		dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-		dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 		dirData_AddOn2		= '';
+		switch strStudy
+			case '3T_Trauma'
+				% svs_dkd_slaser with TE = 23 ms
+				dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+				dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+				%dirData_AddOn2		= '';
+			case '7T_KCL'
+				% eja_svs_slaser with TE = 40 ms
+				dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
+				dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+				%dirData_AddOn2		= '';
+				
+			otherwise
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+		end			% End of switch strStudy
+		
 		if bECC_In
 			% Use reference (water) signals for ECC, if acquired
 			% If not, then use an unsuppressed water signal, if acquired
@@ -346,7 +360,7 @@ switch seqType_MRS
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end
+end		% End of switch seqType_MRS
 
 % Check whether directories for data or results exist
 % If directory for data does not exist or is empty, return with error
@@ -425,7 +439,7 @@ else
 		% Close original control file
 		status_control	= fclose(fid_control);
 	end
-end
+end		% End of if( fid_control == -1 )
 
 % Specify basis file as input in new control file
 % (this file is the same for the set of MR spectra to be analyzed)
@@ -757,7 +771,7 @@ if( noFiles_table > 0 )
 			
 		otherwise
 			error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-	end
+	end			% End of switch seqType_MRS
 
 	% Save/copy results from .csv file also into (formatted) Excel file, if selected
 	if bCopyIntoExcel
