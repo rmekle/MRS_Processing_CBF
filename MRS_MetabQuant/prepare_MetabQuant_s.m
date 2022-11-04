@@ -32,6 +32,7 @@ dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
 % strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
 % leftshift_In			= 0;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
+digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 % strMinUserIn_In			= 'y';
 % aaDomain_In				= 'f';			% 'f';		% 't';
 % tmaxin_In				= 0.2;
@@ -41,6 +42,7 @@ bECC_In					= 0;
 % bPhaseCorrFreqShift_In	= 0;
 % plotSwitch_In			= 0;
 % reportSwitch_In			= 1;
+
 % Additional input parameters specific to this routine
 % 'bCopyFiles' used to turn on/off any copying of files (mostly used for debugging)
 bCopyFiles				= 1;
@@ -50,7 +52,8 @@ bCopyFiles_ref_ECC		= 0;
 bCopyFiles_w			= 1;
 bWriteFilenames			= 1;
 
-% Set (additional) parameters depending on sequence type
+
+%% Set (additional) parameters depending on sequence type
 % 'dirString_Out' inidcates output directories from preprocessing of MR spectra
 % Using 'dirString_Out' instead of 'dirString_Out' allows to use same code for generating
 % directory names as in routine preprocess_ListOfFiles_s.m
@@ -86,7 +89,7 @@ switch seqType_MRS
 	case 'sLASER'
 		% Select directory for input data depending on study, on # of SDs, and other 
 		% options used for pre-processing of MR spectra
-		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];	
+		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];	
 		switch strStudy
 			case '3T_Trauma'
 				% Output data directory for preprocessing
