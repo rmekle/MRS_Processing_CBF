@@ -47,7 +47,7 @@ bECC_In					= 0;
 
 % Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'PCG';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
+strTissue				= 'HC';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
 strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 b0nratio				= 1;
 % Indicate whether water scaling is used
@@ -58,22 +58,24 @@ strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 bCopyIntoExcel			= 1;
 
 
-
 %% Select basis set and control file for LCModel analysis depending on sequence type
 % Init directory for control files and string(s) for output directory addition(s)
-dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
+dirBasis_base					= '/home/mekler/.lcmodel/basis-sets/';
+dirBasis_Add1					= '';
+dirControl_base					= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
+dirControl_Add1					= '';
 outDir_AddControl				= '';
 switch seqType_MRS
 	case 'SPECIAL'
 		% For 3T Potsdam pain study and SPECIAL
-		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
+		dirBasis_Add1					= 'Basis_Sets_Ralf/Basis_SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
 		LCM_Basis						= '3T_sim_TE8-5_mac_ac.basis';
-		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/Other/';
+		dirControl_Add1					= 'Other/';
 		LCM_Control						= '3T_RAW_mac_shortTE_ACC_water_nratio0';
 		%LCM_Control						= '3T_RAW_mac_shortTE_ACC_water';	
 	case 'MEGA-PRESS'
 		% Control files for MEGA-PRESS
-		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/LCM_Control_MEGA-PRESS/';
+		dirControl_Add1					= 'LCM_Control_MEGA-PRESS/';
 		% For 3T BCAN Dopamin study and MEGA-PRESS depending on type of data (spectra) 
 		% used for analysis
 		if strcmp(strAnalysisData, 'MRS_diff')
@@ -88,7 +90,7 @@ switch seqType_MRS
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method2';
 			
 			% Basis sets and control files for MM-suppressed (symmetric) editing
-			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_JimMurdoch/';
+			dirBasis_Add1					= 'Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_JimMurdoch/';
 			LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
@@ -123,7 +125,7 @@ switch seqType_MRS
 		else
 			% MRS_editOFF
 			% Basis sets and control files for water-symmetric editing
-			dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_PurdueU/';
+			dirBasis_Add1					= 'Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_PurdueU/';
 			LCM_Basis						= '3t_IU_MP_te68_748_ppm_inv_Edit-Off.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0_noECC';
 			LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0';
@@ -148,30 +150,87 @@ switch seqType_MRS
 			outDir_AddControl			= ['DOPA_LCM_', LCM_Control];
 		end
 	case 'sLASER'
-		% TE = 23 ms
-		dirBasis						= '/home/mekler/.lcmodel/basis-sets/Basis_Sets_DineshKD/Basis_sLASER/';
-		LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
-		dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/LCM_Control_sLASER_dkd_TE23/';
-		switch strTissue
-			case 'GM'
-				LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
-			case 'HC'
-				%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-				LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
-			case 'PCG'
-				%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
-				LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
-				%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-				
+		% Select basis and control files depending on study, tissue type, and other 
+		% options 
+		switch strStudy
+			case '3T_Trauma'
+				% svs_dkd_slaser with TE = 23 ms
+				dirBasis_Add1					= 'Basis_Sets_DineshKD/Basis_sLASER/';
+				LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
+				dirControl_Add1					= 'LCM_Control_sLASER_dkd_TE23/';
+				switch strTissue
+					case 'GM'
+						LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
+					case 'HC'
+						%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+						LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
+					case 'PCG'
+						%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
+						LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+						
+					otherwise
+						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+				end		% End of switch strTissue			
+			case '7T_KCL'
+				% eja_svs_slaser with TE = 40 ms
+				dirBasis_Add1					= 'Basis_Sets_Gosia/Basis_sLASER/';
+				LCM_Basis						= 'basis_sLASER_7T_TE=35.BASIS';
+				dirControl_Add1					= 'LCM_Control_sLASER_eja_TE40/';
+				switch strTissue
+					case 'CB'
+						if bECC_In == 1
+							% ECC included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_CB_water_nratio0_noECC_mac';
+						else
+							% ECC not included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_CB_water_nratio0_mac';
+						end		% End of if bECC_In == 1
+					case 'HC'
+						if bECC_In == 1
+							% ECC included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_HC_water_nratio0_noECC_mac';
+						else
+							% ECC not included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_HC_water_nratio0_mac';
+						end		% End of if bECC_In == 1
+					case 'PCC'
+						if bECC_In == 1
+							% ECC included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_PCC_water_nratio0_noECC_mac';
+						else
+							% ECC not included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_PCC_water_nratio0_mac';
+						end		% End of if bECC_In == 1
+					case 'PFC'
+						if bECC_In == 1
+							% ECC included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_PFC_water_nratio0_noECC_mac';
+						else
+							% ECC not included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_PFC_water_nratio0_mac';
+						end		% End of if bECC_In == 1
+					case 'Pons'
+						if bECC_In == 1
+							% ECC included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_Pons_water_nratio0_noECC_mac';
+						else
+							% ECC not included in preprocessing
+							LCM_Control					= '7T_RAW8192_sLASER_eja_TE40_Pons_water_nratio0_mac';
+						end		% End of if bECC_In == 1
+						
+					otherwise
+						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+				end		% End of switch strTissue
 				
 			otherwise
-				error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
-		end		% End of switch strTissue
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+		end
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
@@ -179,6 +238,8 @@ end		% End of switch seqType_MRS
 
 % Sequence independent settings
 %dirControl						= '/home/mekler/.lcmodel/profiles/ralf/control-defaults/';
+dirBasis						= [dirBasis_base, dirBasis_Add1];
+dirControl						= [dirControl_base, dirControl_Add1];
 fullFileName_LCM_Basis			= [dirBasis, LCM_Basis];
 fullFileName_LCM_Control		= [dirControl, LCM_Control];
 %fullFileName_LCM_Control_New	= [outDir, LCM_Control, '_template.control'];
@@ -229,7 +290,7 @@ switch seqType_MRS
 		% Select directories for (input) data files and for output data depending on # of
 		% SDs and other options used for pre-processing of MR spectra and on settings for 
 		% LCModel analysis
-		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
 		dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 		dirData_AddOn2		= '';
