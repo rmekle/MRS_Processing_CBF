@@ -21,23 +21,32 @@ sMsg_newLine		= sprintf('\n');
 disp(sMsg_newLines);
 
 
-%% Init parameter settings
-charVecSaveWorkspace	= 'y';
-strVOI					= 'PCG';			% 'HC';		% 'PCG';
-seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w';		% 'mrs';		% 'mrs_w';	% 'mrs_w_ref;		
-%										% 'mrs_ref';	% 'water';	% 'water_ref';
-% strOVS_In				= 'wOVS';
-% strOVS_w_In				= 'wOVS';
+%% Init parameter settings for running LCModel analysis
+%dirString_Out			= '';
+%dirString_Out			= '';
+filename_In				= '';
+filename_w_In			= '';
+strStudy				= '7T_KCL';		% '3T_Trauma';
+strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
+% strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+% strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
+% leftshift_In			= 0;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
 % strMinUserIn_In			= 'y';
-% aaDomain_In				= 'f';
+% aaDomain_In				= 'f';			% 'f';		% 't';
 % tmaxin_In				= 0.2;
 % iterin_In				= 20;
 % alignSS_In				= 2;
-bECC_In					= 1;
+bECC_In					= 0;
+% bPhaseCorrFreqShift_In	= 0;
+% plotSwitch_In			= 0;
+% reportSwitch_In			= 1;
+
+% Additional input parameters specific to this routine
+str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
 strTissue				= 'PCG';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
 strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 b0nratio				= 1;
@@ -84,16 +93,29 @@ switch seqType_MRS
 			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK06';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK50';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41_DK06';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config3_185to41_mega-press-3';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config3_185to41_mega-press-3_dowsF';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config4_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41_DK06';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config6_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config6_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config6_185to41_DK06';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config6_185to41_DK50';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config7_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config7_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config7_185to41_DK06';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41_DK06';
 			
 			% Set pattern to be searched for in filename of control file to shorten final
 			% name of output directory
@@ -700,6 +722,7 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 %fullFileName_SavedWorkspace		= fullfile(outDir, strcat('3T_', 'LCModel_', LCM_Basis, '_', LCM_Control, '_', dt, '.mat'));
 fullFileName_SavedWorkspace		= fullfile(outDir, [FileName_all '_' dt '.mat']);
 %charVecSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
+charVecSaveWorkspace	= 'y';
 if strcmp(charVecSaveWorkspace,'y') || strcmp(charVecSaveWorkspace,'Y')
 	save(fullFileName_SavedWorkspace);
 end
