@@ -79,7 +79,7 @@ switch seqType_MRS
 			
 			otherwise
 				error('%s: ERROR: No directory/data for noSD_In =  %f!', sFunctionName, noSD_In);
-		end
+		end			% End of switch(noSD_In)
 		outDirString_LCM		= [dirString_Out, 'DOPA_LCModel_Analysis_Data/'];
 		%outDirString_LCM_w		= [outDirString_LCM, 'Water_Signals/'];
 		textFileName_diff_MRS	= 'list_filenames_MRS_Diff_Spectra.txt';
@@ -100,7 +100,7 @@ switch seqType_MRS
 							
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end
+		end			% End of switch strStudy
 		
 		% Complete output data directory name for preprocessing
 		dirString_Out_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
@@ -144,7 +144,7 @@ switch seqType_MRS
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end
+end		% End of switch seqType_MRS
 
 % If output directories for file copying do not exist, create them
 if not(isfolder(outDirString_LCM))
@@ -451,7 +451,7 @@ switch seqType_MRS
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end
+end		% End of switch seqType_MRS
 
 
 %% Save variables of workspace to file
