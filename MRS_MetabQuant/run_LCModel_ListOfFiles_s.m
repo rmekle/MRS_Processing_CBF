@@ -735,7 +735,7 @@ if( noFiles_table > 0 )
 	% saving/copying final table of results into (formatted) Excel file
 	switch seqType_MRS
 		case 'SPECIAL'
-			disp('NOT YET COMPLETED ...');
+			fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', seqType_MRS);
 			bCopyIntoExcel			= 0;
 		case 'MEGA-PRESS'
 			% Insert selected # of columns for additional parameters, e.g. water linewidth (LW_H2O),
@@ -765,7 +765,7 @@ if( noFiles_table > 0 )
 				strRangeSel				= 'A4';
 			end		% End of if strcmp(strAnalysisData, 'MRS_diff')		
 		case 'sLASER'
-			disp('Coming soon ...');
+			fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', seqType_MRS);
 			bCopyIntoExcel			= 0;
 			
 		otherwise
