@@ -1,7 +1,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% preProcess_MRS_RawData_s.m
+% preProcess_MRS_dicomData_s.m
 %
 %% Function to preprocess single volume magnetic resonance spectroscopy (MRS) data
 %  using functions from the MRS processing toolkit FID-A
@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,bPhaseCorrFreqShift,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_dicomData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,bPhaseCorrFreqShift,plotSwitch,strMinUserIn,reportSwitch);
 % 
 % DESCRIPTION:
 % Function for processing Siemens MRS data in .dat format (twix raw data) 
@@ -89,14 +89,14 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,bPhaseCorrFreqShift,plotSwitch,strMinUserIn,reportSwitch)
+function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_dicomData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,bPhaseCorrFreqShift,plotSwitch,strMinUserIn,reportSwitch)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
 % close all;
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
-sFunctionName		= 'preProcess_MRS_RawData_s.m';
+sFunctionName		= 'preProcess_MRS_dicomData_s.m';
 sMsg_newLines		= sprintf('\n\n');
 sMsg_newLine		= sprintf('\n');
 disp(sMsg_newLines);
