@@ -12,11 +12,12 @@
 % [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,options)
 % 
 % DESCRIPTION:
-% Function for processing Siemens MRS data in .dat format (twix raw data) and in .IMA
+% Function for processing Siemens MRS data in .dat format (twix raw data) or in .IMA
 % format (DICOM data)
 % using functions from the MRS processing toolkit FID-A
-% Includes combination of receiver channels (if required), removal of bad averages, 
-% frequency drift correction, phase and frequency correction.
+% Includes combination of receiver coil channels (if required), removal of bad averages, 
+% frequency drift correction, averaging, eddy current correction (optional), phase and 
+% frequency correction.
 % 
 % INPUTS:
 % dirString    = String variable for the name of the directory containing
