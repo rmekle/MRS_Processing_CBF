@@ -9,12 +9,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString,outDirString,filename,filename_w,seqType,dataType,strOVS,strOVS_w,leftshift,nSD,aaDomain,tmaxin,iterin,bECC,bPhaseCorrFreqShift,plotSwitch,strMinUserIn,reportSwitch);
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,options)
 % 
 % DESCRIPTION:
-% Function for processing Siemens MRS data in .dat format (twix raw data) 
+% Function for processing Siemens MRS data in .dat format (twix raw data) and in .IMA
+% format (DICOM data)
 % using functions from the MRS processing toolkit FID-A
-% Includes combination of receiver channels, removal of bad averages, 
+% Includes combination of receiver channels (if required), removal of bad averages, 
 % frequency drift correction, phase and frequency correction.
 % 
 % INPUTS:
@@ -109,6 +110,7 @@ function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_EC
 % close all;
 
 %% Parse Arguments
+% FLAG: Modified
 arguments
     dirString       {mustBeText}
     outDirString    {mustBeText}
@@ -166,14 +168,17 @@ disp(sMsg_newLines);
 %% Process names of directories and input filenames and create directory for html report
 % Use filenames for the MRS datasets provided as input arguments
 % NOTE: It is assumed that water suppressed and water unsuppressed data are in same
-% directory! Addendum: Not anymore!
+% directory! Addendum: Not anymore! 
+% For MRS raw data (.dat) assumption should hold
+% For MRS DICOM data (.IMA) each spectrum or water signal is in its own directory
 
-% Ensure that input and output directory string end with file separator, i.e. '/' or '\'
+% Ensure that input and output directory strings end with file separator, i.e. '/' or '\'
 % (Windows handles the Unix '/' just fine)
 if( ~strcmp( dirString(end), filesep ) )
 	dirString	= [dirString, filesep];
 end
 
+% FLAG: Modified
 if(~isempty(dirString_w))
     if( ~strcmp( dirString_w(end), filesep ) )
         dirString_w	= [dirString_w, filesep];
@@ -186,6 +191,7 @@ end
 
 % Obtain different parts of input filenames
 % FLAG: Modified
+% Set flags to indicate whether MRS data is in DICOM format (.IMA) or not
 [sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
 if strcmp(extSpec, '.dat')
     isIMA = 0;
@@ -201,33 +207,50 @@ else
 end
 
 % FLAG: Modified
-    if filename_r ~= ""
-        nameSpec = filename_r;
-        name_w = [filename_r '_w'];
-    else
-        if nameSpec == ""
-            strDate = datestr(datetime(now, 'ConvertFrom', 'datenum'));
-            strDate = strrep(strDate, ' ', '_');
-            strDate = strrep(strDate, ':', '-');
-            nameSpec = strDate;
-        end
-        if name_w == ""
-            strDate = datestr(datetime(now, 'ConvertFrom', 'datenum'));
-            strDate = strrep(strDate, ' ', '_');
-            strDate = strrep(strDate, ':', '-');
-            name_w = [strDate '_w'];
-        end
-    end
+% % Derive filenames for spectrum and water signal from either input filename of report
+% % file or from current date and time
+% % (for MRS DICOM data, since filenames are empty, since directories are provided instead)
+% if filename_r ~= ""
+% 	nameSpec	= filename_r;
+% 	name_w		= [filename_r '_w'];
+% else
+% 	if nameSpec == ""
+% 		strDate		= datestr(datetime(now, 'ConvertFrom', 'datenum'));
+% 		strDate		= strrep(strDate, ' ', '_');
+% 		strDate		= strrep(strDate, ':', '-');
+% 		nameSpec	= strDate;
+% 	end
+% 	if name_w == ""
+% 		strDate		= datestr(datetime(now, 'ConvertFrom', 'datenum'));
+% 		strDate		= strrep(strDate, ' ', '_');
+% 		strDate		= strrep(strDate, ':', '-');
+% 		name_w		= [strDate '_w'];
+% 	end
+% end
+
+% For MRS DICOM data (.IMA)), derive filenames for spectrum and water signal from
+% corresponding sub-directory names
+% Obtain names of sub-directories from splitting corresponding paths into cell arrays
+% (first and last cell of cell array are empty, if directory is of from "/home/.../test/')
+if isIMA
+	%dirParts	= regexp(dirString, filesep, 'split');
+	dirParts	= strsplit(dirString, filesep);
+	nameSpec	= dirParts{length(dirParts)-1};
+end
+
+if isIMA_w
+	%dirParts_w	= regexp(dirString_w, filesep, 'split');
+	dirParts_w	= strsplit(dirString_w, filesep);
+	name_w		= dirParts_w{length(dirParts_w)-1};
+end
 
 % Make a new directory for the output report and figures each, if not already existent,
 % and if desired
 if reportSwitch == 1
 	%mkdir([outDirString nameSpec '/report']);
 	%mkdir([outDirString nameSpec '/report/figs']);
-
     reportDirStr		= [nameSpec '_report/'];
-    reportFigDirStr		= [nameSpec '_report/figs/'];
-	
+    reportFigDirStr		= [nameSpec '_report/figs/'];	
 	if ~exist([outDirString reportDirStr], 'dir' )
 		mkdir([outDirString reportDirStr]);
 	end
@@ -295,9 +318,17 @@ switch dataType
 		out_ref_Quant_noproc	= struct([]);
 	case 'mrs_w'
 		% MR spectrum is provided together with unsuppressed water signal
-		if isempty(filename_w)
-			error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
-		end
+		% FLAG: Modified
+		% Check on filename or directory name depending on MRS data type
+        if(isIMA_w)
+            if isempty(dirString_w)
+                error('%s: Error: Directory name for unsuppresed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+            end
+        else
+            if isempty(filename_w)
+                error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
+            end
+        end
 		disp('Data is MR spectrum with additional unsuppressed water signal ...');
 		with_water				= true;
 		with_ref				= false;
@@ -308,9 +339,11 @@ switch dataType
 	case 'mrs_w_ref'
 		% MR spectrum is provided together with unsuppressed water signal and reference
 		% scans
+		% FLAG: Modified
+		% Check on filename or directory name depending on MRS data type
         if(isIMA_w)
             if isempty(dirString_w)
-                error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
+                error('%s: Error: Directory name for unsuppresed water signal %s is empty!\n\n', sFunctionName, dirString_w);
             end
         else
             if isempty(filename_w)
@@ -374,6 +407,7 @@ disp(sMsg_newLines);
 % Read in the 'main' data together with possibly existing reference scans and, 
 % if available, the additional unsuppressed water signal
 % FLAG: Modified
+% Selects data loading function depending on data type
 %out_raw				= io_loadspec_twix([dirString filename]);
 if(isIMA)
     [out_raw, out_ref_raw]  = io_loadspec_IMA_s(dirString);
@@ -399,10 +433,10 @@ if with_water
 	fprintf('%s: ***WITH ADDITIONAL WATER UNSUPPRESSED DATA***\n', sFunctionName);
     
     % FLAG: Modified
-    % Selects loading function depending on the file type
+    % Selects data loading function depending on data type
     if isIMA_w
         if isempty(dirString_w)
-            error('%s: Error: Name of directory for unsuppresed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+            error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
         end
         out_w_raw		= io_loadspec_IMA_s(dirString_w);
     else
@@ -446,7 +480,7 @@ switch seqType
 		% acquisition slightly earlier)
 		% Specific # of points in this case should be equal to 3 for oversampled raw 
 		% data (.dat on Siemens)
-		% Leftshift MR spectrum and, if existent, als the unsuppresed water signal
+		% Leftshift MR spectrum and, if existent, also the unsuppresed water signal
 		if isSVSdkd_seq
 			%leftshift	= 3;
 			out_raw		= op_leftshift(out_raw, leftshift);
@@ -573,8 +607,8 @@ switch seqType
 		%% Combine signals from different coil elements
         % FLAG: Modified
         
-        % Zeroth step is to look if our data is in .IMA format which is
-        % already combined and can skip over everything here
+        % Zeroth step is to look if our data is in .IMA (DICOM) format which is
+        % usually already combined and can skip over coil combination here
         if ~(isIMA && isIMA_w)
 		    % First step should be to combine coil channels. For this find the coil phases 
 		    % from water unsuppressed data, if available; otherwise from the MR spectra
@@ -751,20 +785,22 @@ switch seqType
 		    end
 		    close(h1);
         else
-            % Move "raw" .IMA data to coilcombined "cc" data as ima files are already coilcombined
-            out_cc = out_raw;
-            out_noproc = op_averaging(out_cc);
+            % Move "raw" .IMA data to coil combined "cc" data as ima files are already 
+			% coil combined
+            out_cc		= out_raw;
+            out_noproc	= op_averaging(out_cc);
             if with_water
-                out_w_cc = out_w_raw;
-                out_w_noproc = op_averaging(out_w_cc);
+                out_w_cc				= out_w_raw;
+                out_w_noproc			= op_averaging(out_w_cc);
             end
             if with_ref
-                out_ref_ECC_cc = out_ref_ECC_raw;
-                out_ref_Quant_cc = out_ref_Quant_raw;
+                out_ref_ECC_cc			= out_ref_ECC_raw;
+                out_ref_Quant_cc		= out_ref_Quant_raw;
 			    out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
 			    out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
             end
-        end
+		end		% End of if ~(isIMA && isIMA_w)
+		
         
 		%% Remove bad averages from MRS data
 		%%%%%%%% OPTIONAL REMOVAL OF BAD AVERAGES FROM DATASET %%%%%%%%%%%%%%%%%%%%
@@ -903,7 +939,8 @@ switch seqType
 				% MR spectrum is provided together without or with unsuppressed water 
 				% signal and/or with reference scans
 				ppmmin_fix		= 1.6;
-				ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+				%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+				ppmmaxarray_fix = [2.4,2.85,3.35,4.2,4.4,5.2];
 				iamax			= 6;
 			case {'water', 'water_ref'}
 				% MR spectrum is water signal itself without or with reference scans
@@ -962,8 +999,10 @@ switch seqType
 					switch aaDomain
 						case 't'
 							[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
+							%[out_aa,fs,phs]		= op_alignAverages(out_rm2);
 						case 'f'
 							[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
+							%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'n');
 						otherwise
 							error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
 					end
@@ -1707,13 +1746,18 @@ switch seqType
 			fprintf(fid2,'\n<p>Data type: %s </p>', dataType);
 			fprintf(fid2,'\n<p>DATE: %s </p>',date);
 			fprintf(fid2,'\n\n<p> </p>');
-
+			
+			% FLAG: Modified
+			% Write info about coil combination into report depending on MRS data type
             if ~(isIMA && isIMA_w)
 			    fprintf(fid2,'\n\n<h2>Results of multi-coil combination:</h2>');
 			    %fprintf(fid2,'\n<img src= " %s%scoilReconFig.jpg " width="800" height="400"></body>', outDirString, reportFigDirStr);
 			    fprintf(fid2,'\n<img src= " %s " width="800" height="400"></body>', fullfile('./figs/', 'coilReconFig.jpg'));
 			    fprintf(fid2,'\n\n<p> </p>');
-            end
+			else
+				fprintf(fid2,'\n\n<h2>Multi-coil combination was not performed, since MRS DICOM data already coil combined.</h2>');
+				fprintf(fid2,'\n\n<p> </p>');
+			end		% End of  if ~(isIMA && isIMA_w)
 			
 			% Write results from removing bad averages into html report, only if step was
 			% actually performed, i.e. it was selected and dimension of averages existed
@@ -1787,3 +1831,5 @@ switch seqType
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 		
 end		% End of switch seqType
+
+
