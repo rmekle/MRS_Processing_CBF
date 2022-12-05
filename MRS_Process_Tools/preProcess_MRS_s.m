@@ -442,9 +442,9 @@ if with_water
         out_w_raw		= io_loadspec_IMA_s(dirString_w);
     else
         if isempty(dirString_w)
-            out_w_raw		= io_loadspec_twix([dirString filename_w]);
+            out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
         else
-            out_w_raw		= io_loadspec_twix([dirString_w filename_w]);
+            out_w_raw		= io_loadspec_twix_s([dirString_w filename_w]);
         end
     end
 	
@@ -909,9 +909,7 @@ switch seqType
 				%fid1=fopen([dirString '/readme.txt'],'w+');
 				%fid1		= fopen([outDirString outFileName '_readme.txt'],'w+');
 				%fid1		= fopen([outDirString reportDirStr 'readme.txt'],'w+');
-                % FLAG: CHANGES
-                % FLAG: ERROR
-                disp([outDirString reportDirStr outFileName '_readme.txt']);
+                %disp([outDirString reportDirStr outFileName '_readme.txt']);
 				fid1		= fopen([outDirString reportDirStr outFileName '_readme.txt'],'w+');
 				fprintf(fid1,'Original number of averages: \t%5.6f',out_raw.sz(out_raw.dims.averages));
 				disp(['Original number of averages:  ' num2str(out_raw.sz(out_raw.dims.averages))]);
