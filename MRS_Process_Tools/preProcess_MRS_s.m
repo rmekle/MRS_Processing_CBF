@@ -125,14 +125,14 @@ arguments
     options.WaterOVS				{mustBeMember(options.WaterOVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
-    options.StandardDeviation       (1,1) double            = 3.2
+    options.noStandardDeviation     (1,1) double            = 3.2
     options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
-    options.DriftCorrectionDuration (1,1) double            = 0.2
-    options.Iterations              (1,1) {mustBeNumeric}   = 20
-    options.ECC                     (1,1) {islogical}       = 0
-    options.PhaseFrequencyCorrection    (1,1) {islogical}    = 0
-    options.ShowPlots               (1,1) {islogical}       = 0
-    options.MinimizeUserInput       {mustBeMember(options.MinimizeUserInput,{'y', 'Y', 'n', 'N'})} = 'y'
+    options.MaxTimeAlignment		(1,1) double            = 0.2
+    options.Iterations				(1,1) {mustBeNumeric}   = 20
+    options.ECC						(1,1) {islogical}       = 0
+    options.PhaseFrequencyCorrection(1,1) {islogical}		= 0
+    options.ShowPlots				(1,1) {islogical}       = 0
+    options.MinimizeUserInput		{mustBeMember(options.MinimizeUserInput,{'y', 'Y', 'n', 'N'})} = 'y'
     options.GenerateReport          (1,1) {islogical}        = 1
 end
 
@@ -149,9 +149,9 @@ end
     else
         leftshift_w = options.WaterLeftshift
     end
-    nSD             = options.StandardDeviation;
+    nSD             = options.noStandardDeviation;
     aaDomain        = options.aaDomain;
-    tmaxin          = options.DriftCorrectionDuration;
+    tmaxin          = options.MaxTimeAlignment;
     iterin          = options.Iterations;
     bECC            = options.ECC;
     bPhaseCorrFreqShift = options.PhaseFrequencyCorrection;
