@@ -51,10 +51,10 @@
 %					'water'		= MR spectrum is unsuppressed water signal itself
 %					'water_ref' = MR spectrum is unsuppressed water signal itself with
 %									reference (water) scans (should be very rare!)
-% strOVS	   = (optional) ['Oversampling'] String that specifies whether MR spectrum acquired 
+% strOVS	   = (optional) ['OVS'] Character array that specifies whether MR spectrum acquired 
 %					 with OVS ('wOVS') or withoutOVS ('woutOVS') is used for processing. 
 %					 Default is 'woutOVS', which means that OVS was not used.
-% strOVS_w	   = (optional) ['OversamplingWater'] String that specifies whether water acquired with OVS ('wOVS')
+% strOVS_w	   = (optional) ['OVSwater'] Character array that specifies whether water acquired with OVS ('wOVS')
 %					 or withoutOVS ('woutOVS') is used for processing.
 %					 Default is 'woutOVS', which means that OVS was not used.
 % leftshift	   = (optional) ['Leftshift'] # of points to leftshift all FIDs, i.e. to remove leading 
@@ -121,8 +121,8 @@ arguments
     options.WaterDirectory          {mustBeText} = '';
     options.WaterFilename           {mustBeText} = '';
     options.ReportFilename          {mustBeText} = '';
-    options.Oversampling            {mustBeMember(options.Oversampling,{'wOVS', 'woutOVS'})} = "woutOVS"
-    options.OversamplingWater       {mustBeMember(options.OversamplingWater,{'wOVS', 'woutOVS'})} = "woutOVS"
+    options.OVS			            {mustBeMember(options.OVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
+    options.OVSwater			    {mustBeMember(options.OVSwater,{'wOVS', 'woutOVS'})} = 'woutOVS'
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
     options.StandardDeviation       (1,1) double            = 3.2
@@ -141,8 +141,8 @@ end
     filename        = options.Filename;
     filename_w      = options.WaterFilename;
     filename_r      = options.ReportFilename;
-    strOVS          = options.Oversampling;
-    strOVS_w        = options.OversamplingWater;
+    strOVS          = options.OVS;
+    strOVS_w        = options.OVSwater;
     leftshift       = options.Leftshift;
     if isnan(options.WaterLeftshift)
         leftshift_w = leftshift;
