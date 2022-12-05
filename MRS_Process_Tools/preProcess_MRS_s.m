@@ -122,7 +122,7 @@ arguments
     options.WaterFilename           {mustBeText} = '';
     options.ReportFilename          {mustBeText} = '';
     options.OVS			            {mustBeMember(options.OVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
-    options.OVSwater			    {mustBeMember(options.OVSwater,{'wOVS', 'woutOVS'})} = 'woutOVS'
+    options.WaterOVS				{mustBeMember(options.WaterOVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
     options.StandardDeviation       (1,1) double            = 3.2
@@ -142,7 +142,7 @@ end
     filename_w      = options.WaterFilename;
     filename_r      = options.ReportFilename;
     strOVS          = options.OVS;
-    strOVS_w        = options.OVSwater;
+    strOVS_w        = options.WaterOVS;
     leftshift       = options.Leftshift;
     if isnan(options.WaterLeftshift)
         leftshift_w = leftshift;
