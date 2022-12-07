@@ -163,7 +163,7 @@ end
 [sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
 
 % Make a new directory for the output report and figures each, if not already existent,
-% and if desrired
+% and if desired
 if reportSwitch == 1
 	%mkdir([outDirString nameSpec '/report']);
 	%mkdir([outDirString nameSpec '/report/figs']);
@@ -772,7 +772,8 @@ switch seqType
 				% MR spectrum is provided together without or with unsuppressed water 
 				% signal and/or with reference scans
 				ppmmin_fix		= 1.6;
-				ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+				%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+				ppmmaxarray_fix = [2.4,2.85,3.35,4.2,4.4,5.2];
 				iamax			= 6;
 			case {'water', 'water_ref'}
 				% MR spectrum is water signal itself without or with reference scans
@@ -831,8 +832,10 @@ switch seqType
 					switch aaDomain
 						case 't'
 							[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
+							%[out_aa,fs,phs]		= op_alignAverages(out_rm2);
 						case 'f'
 							[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
+							%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'n');
 						otherwise
 							error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
 					end
@@ -1653,6 +1656,5 @@ switch seqType
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 		
 end		% End of switch seqType
-
 
 
