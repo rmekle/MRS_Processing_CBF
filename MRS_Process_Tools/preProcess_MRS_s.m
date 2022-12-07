@@ -173,6 +173,18 @@ disp(sMsg_newLines);
 % For MRS raw data (.dat) assumption should hold
 % For MRS DICOM data (.IMA) each spectrum or water signal is in its own directory
 
+% Ensure that input and output directory names are not empty
+% Note that the directory name for the water signal can be empty, e.g. when preprocessing
+% is to be applied to MRS raw data (.dat), since then MR spectrum and water signal can be
+% in same directory
+if isempty(dirString)
+	error('%s: Error: Name of directory for MRS signal %s is empty!\n\n', sFunctionName, dirString);
+end
+
+if isempty(outDirString)
+	error('%s: Error: Name of output directory for processed MRS signals %s is empty!\n\n', sFunctionName, outDirString);
+end
+
 % Ensure that input and output directory strings end with file separator, i.e. '/' or '\'
 % (Windows handles the Unix '/' just fine)
 if( ~strcmp( dirString(end), filesep ) )
@@ -240,9 +252,13 @@ if isIMA
 end
 
 if isIMA_w
-	%dirParts_w	= regexp(dirString_w, filesep, 'split');
-	dirParts_w	= strsplit(dirString_w, filesep);
-	name_w		= dirParts_w{length(dirParts_w)-1};
+	if isempty(dirString_w)
+		error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+	else
+		%dirParts_w	= regexp(dirString_w, filesep, 'split');
+		dirParts_w	= strsplit(dirString_w, filesep);
+		name_w		= dirParts_w{length(dirParts_w)-1};
+	end
 end
 
 % Make a new directory for the output report and figures each, if not already existent,
@@ -438,8 +454,9 @@ if with_water
     if isIMA_w
         if isempty(dirString_w)
             error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
-        end
-        out_w_raw		= io_loadspec_IMA_s(dirString_w);
+		else
+			out_w_raw		= io_loadspec_IMA_s(dirString_w);
+		end
     else
         if isempty(dirString_w)
             out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
