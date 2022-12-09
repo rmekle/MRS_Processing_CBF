@@ -362,7 +362,7 @@ switch seqType
 		% acquisition slightly earlier)
 		% Specific # of points in this case should be equal to 3 for oversampled raw 
 		% data (.dat on Siemens)
-		% Leftshift MR spectrum and, if existent, als the unsuppresed water signal
+		% Leftshift MR spectrum and, if existent, also the unsuppresed water signal
 		if isSVSdkd_seq
 			%leftshift	= 3;
 			out_raw		= op_leftshift(out_raw, leftshift);
