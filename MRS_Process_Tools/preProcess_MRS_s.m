@@ -106,21 +106,17 @@
 
 function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,options)
 
-%% Clear all variables from workspace and close all figures
-% clear all;
-% close all;
-
-%% Parse Arguments
+%% Parse arguments
 % FLAG: Modified
 arguments
     dirString       {mustBeText}
     outDirString    {mustBeText}
     seqType         {mustBeText}
     dataType        {mustBeText}
-    options.Filename                {mustBeText} = '';
-    options.WaterDirectory          {mustBeText} = '';
-    options.WaterFilename           {mustBeText} = '';
-    options.ReportFilename          {mustBeText} = '';
+    options.Filename                {mustBeText} = ''
+    options.WaterDirectory          {mustBeText} = ''
+    options.WaterFilename           {mustBeText} = ''
+    options.ReportFilename          {mustBeText} = ''
     options.OVS			            {mustBeMember(options.OVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
     options.WaterOVS				{mustBeMember(options.WaterOVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
@@ -133,7 +129,7 @@ arguments
     options.PhaseFrequencyCorrection(1,1) {islogical}		= 0
     options.ShowPlots				(1,1) {islogical}       = 0
     options.MinimizeUserInput		{mustBeMember(options.MinimizeUserInput,{'y', 'Y', 'n', 'N'})} = 'y'
-    options.GenerateReport          (1,1) {islogical}        = 1
+    options.GenerateReport          (1,1) {islogical}       = 1
 end
 
 % Convert optional inputs to regular variables
@@ -147,7 +143,7 @@ end
     if isnan(options.WaterLeftshift)
         leftshift_w = leftshift;
     else
-        leftshift_w = options.WaterLeftshift
+        leftshift_w = options.WaterLeftshift;
     end
     nSD             = options.noStandardDeviation;
     aaDomain        = options.aaDomain;
@@ -625,9 +621,13 @@ switch seqType
 		%% Combine signals from different coil elements
         % FLAG: Modified
         
-        % Zeroth step is to look if our data is in .IMA (DICOM) format which is
-        % usually already combined and can skip over coil combination here
-        if ~(isIMA && isIMA_w)
+        % Zeroth step is to look if MRS data is in .IMA (DICOM) format which is
+        % usually already combined on the scanner, and, thus coil combination can be
+        % skipped for DICOM data
+		% Index for coil dimension in data struct should then also be zero, since coil
+		% dimension does not exist
+		% if ~(isIMA && isIMA_w)
+        if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 		    % First step should be to combine coil channels. For this find the coil phases 
 		    % from water unsuppressed data, if available; otherwise from the MR spectra
 		    % Arguments referring to the nPos_ccth point of the FID and weighting of channels 
@@ -693,7 +693,7 @@ switch seqType
 			    if with_water
 				    coilcombos	= coilcombos_w;
 			    else
-				    coilcombos		= coilcombos_mrs;
+				    coilcombos	= coilcombos_mrs;
 			    end			% % End of if with_water
 		    end		% End of if with_ref
 			    
@@ -709,9 +709,9 @@ switch seqType
             if ~isIMA
 		        out_noproc			= op_averaging(out_cc);
             else
-                out_cc = out_raw;
-                out_noproc = op_averaging(out_cc);
-                spec_av_pre = out_noproc.specs;
+                out_cc				= out_raw;
+                out_noproc			= op_averaging(out_cc);
+                spec_av_pre			= out_noproc.specs;
             end
             
             if with_ref
@@ -719,8 +719,8 @@ switch seqType
 			        out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
 			        out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
                 else
-                    out_ref_ECC_cc = out_ref_ECC_raw;
-                    out_ref_Quant_cc = out_ref_Quant_raw;
+                    out_ref_ECC_cc			= out_ref_ECC_raw;
+                    out_ref_Quant_cc		= out_ref_Quant_raw;
 			        out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
 			        out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
                 end
@@ -728,11 +728,11 @@ switch seqType
 
 		    if with_water
                 if ~isIMA_w
-			        out_w_noproc				= op_averaging(out_w_cc);
+			        out_w_noproc	= op_averaging(out_w_cc);
                 else
-                    out_w_cc = out_w_raw;
-                    out_w_noproc = op_averaging(out_w_cc);
-                    spec_w_pre = out_w_raw.specs;
+                    out_w_cc		= out_w_raw;
+                    out_w_noproc	= op_averaging(out_w_cc);
+                    spec_w_pre		= out_w_raw.specs;
                 end
 		    end
     
@@ -803,8 +803,9 @@ switch seqType
 		    end
 		    close(h1);
         else
-            % Move "raw" .IMA data to coil combined "cc" data as ima files are already 
-			% coil combined
+            % Move "raw" DICOM (.IMA) data to coil combined "cc" data, as DICOM data are 
+			% already coil combined, to execute same preprocssing code as for MRS data
+			% that needs to be coil combined, e.g. MRS raw data (.dat)
             out_cc		= out_raw;
             out_noproc	= op_averaging(out_cc);
             if with_water
@@ -813,11 +814,12 @@ switch seqType
             end
             if with_ref
                 out_ref_ECC_cc			= out_ref_ECC_raw;
-                out_ref_Quant_cc		= out_ref_Quant_raw;
-			    out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
+				out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
+                out_ref_Quant_cc		= out_ref_Quant_raw;		    
 			    out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
-            end
-		end		% End of if ~(isIMA && isIMA_w)
+			end
+		%end		% End of  if ~(isIMA && isIMA_w)
+		end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 		
         
 		%% Remove bad averages from MRS data
@@ -1081,7 +1083,7 @@ switch seqType
 				box off;
 				legend('Frequency Drift','Location','SouthEast');
 				legend boxoff;
-				title('Estimated Freqeuncy Drift','FontSize',12);
+				title('Estimated Frequency Drift','FontSize',12);
 				set(h6,'PaperUnits','centimeters');
 				set(h6,'PaperPosition',[0 0 10 10]);
 				%saveas(h6,[outDirString nameSpec '/report/figs/freqDriftFig'],'jpg');
@@ -1674,7 +1676,7 @@ switch seqType
 		if wrt=='y' || wrt=='Y'
 			disp(sMsg_newLines);
 			fprintf('%s: Writing results to file ...\n\n', sFunctionName);
-			RF = io_writelcm(out, [outDirString outFileName '_processed_lcm' '.RAW'],out.te);
+			RF = io_writelcm(out,[outDirString outFileName '_processed_lcm' '.RAW'],out.te);
 			RF = io_writelcm(out_noproc,[outDirString outFileName '_unprocessed_lcm' '.RAW'],out_noproc.te);
 			if with_water
 				% Save water signal
@@ -1765,7 +1767,8 @@ switch seqType
 			
 			% FLAG: Modified
 			% Write info about coil combination into report depending on MRS data type
-            if ~(isIMA && isIMA_w)
+            %if ~(isIMA && isIMA_w)
+			if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 			    fprintf(fid2,'\n\n<h2>Results of multi-coil combination:</h2>');
 			    %fprintf(fid2,'\n<img src= " %s%scoilReconFig.jpg " width="800" height="400"></body>', outDirString, reportFigDirStr);
 			    fprintf(fid2,'\n<img src= " %s " width="800" height="400"></body>', fullfile('./figs/', 'coilReconFig.jpg'));
@@ -1773,7 +1776,8 @@ switch seqType
 			else
 				fprintf(fid2,'\n\n<h2>Multi-coil combination was not performed, since MRS DICOM data already coil combined.</h2>');
 				fprintf(fid2,'\n\n<p> </p>');
-			end		% End of  if ~(isIMA && isIMA_w)
+			%end		% End of  if ~(isIMA && isIMA_w)
+			end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 			
 			% Write results from removing bad averages into html report, only if step was
 			% actually performed, i.e. it was selected and dimension of averages existed
