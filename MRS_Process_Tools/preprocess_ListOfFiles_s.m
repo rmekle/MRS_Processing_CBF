@@ -20,21 +20,23 @@ sMsg_newLine		= sprintf('\n');
 disp(sMsg_newLines);
 
 
-%% Init input parameters for preprocessing routine
+%% Init input parameters for preprocessing
 %dirString_In			= '';
 %dirString_Out			= '';
+fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '7T_KCL';		% '3T_Trauma';
-strVOI					= 'PCC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 0;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
+digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 strMinUserIn_In			= 'y';
-aaDomain_In				= 'f';
+aaDomain_In				= 'f';			% 'f';		% 't';
 tmaxin_In				= 0.2;
 iterin_In				= 20;
 alignSS_In				= 2;
@@ -43,7 +45,8 @@ bPhaseCorrFreqShift_In	= 0;
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
 
-% Set (additional) parameters depending on sequence type
+
+%% Set (additional) parameters depending on sequence type
 switch seqType_MRS
 	case 'SPECIAL'
 		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_RawData_dat_Files/';
@@ -75,36 +78,64 @@ switch seqType_MRS
 				error('%s: ERROR: No directory/data for noSD_In =  %f!', sFunctionName, noSD_In);
 		end
 	case 'sLASER'
-		% Data input and output directories depending on study data and other parameters
-		digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+		% Select data input and output directories depending on study, MRS data type, 
+		% i.e. file extension, study, and other parameters
+		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		switch strStudy
 			case '3T_Trauma'
 				% Data (input) directories
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
-				dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
+				%dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
 				
 				% Output data directory
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+				
+				% Directories depending on MRS data type
+				switch fileExtension
+					case 'dat'
+						% Select directories specific to MRS raw data (.dat)
+						dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
+					case 'IMA'
+						% Select directories specific to MRS DICOM data (.IMA)
+						dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_DICOM_IMA_Files_MRS_%s', strVOI);
+						
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+				end			% End of switch fileExtension
 			case '7T_KCL'
 				% Data (input) directories
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/7T_KCL/';
-				dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_RawData_dat_Files_MRS_eja_%s', strVOI);
+				%dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_RawData_dat_Files_MRS_eja_%s', strVOI);
 				
 				% Output data directory
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
-							
+				
+				% Directories depending on MRS data type
+				switch fileExtension
+					case 'dat'
+						% Select directories specific to MRS raw data (.dat)
+						dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_RawData_dat_Files_MRS_eja_%s', strVOI);
+					case 'IMA'
+						% Select directories specific to MRS DICOM data (.IMA)
+						dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_DICOM_IMA_Files_MRS_eja_%s', strVOI);
+						
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+				end			% End of switch fileExtension
+				
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end
+		end				% End of switch strStudy
 		
 		% Complete names of data (input) directories
 		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
-		
-		% Select directory for output data depending on # of SDs and other options used 
-		% for pre-processing of MR spectra
+			
+		% Select directory for output data depending on voxel location, data type,
+		% # of SDs, and other options used for pre-processing of MR spectra
 		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-		dirString_Out_AddOn1	= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+		%dirString_Out_AddOn1	= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+		dirString_Out_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
 		dirString_Out_AddOn2	= '';
 		if bECC_In
 			% Use reference (water) signals for ECC, if acquired
@@ -135,14 +166,14 @@ switch seqType_MRS
 		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
 		
-		% If outout directory is non-existent, create it
+		% If output directory is non-existent, create it
 		if ~exist( dirString_Out, 'dir' )
 			mkdir(dirString_Out);
 		end
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end
+end		% End of switch seqType_MRS
 
 
 
@@ -258,7 +289,7 @@ switch seqType_MRS
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end
+end		% End of switch seqType_MRS
 
 
 %% Save variables of workspace to file
