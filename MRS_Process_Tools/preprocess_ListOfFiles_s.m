@@ -177,21 +177,47 @@ end		% End of switch seqType_MRS
 
 
 
-%% Obtain information about the list of files
-% (assuming that all data files are included in the same directory)
+%% Obtain information about the list of files (.dat) or list of directories (.IMA)
+% (assuming that all .dat files are included in the same directory)
 % (On Linux, file list in Matlab also includes the two directories "." and "..", which
 % means that the actual # of files in the directory is (# of entries in list - 2;
 % however, if dir is used to list specific files, e.g. using a file extension, these two 
 % directories are not included in the resulting list)
 %cd(dirString_In);
-structFileListing		= dir([dirString_In, '*.dat']);
-noEntriesListing		= length( structFileListing );
-%noDataFiles				= noEntriesListing - 2
+
+% FLAG: CHANGE
+% Added an option for loading a set of directories containing scans
+switch fileExtension
+    case 'dat'
+        structFileListing		= dir([dirString_In, '*.dat']);
+        noEntriesListing		= length( structFileListing );
+        %noDataFiles				= noEntriesListing - 2
+    case 'IMA'
+        structFileListingAll	= dir(dirString_In);
+        subDir					= [structFileListingAll(:).isdir];
+        structFileListing		= structFileListingAll(subDir);
+        % Remove the two directories '.' and '..'
+        structFileListing		= structFileListing(~ismember({structFileListing(:).name},{'.','..'}));
+        noEntriesListing		= length(structFileListing);
+    otherwise
+        error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExtension);
+end
+
 
 
 %% Preprocess all data files depending on sequence type
+
+% FLAG: TODO: Update for all 3 cases the function to the new version with
+% name-value pair parameters, depending on if imaDataSwitch is set or not
+
 switch seqType_MRS
 	case 'SPECIAL'
+		% Pre-processing of .IMA files is not implemented for run_specialproc_CBF, only
+        % for the sLASER sequence using preProcess_MRS_s
+        if strcmp(fileExtension, 'IMA')
+            error('%s: ERROR: File extension IMA incompatible with sequence type %s!', sFunctionName, seqType_MRS);
+		end
+		
 		% Here preprocessing of SPECIAL MR spectra together with the corresponding water 
 		% files is performed
 		% Assumptions:
@@ -227,6 +253,12 @@ switch seqType_MRS
 			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filename_w_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
 		end
 	case 'MEGA-PRESS'
+		% Pre-processing of .IMA files is not implemented for run_megapressproc_CBF, only
+        % for the sLASER sequence using preProcess_MRS_s
+        if strcmp(fileExtension, 'IMA')
+            error('%s: ERROR: File extension IMA incompatible with sequence type %s!', sFunctionName, seqType_MRS);
+		end
+		
 		% Here preprocessing of MEGA-PRESS MR spectraFSN-FZ-CSB-08 together with the corresponding 
 		% water file is performed
 		% Assumptions:
@@ -254,11 +286,17 @@ switch seqType_MRS
 	case 'sLASER'
 		% Here preprocessing of sLASER MR spectra acquired with or without water reference
 		% signals together with the corresponding water file is performed
-		% Assumptions:
+		% Assumptions for MRS raw data (.dat) files:
 		% - All data files are consecutively sorted, e.g. by date
 		% - Data files come in group of two files:
 		% - sLASER MR spectrum with or without reference scans, sLASER water signal
 		% - Order of files is same for all cases, i.e. spectrum; water
+		
+		% Assumptions for MRS DICOM data (.IMA) files:
+		% - All data directories are consecutively sorted, e.g. by date
+		% - Data directories come in group of two directories:
+		% - sLASER MR spectrum with or without reference scans, sLASER water signal
+		% - Order of directories is same for all cases, i.e. spectrum; water
 		
 		% Preprocess each case (spectrum)
 		% If separate water scans and reference scans were acquired, get coil phases from
@@ -271,21 +309,55 @@ switch seqType_MRS
 		% if only water scans exist, 
 		%	coil phases from water scans for water scans and for MR spectra
 		%
-		% if neither reference scans nor water scans eFSN-FZ-CSB-08xist,
+		% if neither reference scans nor water scans exist,
 		%	coil phases from MR spectra for MR spectra
 		indexStart		= 1;
 		indexStep		= 2;	% For sLASER, since only one water signals exists
 		for ind=indexStart : indexStep : noEntriesListing		% noEntriesListing	% 4		% 2
+			% FLAG: CHANGE
 			% Preprocess MR spectrum and water
-			filename_In		= structFileListing(ind).name;
-			filename_w_In	= structFileListing(ind+1).name;
-			disp(sMsg_newLines);
-			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
-			[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,leftshift_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,bECC_In,bPhaseCorrFreqShift_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
+            % with parameters set accoprding to data type (file extension)
+			switch fileExtension
+				case 'dat'
+					% MRS raw data (.dat)
+					filename_In			= structFileListing(ind).name;
+					filename_w_In		= structFileListing(ind+1).name;
+					disp(sMsg_newLines);
+					disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
+					[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,leftshift_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,bECC_In,bPhaseCorrFreqShift_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
+					
+				case 'IMA'
+					% MRS DICOM data (.IMA)
+					dirString_In_IMA	= [dirString_In structFileListing(ind).name];
+					dirString_w_In_IMA	= [dirString_In structFileListing(ind+1).name];
+					dirParts_In_IMA		= strsplit(dirString_In_IMA, filesep);
+					dirParts_w_In_IMA	= strsplit(dirString_w_In_IMA, filesep);
+					disp(sMsg_newLines);
+					disp([sprintf('ind = %d\t', ind), sprintf('\t'), dirParts_In_IMA{end-1}, sprintf('\t'), dirParts_w_In_IMA{end-1}, sprintf('\n\n')]);
+					
+					[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(...
+						dirString_In_IMA,...
+						dirString_Out,...
+						seqType_MRS,...
+						dataType_MRS,...
+						'WaterDirectory', dirString_w_In_IMA,...
+						'OVS', strOVS_In,...
+						'WaterOVS', strOVS_w_In,...
+						'Leftshift', leftshift_In,...
+						'noStandardDeviation', noSD_In,...
+						'aaDomain', aaDomain_In,...
+						'DriftCorrectionDuration', tmaxin_In,...
+						'Iterations', iterin_In,...
+						'ECC', bECC_In,...
+						'PhaseFrequencyCorrection', bPhaseCorrFreqShift_In,...
+						'ShowPlots', plotSwitch_In,...
+						'MinimizeUserInput', strMinUserIn_In,...
+						'GenerateReport', reportSwitch_In);
+			end			% End of switch fileExtension
 			
 			% Close all figures
 			%close all;
-		end		
+		end		% End of or ind=indexStart : indexStep : noEntriesListing
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
