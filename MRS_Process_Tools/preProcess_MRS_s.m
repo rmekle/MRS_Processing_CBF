@@ -244,7 +244,8 @@ end
 if isIMA
 	%dirParts	= regexp(dirString, filesep, 'split');
 	dirParts	= strsplit(dirString, filesep);
-	nameSpec	= dirParts{length(dirParts)-1};
+	nameSpec	= dirParts{end-1};
+	%nameSpec	= dirParts{length(dirParts)-1};
 end
 
 if isIMA_w
@@ -253,7 +254,8 @@ if isIMA_w
 	else
 		%dirParts_w	= regexp(dirString_w, filesep, 'split');
 		dirParts_w	= strsplit(dirString_w, filesep);
-		name_w		= dirParts_w{length(dirParts_w)-1};
+		name_w		= dirParts_w{end-1};
+		%name_w		= dirParts_w{length(dirParts_w)-1};
 	end
 end
 
@@ -625,9 +627,11 @@ switch seqType
         % usually already combined on the scanner, and, thus coil combination can be
         % skipped for DICOM data
 		% Index for coil dimension in data struct should then also be zero, since coil
-		% dimension does not exist
+		% dimension does not exist; 
+		% Thus, perform coil combination, if NRS data is not DICOM and index for coil
+		% dimension is non-zero
 		% if ~(isIMA && isIMA_w)
-        if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
+        if ~(isIMA && isIMA_w) && (out_raw.dims.coils ~= 0)
 		    % First step should be to combine coil channels. For this find the coil phases 
 		    % from water unsuppressed data, if available; otherwise from the MR spectra
 		    % Arguments referring to the nPos_ccth point of the FID and weighting of channels 
