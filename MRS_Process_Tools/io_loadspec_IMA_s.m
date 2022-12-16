@@ -20,29 +20,49 @@
 % Jamie Near, McGill University 2014
 % Modified by Ivo Opitz, Charite Universitätsmedizin Berlin, 2022 to add
 % option to load a whole directory of .IMA files into one structure.
+% Modified by Ralf Mekle, Charite Universitätsmedizin Berlin, 2022
 
 function [out, out_ref] = io_loadspec_IMA_s(dirString)
+
 %% Modify for reading a whole directory of IMA files
 %Load Dicom Info using Chris Rogers' "SiemensCsaParse.m" function:
 
-oldFolder = cd(dirString);
-dirData = dir('*.IMA');
-files = char({dirData.name});
-Nfiles = size(files, 1);
+% Load all DICOM files without changing working directory
+%oldFolder	= cd(dirString);
+%dirData		= dir('*.IMA');
+dirData		= dir([dirString, '*.IMA']);
+files		= char({dirData.name});
+Nfiles		= size(files, 1);
 
-h = waitbar (0, 'Loading DICOM Files...', 'Name', 'Loading DICOM Files');
-[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(files(1, :)), 0, 'conj');
+% Indicate progress of loading all DICOM files
+h		= waitbar (0, 'Loading DICOM Files...', 'Name', 'Loading DICOM Files');
+
+% Load Dicom Info using Chris Rogers' "SiemensCsaParse.m" function:
+fullFileName	= fullfile(dirString, files(1, :));
+info			= SiemensCsaParse(fullFileName);
+%info			= SiemensCsaParse(files(1, :));
+
+% Read in first Dicom file using Chris Rogers' "SiemensCsaReadFid.m" function:
+%[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(files(1, :)), 0, 'conj');
+[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
+
+% Read in all remaining DICOM files (one file for each average) and indicate progress of
+% file loading
 for i = 2:Nfiles
-    progress = (i-1.0) / Nfiles;
-    progressStr = sprintf('%d of %d files loaded', i-1, Nfiles);
+    progress		= (i-1.0) / Nfiles;
+    progressStr		= sprintf('%d of %d files loaded', i-1, Nfiles);
     waitbar (progress, h, progressStr);
-    [fids(:,i), ~] = SiemensCsaReadFid(SiemensCsaParse(files(i, :)), 0, 'conj');
+    %[fids(:,i), ~]	= SiemensCsaReadFid(SiemensCsaParse(files(i, :)), 0, 'conj');
+	fullFileName	= fullfile(dirString, files(i, :));
+	[fids(:,i), ~]	= SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
 end
 
 close(h);
-cd(oldFolder);
+%cd(oldFolder);
 
+% Determine size of array of FIDs
 sz = size(fids);
+
 
 %% Read the regular parameters of the scan
 Naverages = info.csa.NumberOfAverages;
@@ -51,15 +71,28 @@ Naverages = info.csa.NumberOfAverages;
     % In the raw data Bo is lower than 3, but here it is exactly 3, not fitting
     % to the transmitting frequency given. So the latter is used and Bo
     % manually calculated
-txfrq = info.csa.ImagingFrequency * 1000000;
-te = info.csa.EchoTime;
-tr = info.csa.RepetitionTime;
-dwelltime = info.csa.RealDwellTime / 1000000000;
-spectralwidth = 1 / dwelltime;
-sequence = info.ProtocolName;
+txfrq			= info.csa.ImagingFrequency * 1000000;
+te				= info.csa.EchoTime;
+tr				= info.csa.RepetitionTime;
+dwelltime		= info.csa.RealDwellTime / 1000000000;
+spectralwidth	= 1 / dwelltime;
 
-%% Determine if sLaser was used
-isSVSdkdseq = contains(sequence,'svs_slaser_dkd');
+
+%% Determine which sequence protocol was used
+% Specific entries/fields of the DICOM header might exist or might not exist, if MRS DICOM
+% data were anonymized or pseudonomized
+if(isfield(info, 'ProtocolName'))
+	sequence		= info.ProtocolName;
+else if(isfield(info.csa, 'SequenceName'))
+		sequence		= info.csa.SequenceName;
+	else
+		sequence		= '';
+	end
+end
+
+% In particular, determine if Dinesh's sLASER sequence was used
+isSVSdkdseq		= contains(sequence,'svs_slaser_dkd');
+
 
 %% Determine the number of averages
 if(Nfiles < Naverages)
@@ -72,6 +105,7 @@ end
 
 % Typically the coils are already combined
 Ncoils = 1;
+
 
 %% Determine dimensions
 if ndims(fids)==4  %Default config when 4 dims are acquired
@@ -138,6 +172,7 @@ end
 % Necessary for some processing operations
 dims.extras = 0;
 
+
 %% Now get relevant scan parameters:*****************************
 
 %Calculate Bo
@@ -153,12 +188,14 @@ rawAverages = Naverages;
 subspecs = 1;
 rawSubspecs = 1;
 
+
 %% Calculate t and ppm arrays using the calculated parameters:
 f=[(-spectralwidth/2)+(spectralwidth/(2*sz(dims.t))):spectralwidth/(sz(dims.t)):(spectralwidth/2)-(spectralwidth/(2*sz(dims.t)))];
 ppm = -f / (Bo*42.577);
 ppm= ppm + 4.65;
 
 t=[0:dwelltime:(sz(dims.t)-1)*dwelltime];
+
 
 %% Sort data into averages and reference scans
 if(noRefScans > 0)
@@ -174,6 +211,7 @@ else
     fidsAverages = fids;
     specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
 end
+
 
 %% FILLING IN DATA STRUCTURE
 out.fids=fidsAverages;
@@ -216,12 +254,13 @@ else
     out.flags.isFourSteps=(out.sz(out.dims.subSpecs)==4);
 end
 
-%% Create the reference structure
+
+%% Create a data structure for (water) reference scans
 if ~isSVSdkdseq || noRefScans == 0
     % will be logical 0 if isempty is called
     out_ref = struct([]);
 else
-    out_ref = out;
+    out_ref				= out;
     out_ref.fids		= fidsRefScans;
     out_ref.specs		= specsRefScans;
     out_ref.sz			= size(fidsRefScans);
