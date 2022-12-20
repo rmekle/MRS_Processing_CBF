@@ -24,8 +24,14 @@
 
 function [out, out_ref] = io_loadspec_IMA_s(dirString)
 
+% %% Set string for name of routine and display blank lines for enhanced output visibility 
+sFunctionName		= 'io_loadspec_IMA_s.m';
+sMsg_newLines		= sprintf('\n\n');
+% sMsg_newLine		= sprintf('\n');
+% disp(sMsg_newLines);
+
+
 %% Modify for reading a whole directory of IMA files
-%Load Dicom Info using Chris Rogers' "SiemensCsaParse.m" function:
 
 % Load all DICOM files without changing working directory
 %oldFolder	= cd(dirString);
@@ -44,7 +50,50 @@ info			= SiemensCsaParse(fullFileName);
 
 % Read in first Dicom file using Chris Rogers' "SiemensCsaReadFid.m" function:
 %[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(files(1, :)), 0, 'conj');
-[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
+%[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
+[fids_shot, info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
+
+% Determine most important scan parameters from the DICOM info object
+Naverages		= info.csa.NumberOfAverages;
+% Bo = info.csa.MagneticFieldStrength;
+    % Bo can be read from the metadata but does not seem to be accurate enough.
+    % In the raw data Bo is lower than 3, but here it is exactly 3, not fitting
+    % to the transmitting frequency given. So the latter is used and Bo
+    % manually calculated
+txfrq			= info.csa.ImagingFrequency * 1000000;
+te				= info.csa.EchoTime;
+tr				= info.csa.RepetitionTime;
+dwelltime		= info.csa.RealDwellTime / 1000000000;
+spectralwidth	= 1 / dwelltime;
+
+% Typically the coils are already combined for MRS DICOM data
+Ncoils = 1;
+
+% Determine # of subspectra from DICOM info of first shot/average
+% NOTE: This is an 'educated guess', since it is not clear how exactly the # of
+% subspectra would be encoded in a real sequence; e.g., for SPECIAL spectra, the 
+% subsprectra are obtained from averaging (subtraction), i.e. subspectra are encoded as
+% averages
+NsubSpectra		= info.csa.SpectroscopyAcquisitionOutofplanePhaseSteps;
+if NsubSpectra > 1
+	disp(sMsg_newLines);
+	warning('%s: \tNsubSpectra = %d > 1!', sFunctionName, NsubSpectra);
+	disp(sMsg_newLines);
+end
+
+% Determine # of dimensions of fids data struct for a single shot (average)
+% (help ndims - The number of dimensions in an array is always greater than or 
+% equal to 2. => ndims(fids) always > 1!
+noDims_fids_shot	= ndims(fids_shot);
+switch noDims_fids_shot
+	case 4
+	case 3
+	case 2
+		fids(:,1)	= fids_shot;
+		
+	otherwise
+		error('%s: Unknown # of dimensions of fids_shot = ndims(fids_shot) = %d!', sFunctionName, noDims_fids_shot);
+end		% End of switch ndims(fids_tmp)
 
 % Read in all remaining DICOM files (one file for each average) and indicate progress of
 % file loading
@@ -64,20 +113,6 @@ close(h);
 sz = size(fids);
 
 
-%% Read the regular parameters of the scan
-Naverages = info.csa.NumberOfAverages;
-% Bo = info.csa.MagneticFieldStrength;
-    % Bo can be read from the metadata but does not seem to be accurate enough.
-    % In the raw data Bo is lower than 3, but here it is exactly 3, not fitting
-    % to the transmitting frequency given. So the latter is used and Bo
-    % manually calculated
-txfrq			= info.csa.ImagingFrequency * 1000000;
-te				= info.csa.EchoTime;
-tr				= info.csa.RepetitionTime;
-dwelltime		= info.csa.RealDwellTime / 1000000000;
-spectralwidth	= 1 / dwelltime;
-
-
 %% Determine which sequence protocol was used
 % Specific entries/fields of the DICOM header might exist or might not exist, if MRS DICOM
 % data were anonymized or pseudonomized
@@ -94,7 +129,7 @@ end
 isSVSdkdseq		= contains(sequence,'svs_slaser_dkd');
 
 
-%% Determine the number of averages
+%% Check on number of averages and determined numer of possible (water) refrence scans
 if(Nfiles < Naverages)
     Naverages = Nfiles;
 elseif(Nfiles == Naverages)
@@ -103,9 +138,6 @@ else
     noRefScans = Nfiles - Naverages;
 end
 
-% Typically the coils are already combined
-Ncoils = 1;
-
 
 %% Determine dimensions
 if ndims(fids)==4  %Default config when 4 dims are acquired
@@ -113,9 +145,20 @@ if ndims(fids)==4  %Default config when 4 dims are acquired
     dims.coils=2;
     dims.averages=3;
     dims.subSpecs=4;
-elseif ndims(fids)<4  %To many permutations...ask user for dims.
+elseif ndims(fids)<4  %Too many permutations...ask user for dims.
     if Naverages == 1 && Ncoils == 1
-        if ndims(fids)>1
+		% Bug fix
+		% (help ndims - The number of dimensions in an array is always greater than or 
+		% equal to 2. => ndims(fids) always > 1!
+		%if ndims(fids)>1
+		if ndims(fids)>2
+			error('%s: ndims(fids) = %d with Naverages = %d and Ncoils = %d! Unknown additional data dimension!', ...
+				sFunctionName, ndims(fids), Naverages, Ncoils);
+		end
+		% ndims(fids) = 2 here, since <4 and not <2
+		% With Naverages = 1, ndims(fids) = 2 the same for both cases, with our without 
+		% subspectra; ndims cannot distinguish these two cases
+		if NsubSpectra > 1
             dims.t=1;
             dims.coils=0;
             dims.averages=0;
