@@ -55,10 +55,11 @@ info			= SiemensCsaParse(fullFileName);
 %[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
 [fids_shot, info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
 
-% Determine # of dimensions of fids data struct for a single shot (average)
+% Determine # of dimensions and size of fids data struct for a single shot (average)
 % (help ndims - The number of dimensions in an array is always greater than or 
 % equal to 2. => ndims(fids) always > 1!
 noDims_fids_shot	= ndims(fids_shot);
+sz_shot				= size(fids_shot)
 
 
 %% Determine relevant scan parameters from the DICOM info of first file (shot)
@@ -80,11 +81,17 @@ Bo				= txfrq / 42577000;
 %date=info(:,1).InstanceCreationDate;
 date=01012000;
 
+% Determine # of complex data points of each FID from DICOM info
+% (alternatively, from size of first data dimension of first shot assuming that
+% first data dimension always holds time points of each FID)
+NdataPoints		= info.csa.DataPointColumns;
+%NdataPoints		= sz_shot(1)
+
+% Typically the coil signals are already combined for MRS DICOM data
+Ncoils			= 1;
+
 % Obtain # of averages not including reference scans from DICOM info
 Naverages		= info.csa.NumberOfAverages;
-
-% Typically the coils are already combined for MRS DICOM data
-Ncoils = 1;
 
 % Use # of subspectra as input parameter
 % NOTE: Currently, it is not clear how exactly the # of subspectra would be encoded in 
@@ -132,32 +139,35 @@ isSVSdkdseq		= contains(sequence,'svs_slaser_dkd');
 % Determine # of dimensions of fids data struct for a single shot (average)
 % (help ndims - The number of dimensions in an array is always greater than or 
 % equal to 2. => ndims(fids) always > 1!
-switch noDims_fids_shot
-	case 4
-	case 3
-	case 2
-		fids(:,1)	= fids_shot;
-		
-	otherwise
-		error('%s: Unknown # of dimensions of fids_shot = ndims(fids_shot) = %d!', sFunctionName, noDims_fids_shot);
-end		% End of noDims_fids_shot
 
-% Read in all remaining DICOM files (one file for each average) and indicate progress of
-% file loading
+% Allocate data array for all FIDs for all possible data dimensions
+% according to the order of data dimensions specified in the FID-A manual
+% (if other data dimensions exist, this code will have to be adapted)
+fids			= zeros(NdataPoints, Ncoils, Naverages, NsubSpectra);
+
+% Insert data from first file (shot/average) into data array for all files
+fids(:,:,1,:)	= fids_shot;
+
+% Read in all remaining DICOM files (one file for each shot/average) and indicate progress
+% of file loading
 for i = 2:Nfiles
     progress		= (i-1.0) / Nfiles;
     progressStr		= sprintf('%d of %d files loaded', i-1, Nfiles);
     waitbar (progress, h, progressStr);
     %[fids(:,i), ~]	= SiemensCsaReadFid(SiemensCsaParse(files(i, :)), 0, 'conj');
-	fullFileName	= fullfile(dirString, files(i, :));
-	[fids(:,i), ~]	= SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
+	fullFileName		= fullfile(dirString, files(i, :));
+	[fids(:,:,i,:), ~]	= SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
+	%[fids(:,i), ~]	= SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
 end
 
 close(h);
 %cd(oldFolder);
 
+% Remove singleton dimensions from data array of FIDs, since these are not required
+fids	= squeeze(fids);
+
 % Determine size of array of FIDs
-sz = size(fids);
+sz		= size(fids);
 
 
 %% Determine order of data dimensions
@@ -246,26 +256,41 @@ dims.extras = 0;
 
 
 %% Sort data into averages and reference scans
-% Implementation below only works, if ndims(fids) = 2
-if noDims_fids == 2
-	if(noRefScans > 0)
-		indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+Naverages+1):Nfiles];
-		indicesAverages	= [(noRefScans/2+1):(noRefScans/2+Naverages)];
-		
-		fidsAverages = fids(:, indicesAverages);
-		fidsRefScans = fids(:, indicesRefScans);
-		
-		specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
-		specsRefScans = fftshift(ifft(fidsRefScans,[],dims.t),dims.t);
-	else
-		fidsAverages	= fids;
-		specsAverages	= fftshift(ifft(fidsAverages,[],dims.t),dims.t);
-	end			% End of if(noRefScans > 0)
-else
-	error('%s: Extraction of reference scans for # of dimensions of fids = ndims(fids) = %d not yet implemented', sFunctionName, noDims_fids);
-end		% End of if noDims_fids == 2
+% % Implementation below only works, if ndims(fids) = 2
+% if noDims_fids == 2
+% 	if(noRefScans > 0)
+% 		indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+Naverages+1):Nfiles];
+% 		indicesAverages	= [(noRefScans/2+1):(noRefScans/2+Naverages)];
+% 		
+% 		fidsAverages = fids(:, indicesAverages);
+% 		fidsRefScans = fids(:, indicesRefScans);
+% 		
+% 		specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
+% 		specsRefScans = fftshift(ifft(fidsRefScans,[],dims.t),dims.t);
+% 	else
+% 		fidsAverages	= fids;
+% 		specsAverages	= fftshift(ifft(fidsAverages,[],dims.t),dims.t);
+% 	end			% End of if(noRefScans > 0)
+% else
+% 	error('%s: Extraction of reference scans for # of dimensions of fids = ndims(fids) = %d not yet implemented', sFunctionName, noDims_fids);
+% end		% End of if noDims_fids == 2
 
-% Determine size of array of FIDs for averages
+% Sort data for different numbers of data dimensions
+if(noRefScans > 0)
+	indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+Naverages+1):Nfiles];
+	indicesAverages	= [(noRefScans/2+1):(noRefScans/2+Naverages)];
+	
+	fidsAverages = fids(:, indicesAverages);
+	fidsRefScans = fids(:, indicesRefScans);
+	
+	specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
+	specsRefScans = fftshift(ifft(fidsRefScans,[],dims.t),dims.t);
+else
+	fidsAverages	= fids;
+	specsAverages	= fftshift(ifft(fidsAverages,[],dims.t),dims.t);
+end			% End of if(noRefScans > 0)
+
+% Determine size of array of FIDs only containing data (averages), but no reference scans
 szAverages	= size(fidsAverages);
 
 
