@@ -1,7 +1,7 @@
 %io_loadspec_IMA_s.m
 %
 % USAGE:
-% [out, out_ref] = io_loadspec_IMA_s(dirString);
+% [out, out_ref] = io_loadspec_IMA_s(dirString, NsubSpectra);
 % 
 % DESCRIPTION:
 % Loads a directory with siemens .IMA files into matlab structure format.
@@ -11,6 +11,8 @@
 % 
 % INPUTS:
 % dirString      = Directory containing several Siemens .IMA files to load.
+% NsubSpectra	 = # of subspectra in the DICOM data 
+%					(usually cannot be determined from MRS DICOM data or header)
 %
 % OUTPUTS:
 % out        = Input dataset in FID-A structure format.
@@ -22,7 +24,7 @@
 % option to load a whole directory of .IMA files into one structure.
 % Modified by Ralf Mekle, Charite Universitätsmedizin Berlin, 2022
 
-function [out, out_ref] = io_loadspec_IMA_s(dirString)
+function [out, out_ref] = io_loadspec_IMA_s(dirString, NsubSpectra)
 
 % %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'io_loadspec_IMA_s.m';
@@ -31,7 +33,7 @@ sMsg_newLines		= sprintf('\n\n');
 % disp(sMsg_newLines);
 
 
-%% Modify for reading a whole directory of IMA files
+%% Modified for reading a whole directory of IMA files
 
 % Load all DICOM files without changing working directory
 %oldFolder	= cd(dirString);
@@ -53,8 +55,14 @@ info			= SiemensCsaParse(fullFileName);
 %[fids(:,1), info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
 [fids_shot, info] = SiemensCsaReadFid(SiemensCsaParse(fullFileName), 0, 'conj');
 
-% Determine most important scan parameters from the DICOM info object
-Naverages		= info.csa.NumberOfAverages;
+% Determine # of dimensions of fids data struct for a single shot (average)
+% (help ndims - The number of dimensions in an array is always greater than or 
+% equal to 2. => ndims(fids) always > 1!
+noDims_fids_shot	= ndims(fids_shot);
+
+
+%% Determine relevant scan parameters from the DICOM info of first file (shot)
+% Assume that these scan parameters are the same for all files (shots)
 % Bo = info.csa.MagneticFieldStrength;
     % Bo can be read from the metadata but does not seem to be accurate enough.
     % In the raw data Bo is lower than 3, but here it is exactly 3, not fitting
@@ -65,26 +73,65 @@ te				= info.csa.EchoTime;
 tr				= info.csa.RepetitionTime;
 dwelltime		= info.csa.RealDwellTime / 1000000000;
 spectralwidth	= 1 / dwelltime;
+% Calculate Bo
+Bo				= txfrq / 42577000;
+
+% Get or set date
+%date=info(:,1).InstanceCreationDate;
+date=01012000;
+
+% Obtain # of averages not including reference scans from DICOM info
+Naverages		= info.csa.NumberOfAverages;
 
 % Typically the coils are already combined for MRS DICOM data
 Ncoils = 1;
 
-% Determine # of subspectra from DICOM info of first shot/average
-% NOTE: This is an 'educated guess', since it is not clear how exactly the # of
-% subspectra would be encoded in a real sequence; e.g., for SPECIAL spectra, the 
-% subsprectra are obtained from averaging (subtraction), i.e. subspectra are encoded as
-% averages
-NsubSpectra		= info.csa.SpectroscopyAcquisitionOutofplanePhaseSteps;
+% Use # of subspectra as input parameter
+% NOTE: Currently, it is not clear how exactly the # of subspectra would be encoded in 
+% the MRS DICOM data of a real sequence; e.g., for SPECIAL spectra, the subspectra are 
+% are obtained from averaging (subtraction), i.e. subspectra are encoded as averages;
+% other sequences encode subsprectra via MDH parameters 'Set', 'Ida', 'Eco' or 'Ide'
+%NsubSpectra		= info.csa.SpectroscopyAcquisitionOutofplanePhaseSteps;
 if NsubSpectra > 1
 	disp(sMsg_newLines);
 	warning('%s: \tNsubSpectra = %d > 1!', sFunctionName, NsubSpectra);
 	disp(sMsg_newLines);
 end
 
+
+%% Check on number of averages and determined number of possible (water) refrence scans
+% Nfiles = # og averages + # of reference scans
+% # of reference scans can be zero; init this value to zero
+noRefScans		= 0;
+if(Nfiles < Naverages)
+    Naverages = Nfiles;
+elseif(Nfiles == Naverages)
+    noRefScans = 0;
+else
+    noRefScans = Nfiles - Naverages;
+end
+
+
+%% Determine which sequence protocol was used
+% Specific entries/fields of the DICOM header might exist or might not exist, if MRS DICOM
+% data were anonymized or pseudonomized
+if(isfield(info, 'ProtocolName'))
+	sequence		= info.ProtocolName;
+else if(isfield(info.csa, 'SequenceName'))
+		sequence		= info.csa.SequenceName;
+	else
+		sequence		= '';
+	end
+end
+
+% In particular, determine if Dinesh's sLASER sequence was used
+isSVSdkdseq		= contains(sequence,'svs_slaser_dkd');
+
+
+%% Load remaining MRS DICOM files (shots/averages)
 % Determine # of dimensions of fids data struct for a single shot (average)
 % (help ndims - The number of dimensions in an array is always greater than or 
 % equal to 2. => ndims(fids) always > 1!
-noDims_fids_shot	= ndims(fids_shot);
 switch noDims_fids_shot
 	case 4
 	case 3
@@ -93,7 +140,7 @@ switch noDims_fids_shot
 		
 	otherwise
 		error('%s: Unknown # of dimensions of fids_shot = ndims(fids_shot) = %d!', sFunctionName, noDims_fids_shot);
-end		% End of switch ndims(fids_tmp)
+end		% End of noDims_fids_shot
 
 % Read in all remaining DICOM files (one file for each average) and indicate progress of
 % file loading
@@ -113,52 +160,31 @@ close(h);
 sz = size(fids);
 
 
-%% Determine which sequence protocol was used
-% Specific entries/fields of the DICOM header might exist or might not exist, if MRS DICOM
-% data were anonymized or pseudonomized
-if(isfield(info, 'ProtocolName'))
-	sequence		= info.ProtocolName;
-else if(isfield(info.csa, 'SequenceName'))
-		sequence		= info.csa.SequenceName;
-	else
-		sequence		= '';
-	end
-end
-
-% In particular, determine if Dinesh's sLASER sequence was used
-isSVSdkdseq		= contains(sequence,'svs_slaser_dkd');
-
-
-%% Check on number of averages and determined numer of possible (water) refrence scans
-if(Nfiles < Naverages)
-    Naverages = Nfiles;
-elseif(Nfiles == Naverages)
-    noRefScans = 0;
-else
-    noRefScans = Nfiles - Naverages;
-end
-
-
-%% Determine dimensions
-if ndims(fids)==4  %Default config when 4 dims are acquired
+%% Determine order of data dimensions
+noDims_fids				= ndims(fids);
+noDims_fids_analysis	= noDims_fids;
+%if ndims(fids)==4  %Default config when 4 dims are acquired
+if noDims_fids_analysis==4  %Default config when 4 dims are acquired
     dims.t=1;
     dims.coils=2;
     dims.averages=3;
     dims.subSpecs=4;
-elseif ndims(fids)<4  %Too many permutations...ask user for dims.
+%elseif ndims(fids)<4  %Too many permutations...ask user for dims.
+elseif noDims_fids_analysis<4  %Too many permutations...ask user for dims.
     if Naverages == 1 && Ncoils == 1
 		% Bug fix
 		% (help ndims - The number of dimensions in an array is always greater than or 
 		% equal to 2. => ndims(fids) always > 1!
 		%if ndims(fids)>1
-		if ndims(fids)>2
-			error('%s: ndims(fids) = %d with Naverages = %d and Ncoils = %d! Unknown additional data dimension!', ...
-				sFunctionName, ndims(fids), Naverages, Ncoils);
+		%if ndims(fids)>2
+		if noDims_fids_analysis>2
+			error('%s: noDims_fids_analysis = %d with Naverages = %d and Ncoils = %d! Unknown additional data dimension!', ...
+				sFunctionName, noDims_fids_analysis, Naverages, Ncoils);
 		end
-		% ndims(fids) = 2 here, since <4 and not <2
-		% With Naverages = 1, ndims(fids) = 2 the same for both cases, with our without 
-		% subspectra; ndims cannot distinguish these two cases
-		if NsubSpectra > 1
+		% noDims_fids_analysis = 2 here, since <4 and not <2
+		% With Naverages = 1, noDims_fids_analysis = 2 the same for both cases, with or 
+		% without subspectra; ndims cannot distinguish these two cases
+		if NsubSpectra>1
             dims.t=1;
             dims.coils=0;
             dims.averages=0;
@@ -170,7 +196,8 @@ elseif ndims(fids)<4  %Too many permutations...ask user for dims.
             dims.subSpecs=0;
         end
     elseif Naverages>1 && Ncoils==1
-        if ndims(fids)>2
+        %if ndims(fids)>2
+		if noDims_fids_analysis>2
             dims.t=1;
             dims.coils=0;
             dims.averages=2;
@@ -182,7 +209,8 @@ elseif ndims(fids)<4  %Too many permutations...ask user for dims.
             dims.subSpecs=0;
         end
     elseif Naverages==1 && Ncoils>1
-        if ndims(fids)>2
+        %if ndims(fids)>2
+		if noDims_fids_analysis>2
             dims.t=1;
             dims.coils=2;
             dims.averages=0;
@@ -194,7 +222,8 @@ elseif ndims(fids)<4  %Too many permutations...ask user for dims.
             dims.subSpecs=0;
         end
     elseif Naverages>1 && Ncoils>1
-        if ndims(fids)>3
+        %if ndims(fids)>3
+		if noDims_fids_analysis>3
             dims.t=1;
             dims.coils=2;
             dims.averages=3;
@@ -216,20 +245,75 @@ end
 dims.extras = 0;
 
 
-%% Now get relevant scan parameters:*****************************
+%% Sort data into averages and reference scans
+% Implementation below only works, if ndims(fids) = 2
+if noDims_fids == 2
+	if(noRefScans > 0)
+		indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+Naverages+1):Nfiles];
+		indicesAverages	= [(noRefScans/2+1):(noRefScans/2+Naverages)];
+		
+		fidsAverages = fids(:, indicesAverages);
+		fidsRefScans = fids(:, indicesRefScans);
+		
+		specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
+		specsRefScans = fftshift(ifft(fidsRefScans,[],dims.t),dims.t);
+	else
+		fidsAverages	= fids;
+		specsAverages	= fftshift(ifft(fidsAverages,[],dims.t),dims.t);
+	end			% End of if(noRefScans > 0)
+else
+	error('%s: Extraction of reference scans for # of dimensions of fids = ndims(fids) = %d not yet implemented', sFunctionName, noDims_fids);
+end		% End of if noDims_fids == 2
 
-%Calculate Bo
-Bo = txfrq / 42577000;
+% Determine size of array of FIDs for averages
+szAverages	= size(fidsAverages);
 
-%Get Date
-%date=info(:,1).InstanceCreationDate;
-date='';
 
-averages = Naverages;
-rawAverages = Naverages;
+%% Determine all versions of # of averages and # of subspectra
+%Find the number of averages.  'averages' will specify the current number
+%of averages in the dataset as it is processed, which may be subject to
+%change.  'rawAverages' will specify the original number of acquired 
+%averages in the dataset, which is unchangeable.
+if dims.subSpecs ~=0
+    if dims.averages~=0
+        %averages		= sz(dims.averages)*sz(dims.subSpecs);
+		averages		= szAverages(dims.averages)*szAverages(dims.subSpecs);
+        rawAverages		= averages;
+    else
+        %averages		= sz(dims.subSpecs);
+		averages		= szAverages(dims.subSpecs);
+        rawAverages		= 1;
+    end
+else
+    if dims.averages~=0
+        %averages		= sz(dims.averages);
+		averages		= szAverages(dims.averages);
+        rawAverages		= averages;
+    else
+        averages		= 1;
+        rawAverages		= 1;
+    end
+end
 
-subspecs = 1;
-rawSubspecs = 1;
+%Find the number of subspecs.  'subspecs' will specify the current number
+%of subspectra in the dataset as it is processed, which may be subject to
+%change.  'rawSubspecs' will specify the original number of acquired 
+%subspectra in the dataset, which is unchangeable.
+if dims.subSpecs ~=0
+    %subspecs		= sz(dims.subSpecs);
+	subspecs		= szAverages(dims.subSpecs);
+    rawSubspecs		= subspecs;
+else
+    subspecs		= 1;
+    rawSubspecs		= subspecs;
+end
+
+% Ivo's code
+% averages		= Naverages;
+% rawAverages		= Naverages;
+% 
+% subspecs		= 1;
+% rawSubspecs		= 1;
 
 
 %% Calculate t and ppm arrays using the calculated parameters:
@@ -238,22 +322,6 @@ ppm = -f / (Bo*42.577);
 ppm= ppm + 4.65;
 
 t=[0:dwelltime:(sz(dims.t)-1)*dwelltime];
-
-
-%% Sort data into averages and reference scans
-if(noRefScans > 0)
-    indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+Naverages+1):Nfiles];
-    indicesAverages	= [(noRefScans/2+1):(noRefScans/2+Naverages)];
-    
-    fidsAverages = fids(:, indicesAverages);
-    fidsRefScans = fids(:, indicesRefScans);
-    
-    specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
-    specsRefScans = fftshift(ifft(fidsRefScans,[],dims.t),dims.t);
-else
-    fidsAverages = fids;
-    specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
-end
 
 
 %% FILLING IN DATA STRUCTURE
