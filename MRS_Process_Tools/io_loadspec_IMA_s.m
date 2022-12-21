@@ -59,7 +59,7 @@ info			= SiemensCsaParse(fullFileName);
 % (help ndims - The number of dimensions in an array is always greater than or 
 % equal to 2. => ndims(fids) always > 1!
 noDims_fids_shot	= ndims(fids_shot);
-sz_shot				= size(fids_shot)
+sz_shot				= size(fids_shot);
 
 
 %% Determine relevant scan parameters from the DICOM info of first file (shot)
@@ -275,17 +275,44 @@ dims.extras = 0;
 % 	error('%s: Extraction of reference scans for # of dimensions of fids = ndims(fids) = %d not yet implemented', sFunctionName, noDims_fids);
 % end		% End of if noDims_fids == 2
 
-% Sort data for different numbers of data dimensions
+% Extract reference scans from data array for different numbers of data dimensions
 if(noRefScans > 0)
-	indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+Naverages+1):Nfiles];
-	indicesAverages	= [(noRefScans/2+1):(noRefScans/2+Naverages)];
+	% Data includes reference scans and averages
+	% Extract reference scans and averages into separate data objects and update
+	% information about data objects
+	% In this case here, half of the reference scans are stored at beginning and
+	% the other half at the end of the dimension for averages
+	%indicesRefScans		= [1:(noRefScans/2) (noRefScans/2+Naverages+1):Nfiles];
+	indicesRefScans		= [1:(noRefScans/2) (noRefScans/2+Naverages+1):sz(dims.averages)];
+	indicesAverages		= [(noRefScans/2+1):(noRefScans/2+Naverages)];
 	
-	fidsAverages = fids(:, indicesAverages);
-	fidsRefScans = fids(:, indicesRefScans);
+	% Use substruct indexing to extract selected data independent of # of
+	% dimensions of (squeezed) data object
+	% NOTE: For this to work, 'dims.averages', i.e. the index of the dimensions for
+	% averages must have been corretly determiined for the data array of FIDs
+	% Define indexing structure for (squeezed) data object (array)
+	% S.type is character vector or string scalar containing (), {}, or .,
+	% specifying the subscript type; here it is '()' that is used for indexing
+	% S.subs is cell array, character vector, or string scalar containing the
+	% actual subscripts; here it is cell array of {':'} for each data dimension
+	S.type					= '()';
+	S.subs					= repmat({':'}, 1, noDims_fids);
 	
-	specsAverages = fftshift(ifft(fidsAverages,[],dims.t),dims.t);
-	specsRefScans = fftshift(ifft(fidsRefScans,[],dims.t),dims.t);
+	% Select subscripts (indices) in dimension for averages of (squezzed) data object
+	% for averages that are nor reference scans
+	S.subs{dims.averages}	= indicesAverages;
+	fidsAverages			= subsref(fids, S);
+	
+	% Select subscripts (indices) in dimension for averages of (squezzed) data object
+	% for reference scans
+	S.subs{dims.averages}	= indicesRefScans;
+	fidsRefScans			= subsref(fids, S);
+
+	% Compute spectra in frequency domain
+	specsAverages	= fftshift(ifft(fidsAverages,[],dims.t),dims.t);
+	specsRefScans	= fftshift(ifft(fidsRefScans,[],dims.t),dims.t);
 else
+	% No reference scans in data included
 	fidsAverages	= fids;
 	specsAverages	= fftshift(ifft(fidsAverages,[],dims.t),dims.t);
 end			% End of if(noRefScans > 0)
