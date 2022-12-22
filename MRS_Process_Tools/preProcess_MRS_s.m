@@ -398,25 +398,25 @@ switch dataType
 		error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
 end		% End of switch dataType 
 				
-% if( strcmp(dataType, 'mrs_w') )
-% 	% MR spectrum is provided together with unsuppressed water signal
-% 	if isempty(filename_w)
-% 		error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
-% 	end
-% 	disp('Data is MR spectrum with additional unsuppressed water signal ...');
-% 	with_water		= true;
-% else
-% 	% Either MR spectrum is unsuppressed water signal ('water') itself or MR spectrum is 
-% 	% provided without unsuppressed water signal
-% 	if( strcmp(dataType, 'water') )
-% 		disp('MR spectrum is unsuppressed water signal itself ...');
-% 	else
-% 		disp('Data is MR spectrum without additional unsuppressed water signal ...');
-% 	end
-% 	with_water		= false;
-%     out_w			= struct([]);
-%     out_w_noproc	= struct([]);
-% end
+% Select parameters specifc to the respective MRS sequence 
+% (e.g. # of subspectra have to be determined for MRS DICOM data prior to file loading)
+switch seqType
+	case {'PRESS', 'STEAM', 'sLASER'}
+		% # of subspectra
+		NoSubSpectra	= 1;		
+	case 'SPECIAL'
+		% # of subspectra
+		% Subspectra encoded as averages (and not as subspectra)
+		NoSubSpectra	= 1;
+	case 'MEGA-PRESS'
+		% # of subspectra
+		% Edit_ON, Edit_OFF, and difference spectrum
+		NoSubSpectra	= 3;
+		
+	otherwise
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		
+end		% End of switch seqType
 disp(sMsg_newLines);
 
 % Read in the 'main' data together with possibly existing reference scans and, 
@@ -425,7 +425,7 @@ disp(sMsg_newLines);
 % Selects data loading function depending on data type
 %out_raw				= io_loadspec_twix([dirString filename]);
 if(isIMA)
-    [out_raw, out_ref_raw]  = io_loadspec_IMA_s(dirString);
+    [out_raw, out_ref_raw]  = io_loadspec_IMA_s(dirString, NoSubSpectra);
 else
     [out_raw, out_ref_raw]	= io_loadspec_twix_s([dirString filename]);
 end
@@ -453,7 +453,7 @@ if with_water
         if isempty(dirString_w)
             error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
 		else
-			out_w_raw		= io_loadspec_IMA_s(dirString_w);
+			out_w_raw		= io_loadspec_IMA_s(dirString_w, NoSubSpectra);
 		end
     else
         if isempty(dirString_w)
