@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,newColsTable,noColsToMove,strOutDir,strSheet,strRange,bUseTemplate,fullPath_Template);
+% [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,newColsTable,noColsToMove,strOutDir,strSheet,strRange,bWriteVariableNames,bUseTemplate,fullPath_Template);
 % 
 % DESCRIPTION:
 % Function that reads in results from metabolite quantification from a (.csv) file into a
@@ -30,6 +30,8 @@
 % strRange			= String variable that specifies range of fields or starting field on
 %						sheet in Excel file, 
 %						to which final table of results is saved/copied to
+% bWriteVariableNames = Boolean that specifies whether variable names for data in table
+%						are also written to spreadsheet in Excel
 % bUseTemplate		= Boolean that specifies whether a (Excel) template file is copied to 
 %					 
 % fullPath_Template	= (Optional) String variable for full path of (Excel) template file
@@ -40,11 +42,11 @@
 %						(initial table of results plus modifications)
 %
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2022; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2022, 2023; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,newColsTable,noColsToMove,strOutDir,strSheet,strRange,bUseTemplate,fullPath_Template)
+function [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,newColsTable,noColsToMove,strOutDir,strSheet,strRange,bWriteVariableNames,bUseTemplate,fullPath_Template)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -59,7 +61,7 @@ disp(sMsg_newLines);
 
 
 %% Check on # of input arguments and assign default values to variables, if required
-maxNargin	= 9;
+maxNargin	= 10;
 if nargin<maxNargin
 	fullPath_Template = '';
 end
@@ -110,7 +112,8 @@ if bUseTemplate
 	end
 end
 
-% Write table to selected sheet and range of newly copied/created Excel file
-writetable(resultsTable_final, fullFileName_Out, 'Sheet', strSheet, 'Range', strRange);
+% Write table to selected sheet and range of newly copied/created Excel file; variable
+% names are included or not based on user input
+writetable(resultsTable_final, fullFileName_Out, 'Sheet', strSheet, 'Range', strRange, 'WriteVariableNames', bWriteVariableNames);
 
 
