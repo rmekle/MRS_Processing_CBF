@@ -5,7 +5,9 @@
 %% Script to run LCModel quantification on a list of files of magnetic resonance 
 %% spectroscopy (MRS) data
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022,
+% 2023;
+% Ivo Opitz, Charite Universitätsmedizin Berlin, Germany, 2022;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,9 +28,9 @@ disp(sMsg_newLines);
 %dirString_Out			= '';
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '7T_KCL';		% '3T_Trauma';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
-seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+strStudy				= '3T_Dopa';		% '3T_Trauma';	% '3T_Dopa';	% '7T_KCL';	
+strVOI					= 'OCC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';	% 'OCC';
+seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
 % strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 % strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
@@ -47,9 +49,9 @@ bECC_In					= 0;
 
 % Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'HC';		% 'GM';	% 'WM';	% 'HC';	% 'PCG';
-strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
-b0nratio				= 1;
+strTissue				= 'OCC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strAnalysisData			= 'MRS_editOFF';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+b0nratio				= 0;
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
 charWaterScaling		= 'Yes';		% 'Yes';	'No';
@@ -68,7 +70,7 @@ outDir_AddControl				= '';
 switch seqType_MRS
 	case 'SPECIAL'
 		% For 3T Potsdam pain study and SPECIAL
-		dirBasis_Add1					= 'Basis_Sets_Ralf/Basis_SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
+		dirBasis_Add1					= 'Basis_Sets_SPECIAL/Basis_SPECIAL_SE/3TBasis_new_withAcquired_MM_Verio/';
 		LCM_Basis						= '3T_sim_TE8-5_mac_ac.basis';
 		dirControl_Add1					= 'Other/';
 		LCM_Control						= '3T_RAW_mac_shortTE_ACC_water_nratio0';
@@ -90,12 +92,13 @@ switch seqType_MRS
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Method2';
 			
 			% Basis sets and control files for MM-suppressed (symmetric) editing
-			dirBasis_Add1					= 'Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_JimMurdoch/';
-			LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
+			dirBasis_Add1					= 'Basis_Sets_MEGA-PRESS/3TBasis_JimMurdoch/';
+			LCM_Basis						= '3t_Siemens_TE68_MM_symmetric_MEGAPRESS_feb2023_DIFF.basis';
+			%LCM_Basis						= '3t_Siemens_TE68_MM_symmetric_MEGAPRESS_feb2023_DIFF.basis';
 			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK06';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK50';
@@ -103,7 +106,7 @@ switch seqType_MRS
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config1_185to41_DK06';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config3_185to41_mega-press-3';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config3_185to41_mega-press-3_dowsF';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config3_185to41_mega-press-3_dowsF';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config4_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config5_185to41_DK03';
@@ -125,11 +128,21 @@ switch seqType_MRS
 		else
 			% MRS_editOFF
 			% Basis sets and control files for water-symmetric editing
-			dirBasis_Add1					= 'Basis_Sets_Ralf/Basis_MEGA-PRESS/3TBasis_PurdueU/';
-			LCM_Basis						= '3t_IU_MP_te68_748_ppm_inv_Edit-Off.basis';
+			%dirBasis_Add1					= 'Basis_Sets_MEGA-PRESS/3TBasis_PurdueU/';
+			%LCM_Basis						= '3t_IU_MP_te68_748_ppm_inv_Edit-Off.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0_noECC';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water';
+
+			% Basis sets and control files for MM-suppressed (symmetric) editing
+			dirBasis_Add1					= 'Basis_Sets_MEGA-PRESS/3TBasis_JimMurdoch/';
+			LCM_Basis						= '3t_Siemens_TE68_MM_symmetric_MEGAPRESS_feb2023_edit-OFF.basis';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_NoLips09_13';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_NoLips09_13_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water_nratio0';
 			
 			% Set pattern to be searched for in filename of control file to shorten final
 			% name of output directory
@@ -155,7 +168,7 @@ switch seqType_MRS
 		switch strStudy
 			case '3T_Trauma'
 				% svs_dkd_slaser with TE = 23 ms
-				dirBasis_Add1					= 'Basis_Sets_DineshKD/Basis_sLASER/';
+				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_DineshKD/';
 				LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
 				dirControl_Add1					= 'LCM_Control_sLASER_dkd_TE23/';
 				switch strTissue
@@ -179,7 +192,7 @@ switch seqType_MRS
 				end				% End of switch strTissue			
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
-				dirBasis_Add1					= 'Basis_Sets_Gosia/Basis_sLASER/';
+				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_Gosia/';
 				LCM_Basis						= 'basis_sLASER_7T_TE=35.BASIS';
 				dirControl_Add1					= 'LCM_Control_sLASER_eja_TE40/';
 				switch strTissue
@@ -738,31 +751,77 @@ if( noFiles_table > 0 )
 			fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', seqType_MRS);
 			bCopyIntoExcel			= 0;
 		case 'MEGA-PRESS'
-			% Insert selected # of columns for additional parameters, e.g. water linewidth (LW_H2O),
-			% into table of results
-			% Create two variables of empty strings and zeros with fitting variable names and
-			% same # of rows as table of results; create table from these two variables,
+			% Insert selected # of columns for additional parameters, e.g. water 
+			% linewidth (LW_H2O), into table of results
+			% Create new variables of empty strings and zeros with fitting variable names 
+			% and same # of rows as table of results; create table from these variables,
 			% use # of colums to be moved for reordering of columns within table,
-			% concatenate this table with table of results; then reorder columns in resulting
-			% table to obtain desired order of columns
+			% concatenate this table with table of results; then reorder columns in 
+			% resulting table to obtain desired order of columns 
+			% or alternatively, only delete selected column(s) from table of results, do 
+			% NOT insert any new columns, and only copy remaining table into Excel
+			% Set variables for deleting and/or moving columns
+			% Select whether variable names for data in table are also written to Excel
 			L_DOPA					= strings(noFiles_MRS, 1);
 			LW_H2O					= zeros(noFiles_MRS, 1);
-			newColsTable_Add		= table(L_DOPA, LW_H2O);
+			GABA_Conc				= zeros(noFiles_MRS, 1);
+			%newColsTable_Add		= table(L_DOPA, LW_H2O, GABA_Conc);
 			nLastRowsToDel			= 3;
+			bDeleteColumns			= true;
+			IndicesColsToDel		= 1;
+			bMoveColumns			= false;
 			nColsToMove				= 1;
+			bToWriteVariableNames	= false;
+			
+			% Select Excel template file depending on selected control file
 			bUseTemplateFile		= 1;
-			fullPath_TemplateFile	= [dirDataAnalysis '3T_MRS_DOPA_Analysis_Template.xltx'];
+			astrTemplateFilesExcel	= ["3T_MRS_DOPA_Analysis_Template.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"];
+			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
+			% Init template file 
+			templateFileExcel		= char(astrTemplateFilesExcel(1));
+			substr1					= "NoLips09_13";
+
+			% If substring is in filename of LCModel control file, change Excel template 
+			% filename to template filename that also contains substring
+			% (assuming that at maximum only one template filename contains substring)
+			if contains(string(LCM_Control), substr1) == 1
+				for ind=1 : 1 : noTemplateFilesExcel
+					if contains(astrTemplateFilesExcel(ind), substr1) == 1
+						templateFileExcel	= char(astrTemplateFilesExcel(ind));
+					end
+				end
+			end		% End of if contains(string(LCM_Control), substr1) == 1
+			fullPath_TemplateFile	= [dirDataAnalysis templateFileExcel];
+			disp(sMsg_newLines);
+			fprintf('templateFileExcel \t= %s\n\n', templateFileExcel);
 			
 			% Select sheet and range of Excel file, where table of results is to be saved
+			% and # of columns to be inserted into final table
 			% depending on type of spectra being analyzed
 			if strcmp(strAnalysisData, 'MRS_diff')
 				% MRS_diff
 				strSheetSel				= 'MRS_Diff_All';
-				strRangeSel				= 'A4';
+				if bDeleteColumns
+					% Select range in Excel for inserting table after only deleting
+					% columns
+					strRangeSel				= 'E5';
+				else
+					% Select range in Excel for inserting table after adding and moving 
+					% columns
+					strRangeSel				= 'A5';		% 'A4';
+				end
+				newColsTable_Add		= table(L_DOPA, LW_H2O, GABA_Conc);
 			else
 				% MRS_editOFF
-				trSheetSel				= 'MRS_editOFF_All';
-				strRangeSel				= 'A4';
+				strSheetSel				= 'MRS_editOFF_All';	% 'MRS_editOFF_All';	% 'MRS_editOFF_All_noECC';	
+				if bDeleteColumns
+					% Select range in Excel for only deleting columns in table
+					strRangeSel				= 'D5';
+				else
+					% Select range in Excel for adding and moving columns to create table
+					strRangeSel				= 'A5';		% 'A4';
+				end
+				newColsTable_Add		= table(L_DOPA, LW_H2O);
 			end		% End of if strcmp(strAnalysisData, 'MRS_diff')		
 		case 'sLASER'
 			fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', seqType_MRS);
@@ -774,10 +833,13 @@ if( noFiles_table > 0 )
 
 	% Save/copy results from .csv file also into (formatted) Excel file, if selected
 	if bCopyIntoExcel
-		% Insert selected # of columns for additional parameters, e.g. water linewidth (LW_H2O),
-		% into table of results, reorder final table of results and save it into Excel
-		% file; Excel file will be formatted, if Excel template file is used
-		[resultsTable_Out] = copyMetabResults_IntoExcel_s(fullFileName_all,nLastRowsToDel,newColsTable_Add,nColsToMove,outDir,strSheetSel,strRangeSel,bUseTemplateFile,fullPath_TemplateFile);
+		% Insert selected # of columns for additional parameters, e.g. water linewidth 
+		% (LW_H2O), into table of results, reorder final table of results and save it into Excel
+		% Excel file;
+		% or alternatively, only delete selected column(s) from table of results, do 
+		% NOT insert any new columns, and only copy remaining table into Excel
+		% Excel file will be formatted, if Excel template file is used
+		[resultsTable_Out] = copyMetabResults_IntoExcel_s(fullFileName_all,nLastRowsToDel,bDeleteColumns,IndicesColsToDel,bMoveColumns,nColsToMove,newColsTable_Add,outDir,strSheetSel,strRangeSel,bToWriteVariableNames,bUseTemplateFile,fullPath_TemplateFile);
 	end		% End of if bCopyIntoExcel
 	
 end		% End of if( noFiles_table > 0 )
