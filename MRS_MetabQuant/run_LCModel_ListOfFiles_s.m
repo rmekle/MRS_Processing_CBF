@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%disp(sMsg_newLines);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % run_LCModel_ListOfFiles_s.m
 %
@@ -139,6 +139,8 @@ switch seqType_MRS
 			LCM_Basis						= '3t_Siemens_TE68_MM_symmetric_MEGAPRESS_feb2023_edit-OFF.basis';
 			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_nratio0';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_NoCrCH2';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_NoCrCH2_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_NoLips09_13';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_editOFF_TE68_DOPA_water_NoLips09_13_nratio0';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_editOFF_TE68_GM_water';
@@ -775,22 +777,39 @@ if( noFiles_table > 0 )
 			
 			% Select Excel template file depending on selected control file
 			bUseTemplateFile		= 1;
-			astrTemplateFilesExcel	= ["3T_MRS_DOPA_Analysis_Template.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"];
+			astrTemplateFilesExcel	= ["3T_MRS_DOPA_Analysis_Template.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"];
 			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
-			% Init template file 
+			% Init template file and list substrings and additional variables
 			templateFileExcel		= char(astrTemplateFilesExcel(1));
-			substr1					= "NoLips09_13";
+			substr1					= "NoCrCH2";
+			substr2					= "NoLips09_13";
+			bSubstr1InTemplate		= 0;
+			bSubstr2InTemplate		= 0;
 
-			% If substring is in filename of LCModel control file, change Excel template 
-			% filename to template filename that also contains substring
+			% If specific substring is in filename of LCModel control file, change Excel 
+			% template filename to template filename that also contains that substring
 			% (assuming that at maximum only one template filename contains substring)
 			if contains(string(LCM_Control), substr1) == 1
 				for ind=1 : 1 : noTemplateFilesExcel
 					if contains(astrTemplateFilesExcel(ind), substr1) == 1
 						templateFileExcel	= char(astrTemplateFilesExcel(ind));
+						bSubstr1InTemplate	= 1;
 					end
 				end
 			end		% End of if contains(string(LCM_Control), substr1) == 1
+			if contains(string(LCM_Control), substr2) == 1
+				for ind=1 : 1 : noTemplateFilesExcel
+					if contains(astrTemplateFilesExcel(ind), substr2) == 1
+						templateFileExcel	= char(astrTemplateFilesExcel(ind));
+						bSubstr1InTemplate	= 2;
+					end
+				end
+			end		% End of if contains(string(LCM_Control), substr2) == 1
+			% Check whether more than one substring was contained in LCModel control file
+			% and Excel template filename
+			if bSubstr1InTemplate && bSubstr2InTemplate
+				warning('%s: Multiple substrings found in LCModel control file: bSubstr1InclTemplate = %d \t bSubstr2InclTemplate = %d\n\n', sFunctionName, bSubstr1InTemplate, bSubstr2InTemplate);
+			end
 			fullPath_TemplateFile	= [dirDataAnalysis templateFileExcel];
 			disp(sMsg_newLines);
 			fprintf('templateFileExcel \t= %s\n\n', templateFileExcel);
