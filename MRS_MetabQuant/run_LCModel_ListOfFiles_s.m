@@ -777,7 +777,7 @@ if( noFiles_table > 0 )
 			
 			% Select Excel template file depending on selected control file
 			bUseTemplateFile		= 1;
-			astrTemplateFilesExcel	= ["3T_MRS_DOPA_Analysis_Template.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"];
+			astrTemplateFilesExcel	= ["3T_MRS_DOPA_Analysis_Template.xltx"; "3T_MRS_DOPA_Analysis_Template_NoCrCH2.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"];
 			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
 			% Init template file and list substrings and additional variables
 			templateFileExcel		= char(astrTemplateFilesExcel(1));
