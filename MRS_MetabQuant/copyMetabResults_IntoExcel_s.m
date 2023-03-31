@@ -142,6 +142,11 @@ end
 
 % Write table to selected sheet and range of newly copied/created Excel file; variable
 % names are included or not based on user input
-writetable(resultsTable_final, fullFileName_Out, 'Sheet', strSheet, 'Range', strRange, 'WriteVariableNames', bWriteVariableNames);
+% Set 'AutoFitWidth' option to false to preserve column width of the Excel template file
+% (Default setting for this option is true, but since only values, i.e. numbers, and no
+% variable names are written to the template file, the column width is then adjusted to
+% only fit the numbers)
+%writetable(resultsTable_final, fullFileName_Out, 'Sheet', strSheet, 'Range', strRange, 'WriteVariableNames', bWriteVariableNames);
+writetable(resultsTable_final, fullFileName_Out, 'Sheet', strSheet, 'Range', strRange, 'WriteVariableNames', bWriteVariableNames, 'AutoFitWidth', false);
 
 
