@@ -31,7 +31,7 @@ filename_w_In			= '';
 strStudy				= '3T_Dopa';		% '3T_Trauma';	% '3T_Dopa';	% '7T_KCL';	
 strVOI					= 'OCC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';	% 'OCC';
 seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
+dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';	% 'mrs_w';
 % strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 % strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
 % leftshift_In			= 0;
@@ -50,14 +50,21 @@ bECC_In					= 0;
 % Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
 strTissue				= 'OCC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
-strAnalysisData			= 'MRS_editOFF';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 b0nratio				= 0;
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
-charWaterScaling		= 'Yes';		% 'Yes';	'No';
+charWaterScaling		= 'No';		% 'Yes';	'No';
 strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 % Set parameters for copying results from .csv file into formatted Excel file
 bCopyIntoExcel			= 1;
+bTestOutput				= 0;
+
+% Check(s) on oarameter settings
+% For (MEGA-PRESS) difference spectra, usually water scaling cannot be used
+if strcmp(strAnalysisData, 'MRS_diff') && strcmp(charWaterScaling, 'Yes')
+	error('%s: ERROR: DIfference spectra set to be analyzed with water scaling: strAnalysisData = %s\t charwaterScaling = %s!', sFunctionName, strAnalysisData, charWaterScaling);
+end
 
 
 %% Select basis set and control file for LCModel analysis depending on sequence type
@@ -382,6 +389,14 @@ end		% End of switch seqType_MRS
 % if numel(dir(dirData)) <= 2, then folder is empty
 if (not(isfolder(dirData))) && (numel(dir(dirData)) <= 2)
     error('%s: Data directory %s does NOT exist or is empty!\n', sFunctionName, dirData);
+end
+
+% Use test output directory, if selected
+if bTestOutput
+	% Using fileparts on a pure path (i.e. no filename) returnd the path without the last
+	% file separator
+	[out_filepath,out_name,out_ext]		= fileparts(outDir);
+	outDir								= [out_filepath, '_Test', filesep];
 end
 
 % If directory for results does not exist, create it
@@ -775,44 +790,19 @@ if( noFiles_table > 0 )
 			nColsToMove				= 1;
 			bToWriteVariableNames	= false;
 			
-			% Select Excel template file depending on selected control file
+			% List available Excel template files 
 			bUseTemplateFile		= 1;
 			astrTemplateFilesExcel	= ["3T_MRS_DOPA_Analysis_Template.xltx"; "3T_MRS_DOPA_Analysis_Template_NoCrCH2.xltx"; "3T_MRS_DOPA_Analysis_Template_NoLips09_13.xltx"];
 			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
-			% Init template file and list substrings and additional variables
+
+			% Init # of template files used, template filename and list substrings and 
+			% additional variables
+			noTemplateFilesUsed		= 1;
 			templateFileExcel		= char(astrTemplateFilesExcel(1));
 			substr1					= "NoCrCH2";
 			substr2					= "NoLips09_13";
 			bSubstr1InTemplate		= 0;
 			bSubstr2InTemplate		= 0;
-
-			% If specific substring is in filename of LCModel control file, change Excel 
-			% template filename to template filename that also contains that substring
-			% (assuming that at maximum only one template filename contains substring)
-			if contains(string(LCM_Control), substr1) == 1
-				for ind=1 : 1 : noTemplateFilesExcel
-					if contains(astrTemplateFilesExcel(ind), substr1) == 1
-						templateFileExcel	= char(astrTemplateFilesExcel(ind));
-						bSubstr1InTemplate	= 1;
-					end
-				end
-			end		% End of if contains(string(LCM_Control), substr1) == 1
-			if contains(string(LCM_Control), substr2) == 1
-				for ind=1 : 1 : noTemplateFilesExcel
-					if contains(astrTemplateFilesExcel(ind), substr2) == 1
-						templateFileExcel	= char(astrTemplateFilesExcel(ind));
-						bSubstr1InTemplate	= 2;
-					end
-				end
-			end		% End of if contains(string(LCM_Control), substr2) == 1
-			% Check whether more than one substring was contained in LCModel control file
-			% and Excel template filename
-			if bSubstr1InTemplate && bSubstr2InTemplate
-				warning('%s: Multiple substrings found in LCModel control file: bSubstr1InclTemplate = %d \t bSubstr2InclTemplate = %d\n\n', sFunctionName, bSubstr1InTemplate, bSubstr2InTemplate);
-			end
-			fullPath_TemplateFile	= [dirDataAnalysis templateFileExcel];
-			disp(sMsg_newLines);
-			fprintf('templateFileExcel \t= %s\n\n', templateFileExcel);
 			
 			% Select sheet and range of Excel file, where table of results is to be saved
 			% and # of columns to be inserted into final table
@@ -829,7 +819,23 @@ if( noFiles_table > 0 )
 					% columns
 					strRangeSel				= 'A5';		% 'A4';
 				end
+				% Set parameters for additional table to be saved into Excel
 				newColsTable_Add		= table(L_DOPA, LW_H2O, GABA_Conc);
+
+				% Select set of template files, to which data are copied to
+				% Init first value of selected template files to avoid an empty array
+				indTemplateFiles			= [1 2 3];
+				noTemplateFilesUsed			= length(indTemplateFiles);
+				astrTemplatesSelected		= strings([noTemplateFilesUsed,1]);
+				astrTemplatesSelected(1)	= astrTemplateFilesExcel(1);
+				for j=1 : 1 : noTemplateFilesUsed
+					astrTemplatesSelected(j)	= astrTemplateFilesExcel(indTemplateFiles(j));
+				end
+
+				% Set additions to Excel file to be able to distinguish Excel files
+				% created from multiple Excel templates and display info
+				astrExelFileAdds	= ["_OFF_water"; "_OFF_NoCrCH2"; "_OFF_NoLips09_13"];
+
 			else
 				% MRS_editOFF
 				strSheetSel				= 'MRS_editOFF_All';	% 'MRS_editOFF_All';	% 'MRS_editOFF_All_noECC';	
@@ -840,8 +846,79 @@ if( noFiles_table > 0 )
 					% Select range in Excel for adding and moving columns to create table
 					strRangeSel				= 'A5';		% 'A4';
 				end
+				% Set parameters for additional table to be saved into Excel
 				newColsTable_Add		= table(L_DOPA, LW_H2O);
-			end		% End of if strcmp(strAnalysisData, 'MRS_diff')		
+
+				% Select set of template files, to which data are copied to	
+				% Init first value of selected template files to avoid an empty array
+				%indTemplateFiles		= [1];
+				%noTemplateFilesUsed		= length(indTemplateFiles);
+				noTemplateFilesUsed			= 1;
+				astrTemplatesSelected		= strings([noTemplateFilesUsed,1]);
+				astrTemplatesSelected(1)	= astrTemplateFilesExcel(1);
+
+				% If specific substring is in filename of LCModel control file, change 
+				% Excel template filename to template filename that also contains that 
+				% substring
+				% (assuming that at maximum only one template filename contains substring)
+				if contains(string(LCM_Control), substr1) == 1
+					for ind=1 : 1 : noTemplateFilesExcel
+						if contains(astrTemplateFilesExcel(ind), substr1) == 1
+							%templateFileExcel	= char(astrTemplateFilesExcel(ind));
+							astrTemplatesSelected(1)	= astrTemplateFilesExcel(ind);
+							bSubstr1InTemplate			= 1;
+						end
+					end
+				end		% End of if contains(string(LCM_Control), substr1) == 1
+				if contains(string(LCM_Control), substr2) == 1
+					for ind=1 : 1 : noTemplateFilesExcel
+						if contains(astrTemplateFilesExcel(ind), substr2) == 1
+							%templateFileExcel	= char(astrTemplateFilesExcel(ind));
+							astrTemplatesSelected(1)	= astrTemplateFilesExcel(ind);
+							bSubstr2InTemplate			= 1;
+						end
+					end
+				end		% End of if contains(string(LCM_Control), substr2) == 1
+				% Check whether more than one substring was contained in LCModel control file
+				% and Excel template filename
+				if bSubstr1InTemplate && bSubstr2InTemplate
+					warning('%s: Multiple substrings found in LCModel control file: bSubstr1InclTemplate = %d \t bSubstr2InclTemplate = %d\n\n', sFunctionName, bSubstr1InTemplate, bSubstr2InTemplate);
+				end
+
+				% Set additions to Excel file to be able to distinguish Excel files
+				% created from multiple Excel templates and display info
+				astrExelFileAdds	= [""];
+
+			end		% End of if strcmp(strAnalysisData, 'MRS_diff')
+
+			% Display info
+			disp(sMsg_newLines);
+			fprintf('strAnalysisData \t= %s\t\tbCopyIntoExcel \t= %d\n\n', strAnalysisData, bCopyIntoExcel);
+
+			% Save/copy results from .csv file also into (formatted) Excel file(s), if
+				% selected
+				if bCopyIntoExcel
+					% Insert selected # of columns for additional parameters, e.g. water
+					% linewidth (LW_H2O), into table of results, reorder final table of
+					% results and save it into Excelfile;
+					% or alternatively, only delete selected column(s) from table of
+					% results, do NOT insert any new columns, and only copy remaining
+					% table into Excel
+					% Excel file will be formatted, if Excel template file is used
+					% If data are copied into multiple Excel files, all formatting remains
+					% the same, only resulting filename and Excel template file change
+					for j=1 : 1 : noTemplateFilesUsed
+						templateFileExcel		= char(astrTemplatesSelected(j));
+						% Check for empty template filename, if template to be used
+						if bUseTemplateFile && isempty(templateFileExcel)
+							error('%s: ERROR: bUseTemplateFile = %d, but empty templateFileExcel = %s!', sFunctionName, bUseTemplateFile, templateFileExcel);
+						end				
+						fprintf('No. of template = %d\t\ttemplateFileExcel \t= %s\n', j, templateFileExcel);
+						fullPath_TemplateFile	= [dirDataAnalysis templateFileExcel];
+						FileName_Excel			= [FileName_all, char(astrExelFileAdds(j)), '.xlsx'];				
+						[resultsTable_Out]		= copyMetabResults_IntoExcel_s(fullFileName_all,nLastRowsToDel,bDeleteColumns,IndicesColsToDel,bMoveColumns,nColsToMove,newColsTable_Add,outDir,FileName_Excel,strSheetSel,strRangeSel,bToWriteVariableNames,bUseTemplateFile,fullPath_TemplateFile);
+					end			% End of for templ=1 : 1 : noTemplateFilesUsed
+				end		% End of if bCopyIntoExcel
 		case 'sLASER'
 			fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', seqType_MRS);
 			bCopyIntoExcel			= 0;
@@ -850,16 +927,16 @@ if( noFiles_table > 0 )
 			error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 	end			% End of switch seqType_MRS
 
-	% Save/copy results from .csv file also into (formatted) Excel file, if selected
-	if bCopyIntoExcel
-		% Insert selected # of columns for additional parameters, e.g. water linewidth 
-		% (LW_H2O), into table of results, reorder final table of results and save it into Excel
-		% Excel file;
-		% or alternatively, only delete selected column(s) from table of results, do 
-		% NOT insert any new columns, and only copy remaining table into Excel
-		% Excel file will be formatted, if Excel template file is used
-		[resultsTable_Out] = copyMetabResults_IntoExcel_s(fullFileName_all,nLastRowsToDel,bDeleteColumns,IndicesColsToDel,bMoveColumns,nColsToMove,newColsTable_Add,outDir,strSheetSel,strRangeSel,bToWriteVariableNames,bUseTemplateFile,fullPath_TemplateFile);
-	end		% End of if bCopyIntoExcel
+% 	% Save/copy results from .csv file also into (formatted) Excel file, if selected
+% 	if bCopyIntoExcel
+% 		% Insert selected # of columns for additional parameters, e.g. water linewidth 
+% 		% (LW_H2O), into table of results, reorder final table of results and save it 
+% 		% into Excel file;
+% 		% or alternatively, only delete selected column(s) from table of results, do 
+% 		% NOT insert any new columns, and only copy remaining table into Excel
+% 		% Excel file will be formatted, if Excel template file is used
+% 		[resultsTable_Out] = copyMetabResults_IntoExcel_s(fullFileName_all,nLastRowsToDel,bDeleteColumns,IndicesColsToDel,bMoveColumns,nColsToMove,newColsTable_Add,outDir,strSheetSel,strRangeSel,bToWriteVariableNames,bUseTemplateFile,fullPath_TemplateFile);
+% 	end		% End of if bCopyIntoExcel
 	
 end		% End of if( noFiles_table > 0 )
 
