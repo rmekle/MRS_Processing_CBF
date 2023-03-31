@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,bDeleteCols,indColsToDel,bMoveCols,noColsToMove,newColsTable,strOutDir,strSheet,strRange,bWriteVariableNames,bUseTemplate,fullPath_Template);
+% [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,bDeleteCols,indColsToDel,bMoveCols,noColsToMove,newColsTable,strOutDir,fileExcel,strSheet,strRange,bWriteVariableNames,bUseTemplate,fullPath_Template);
 % 
 % DESCRIPTION:
 % Function that reads in results from metabolite quantification from a (.csv) file into a
@@ -30,6 +30,7 @@
 % newColsTable		= Integer, # of columns to be added to original table of results
 % strOutDir			= String variable for the name of the output directory, i.e. the 
 %						directory, where all output files are saved to
+% fileExcel			= string variable, filename for output Excel file
 % strSheet			= String variable that specifies name of sheet in Excel file, 
 %						to which final table of results is saved/copied to
 % strRange			= String variable that specifies range of fields or starting field on
@@ -51,7 +52,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,bDeleteCols,indColsToDel,bMoveCols,noColsToMove,newColsTable,strOutDir,strSheet,strRange,bWriteVariableNames,bUseTemplate,fullPath_Template)
+function [resultsTable_final] = copyMetabResults_IntoExcel_s(fullFileName_In,noLastRowsToDel,bDeleteCols,indColsToDel,bMoveCols,noColsToMove,newColsTable,strOutDir,fileExcel,strSheet,strRange,bWriteVariableNames,bUseTemplate,fullPath_Template)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -66,7 +67,7 @@ disp(sMsg_newLines);
 
 
 %% Check on # of input arguments and assign default values to variables, if required
-maxNargin	= 13;
+maxNargin	= 14;
 if nargin<maxNargin
 	fullPath_Template = '';
 end
@@ -121,9 +122,14 @@ sz_final			= size(resultsTable_final);
 
 
 % Write table of results to (formatted) Excel file
-% Determine filename for Excel file
-[filepath_In,name_In,ext_In]	= fileparts(fullFileName_In);
-fullFileName_Out				= fullfile(strOutDir, [name_In, '.xlsx']);
+% Generate full path for Excel file; if corresponding input variable is empty,use filename
+% from.csv file (without file extension); otherwise use given input Excel filename
+if isempty(fileExcel)
+	[filepath_In,name_In,ext_In]	= fileparts(fullFileName_In);
+	fullFileName_Out				= fullfile(strOutDir, [name_In, '.xlsx']);
+else
+	fullFileName_Out				= fullfile(strOutDir, fileExcel);
+end
 
 % To use desired formatting in Excel, copy formatted Excel template to make it
 % formatted Excel file for results, if selected
