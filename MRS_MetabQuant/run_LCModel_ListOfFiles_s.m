@@ -61,10 +61,10 @@ bCopyIntoExcel			= 1;
 bTestOutput				= 0;
 
 % Check(s) on oarameter settings
-% For (MEGA-PRESS) difference spectra, usually water scaling cannot be used
-if strcmp(strAnalysisData, 'MRS_diff') && strcmp(charWaterScaling, 'Yes')
-	error('%s: ERROR: DIfference spectra set to be analyzed with water scaling: strAnalysisData = %s\t charwaterScaling = %s!', sFunctionName, strAnalysisData, charWaterScaling);
-end
+% % For (MEGA-PRESS) difference spectra, usually water scaling cannot be used
+% if strcmp(strAnalysisData, 'MRS_diff') && strcmp(charWaterScaling, 'Yes')
+% 	error('%s: ERROR: DIfference spectra set to be analyzed with water scaling: strAnalysisData = %s\t charwaterScaling = %s!', sFunctionName, strAnalysisData, charWaterScaling);
+% end
 
 
 %% Select basis set and control file for LCModel analysis depending on sequence type
@@ -781,7 +781,9 @@ if( noFiles_table > 0 )
 			% Select whether variable names for data in table are also written to Excel
 			L_DOPA					= strings(noFiles_MRS, 1);
 			LW_H2O					= zeros(noFiles_MRS, 1);
-			GABA_Conc				= zeros(noFiles_MRS, 1);
+			GABA_Ratio_tCr			= zeros(noFiles_MRS, 1);
+			GABA_Conc_tCr			= zeros(noFiles_MRS, 1);
+			GABA_Conc_NAA			= zeros(noFiles_MRS, 1);
 			%newColsTable_Add		= table(L_DOPA, LW_H2O, GABA_Conc);
 			nLastRowsToDel			= 3;
 			bDeleteColumns			= true;
@@ -813,14 +815,15 @@ if( noFiles_table > 0 )
 				if bDeleteColumns
 					% Select range in Excel for inserting table after only deleting
 					% columns
-					strRangeSel				= 'E5';
+					strRangeSel				= 'G5';		% 'E5';
 				else
 					% Select range in Excel for inserting table after adding and moving 
 					% columns
 					strRangeSel				= 'A5';		% 'A4';
 				end
 				% Set parameters for additional table to be saved into Excel
-				newColsTable_Add		= table(L_DOPA, LW_H2O, GABA_Conc);
+				%newColsTable_Add		= table(L_DOPA, LW_H2O, GABA_Conc);
+				newColsTable_Add		= table(L_DOPA, LW_H2O, GABA_Ratio_tCr, GABA_Conc_tCr, GABA_Conc_NAA);
 
 				% Select set of template files, to which data are copied to
 				% Init first value of selected template files to avoid an empty array
