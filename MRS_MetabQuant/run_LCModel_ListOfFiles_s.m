@@ -105,7 +105,7 @@ switch seqType_MRS
 			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK06';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK50';
@@ -128,6 +128,9 @@ switch seqType_MRS
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41_DK06';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK03';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK06';
 			
 			% Set pattern to be searched for in filename of control file to shorten final
 			% name of output directory
