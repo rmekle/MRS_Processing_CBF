@@ -81,7 +81,8 @@ params		= [];
 if ischar(listParams)
 	% Assume that values for only one parameter is to be extracted
 	noParams	= 1;
-	params		= zeros(noEntriesListing, 1);
+	params		= zeros(noEntriesListing, noParams);
+	%params		= zeros(noEntriesListing, 1);
 else
 	% Values for multiple parameters are to be extracted
 	error('%s: ERROR: Extraction of values for multiple parameters not yet implemented!', sFunctionName);
