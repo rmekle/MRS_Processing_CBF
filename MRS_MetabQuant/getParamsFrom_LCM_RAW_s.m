@@ -62,13 +62,13 @@ if isempty(strDirIn)
 end
 
 
-%% Determine all files saved in LCModel .RAW files
+%% Determine all files saved in LCModel .RAW files in input directory
 % (assuming that all data files are included in the same directory)
 % (On Linux, file list in Matlab also includes the two directories "." and "..", which
 % means that the actual # of files in the directory is (# of entries in list - 2;
 % however, if dir is used to list specific files, e.g. using a file extension, these two 
 % directories are not included in the resulting list; 
-% NOTE that name of directory has to  have a file separator, i.e. a slash, at the end for 
+% NOTE that name of directory has to have a file separator, i.e. a slash, at the end for 
 % the latter to work)
 %cd(strDirIn);
 structFileListing		= dir([strDirIn, '*.RAW']);
