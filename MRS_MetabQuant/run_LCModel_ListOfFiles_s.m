@@ -51,7 +51,7 @@ bECC_In					= 0;
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
 strTissue				= 'OCC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
-b0nratio				= 0;
+b0nratio				= 0;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
 charWaterScaling		= 'No';		% 'Yes';	'No';
