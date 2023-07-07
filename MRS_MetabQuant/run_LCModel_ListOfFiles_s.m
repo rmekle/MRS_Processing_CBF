@@ -128,9 +128,9 @@ switch seqType_MRS
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41_DK06';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK03';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK06';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK06';
 			
 			% Set pattern to be searched for in filename of control file to shorten final
 			% name of output directory
@@ -818,7 +818,7 @@ if( noFiles_table > 0 )
 				if bDeleteColumns
 					% Select range in Excel for inserting table after only deleting
 					% columns
-					strRangeSel				= 'G5';		% 'E5';
+					strRangeSel				= 'H5';		% 'G5';		% 'E5';
 				else
 					% Select range in Excel for inserting table after adding and moving 
 					% columns
@@ -847,7 +847,7 @@ if( noFiles_table > 0 )
 				strSheetSel				= 'MRS_editOFF_All';	% 'MRS_editOFF_All';	% 'MRS_editOFF_All_noECC';	
 				if bDeleteColumns
 					% Select range in Excel for only deleting columns in table
-					strRangeSel				= 'D5';
+					strRangeSel				= 'E5';		% 'D5';
 				else
 					% Select range in Excel for adding and moving columns to create table
 					strRangeSel				= 'A5';		% 'A4';
