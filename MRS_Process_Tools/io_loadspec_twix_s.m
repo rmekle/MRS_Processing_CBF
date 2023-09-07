@@ -674,7 +674,9 @@ out.gamma=gamma;
 %FILLING IN THE FLAGS
 out.flags.writtentostruct=1;
 out.flags.gotparams=1;
-out.flags.leftshifted=0;
+% CBF: Indicate whether data were already leftshifted, e.g. for eja sequences from Minn
+%out.flags.leftshifted=0;
+out.flags.leftshifted=bLeftshifted;
 out.flags.filtered=0;
 out.flags.zeropadded=0;
 out.flags.freqcorrected=0;
