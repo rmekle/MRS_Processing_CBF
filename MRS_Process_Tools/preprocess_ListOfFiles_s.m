@@ -4,7 +4,8 @@
 %
 %% Script to preprocess a list of files of magnetic resonance spectroscopy (MRS) data
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022,
+% 2023; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,13 +27,13 @@ disp(sMsg_newLines);
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '7T_KCL';		% '3T_Trauma';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	
+strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
+dataType_MRS			= 'mrs_w_ref';			% 'mrs_w_ref';		'mrs_w';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 0;
+strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 strMinUserIn_In			= 'y';
@@ -40,7 +41,7 @@ aaDomain_In				= 'f';			% 'f';		% 't';
 tmaxin_In				= 0.2;
 iterin_In				= 20;
 alignSS_In				= 2;
-bECC_In					= 0;
+bECC_In					= 1;
 bPhaseCorrFreqShift_In	= 0;
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
