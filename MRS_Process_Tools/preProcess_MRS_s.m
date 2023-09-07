@@ -1670,6 +1670,7 @@ switch seqType
 		
 		%% Write processed and unprocessed data (spectra water, and reference signals) to file, if user selected
 		% Use .RAW format for LCModel
+		% Use .mrui format for jMRUI
 		% Ask for user input for writing results to file only, if minimum user input is 
 		% NOT selected
 		% If minimum user input selected, writing results to file is not optional
@@ -1680,19 +1681,33 @@ switch seqType
 		if wrt=='y' || wrt=='Y'
 			disp(sMsg_newLines);
 			fprintf('%s: Writing results to file ...\n\n', sFunctionName);
+			% LCModel output format
 			RF = io_writelcm(out,[outDirString outFileName '_processed_lcm' '.RAW'],out.te);
 			RF = io_writelcm(out_noproc,[outDirString outFileName '_unprocessed_lcm' '.RAW'],out_noproc.te);
+			% jMRUI output format
+			RF_jmrui = io_writejmrui(out,[outDirString outFileName '_processed_jmrui' '.mrui']);
+			RF_jmrui = io_writejmrui(out_noproc,[outDirString outFileName '_unprocessed_jmrui' '.mrui']);
 			if with_water
 				% Save water signal
+				% LCModel output format
 				RF_w = io_writelcm(out_w,[outDirString  outFileName_w '_processed_lcm' '.RAW'],out_w.te);
 				RF_w = io_writelcm(out_w_noproc,[outDirString outFileName_w '_unprocessed_lcm' '.RAW'],out_w_noproc.te);
+				% jMRUI output format
+				RF_w_jmrui = io_writejmrui(out_w,[outDirString  outFileName_w '_processed_jmrui' '.mrui']);
+				RF_w_jrmui = io_writejmrui(out_w_noproc,[outDirString outFileName_w '_unprocessed_jmrui' '.mrui']);
 			end		% End of if with_water
 			if with_ref
 				% Save (water) reference signals
+				% LCModel output format
 				RF_ref_ECC   = io_writelcm(out_ref_ECC,[outDirString  outFileName_ref_ECC '_processed_lcm' '.RAW'],out_ref_ECC.te);
 				RF_ref_ECC	 = io_writelcm(out_ref_ECC_noproc,[outDirString outFileName_ref_ECC '_unprocessed_lcm' '.RAW'],out_ref_ECC_noproc.te);
 				RF_ref_Quant = io_writelcm(out_ref_Quant,[outDirString  outFileName_ref_Quant '_processed_lcm' '.RAW'],out_ref_Quant.te);
 				RF_ref_Quant = io_writelcm(out_ref_Quant_noproc,[outDirString outFileName_ref_Quant '_unprocessed_lcm' '.RAW'],out_ref_Quant_noproc.te);				
+				% jMRUI output format
+				RF_ref_ECC_jmrui	= io_writejmrui(out_ref_ECC,[outDirString  outFileName_ref_ECC '_processed_jmrui' '.mrui']);
+				RF_ref_ECC_jmrui	= io_writejmrui(out_ref_ECC_noproc,[outDirString outFileName_ref_ECC '_unprocessed_jmrui' '.mrui']);
+				RF_ref_Quant_jmrui	= io_writejmrui(out_ref_Quant,[outDirString  outFileName_ref_Quant '_processed_jmrui' '.mrui']);
+				RF_ref_Quant_jmrui	= io_writejmrui(out_ref_Quant_noproc,[outDirString outFileName_ref_Quant '_unprocessed_jmrui' '.mrui']);				
 			end		% End of if with_ref
 		end
 		
