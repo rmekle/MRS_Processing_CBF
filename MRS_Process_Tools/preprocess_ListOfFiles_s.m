@@ -27,7 +27,7 @@ disp(sMsg_newLines);
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	
+strStudy				= '3T_MMs';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
 strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';			% 'mrs_w_ref';		'mrs_w';
@@ -103,6 +103,32 @@ switch seqType_MRS
 					otherwise
 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
 				end			% End of switch fileExtension
+			case '3T_MMs'
+				% Data (input) directories
+				%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
+				%dirString_In_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
+				
+				
+				% Output data directory
+				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/ZZZZ_Test/';
+				%dirString_Out_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/CodeResults/';
+
+				% Directories depending on MRS data type
+				switch fileExtension
+					case 'dat'
+						% Select directories specific to MRS raw data (.dat)
+						dirString_In_AddOn1		= 'Spectra_dat';
+						%dirString_In_AddOn1		= 'MMs_dat';
+					case 'IMA'
+						% Select directories specific to MRS DICOM data (.IMA)
+						%dirString_In_AddOn1		= 'Spectra_IMA';
+						dirString_In_AddOn1		= 'MMs_IMA';
+						
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+				end			% End of switch fileExtension
 			case '7T_KCL'
 				% Data (input) directories
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/7T_KCL/';
@@ -164,6 +190,9 @@ switch seqType_MRS
 				end		% End of if ~isempty(wInd)
 			end		% if ~isempty(refInd)
 		end		% End of if bECC_In
+		if leftshift_In > 0
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
+		end		% End of if leftshift_In > 0
 		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
 		
