@@ -31,7 +31,7 @@ strStudy				= '3T_MMs';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
 strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';			% 'mrs_w_ref';		'mrs_w';
-signals_MRS				= 'MMs';		% 'MMs';	% 'Spectra';
+signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
@@ -120,12 +120,20 @@ switch seqType_MRS
 				switch fileExtension
 					case 'dat'
 						% Select directories specific to MRS raw data (.dat)
-						%dirString_In_AddOn1		= 'Spectra_dat';
-						dirString_In_AddOn1		= 'MMs_dat';
+						% either for acquired macromolecules (MMs) or for spectra
+						if strcmp(signals_MRS, 'MMs')
+							dirString_In_AddOn1		= 'MMs_dat';
+						else
+							dirString_In_AddOn1		= 'Spectra_dat';
+						end		% End of if strcmp(signals_MRS, 'MMs')
 					case 'IMA'
 						% Select directories specific to MRS DICOM data (.IMA)
-						%dirString_In_AddOn1		= 'Spectra_IMA';
-						dirString_In_AddOn1		= 'MMs_IMA';
+						% either for acquired macromolecules (MMs) or for spectra
+						if strcmp(signals_MRS, 'MMs')
+							dirString_In_AddOn1		= 'MMs_IMA';
+						else
+							dirString_In_AddOn1		= 'Spectra_IMA';
+						end		% End of if strcmp(signals_MRS, 'MMs')
 						
 					otherwise
 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
@@ -163,8 +171,8 @@ switch seqType_MRS
 		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
 		%dirString_Out_AddOn1	= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
-		% Make directories for acquired macromolecules (MMs) distinguishable from those
-		% for spectra
+		% Make output directories for acquired macromolecules (MMs) distinguishable from 
+		% those for spectra
 		if strcmp(signals_MRS, 'MMs')
 			dirString_Out_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
 		else
