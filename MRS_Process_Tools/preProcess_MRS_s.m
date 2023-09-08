@@ -1787,7 +1787,7 @@ switch seqType
 			% FLAG: Modified
 			% Write info about coil combination into report depending on MRS data type
             %if ~(isIMA && isIMA_w)
-			if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
+			if ~(isIMA && isIMA_w) && (out_raw.dims.coils ~= 0)
 			    fprintf(fid2,'\n\n<h2>Results of multi-coil combination:</h2>');
 			    %fprintf(fid2,'\n<img src= " %s%scoilReconFig.jpg " width="800" height="400"></body>', outDirString, reportFigDirStr);
 			    fprintf(fid2,'\n<img src= " %s " width="800" height="400"></body>', fullfile('./figs/', 'coilReconFig.jpg'));
