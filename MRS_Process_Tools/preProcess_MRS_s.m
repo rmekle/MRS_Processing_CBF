@@ -99,7 +99,7 @@
 % out_ref_Quant_noproc	= Water reference signal(s) for Quant without preprocessing
 %
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2021;
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2021, 2022, 2023;
 % Ivo Opitz, Charite Universitätsmedizin Berlin, Germany, 2022;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -492,7 +492,7 @@ switch seqType
 		% NOTE:
 		% If it is Dinesh's sequence , leftshift all FIDs, i.e. remove specifc # of 
 		% points from the beginning of each FID (it is programmed this way to avoid
-		% effect of digital filter on top of echo (first point of FID) by staritng data
+		% effect of digital filter on top of echo (first point of FID) by starting data
 		% acquisition slightly earlier)
 		% Specific # of points in this case should be equal to 3 for oversampled raw 
 		% data (.dat on Siemens)
