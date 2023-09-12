@@ -52,6 +52,12 @@ no_sets					= 2;	% E.g. Mean and STDEV
 no_valuesPerSet			= 7;
 % no_Sheets				= 3;	% 
 
+% Settings for actually copying all values that were read in and different options for
+% source and destination sheets and cell ranges
+bCopyValues				= 0;
+strSheets_source_groups	= 'Incl1';	% 'All';	% 'Incl1';	% 'Incl2';
+strSheets_dest_groups	= 'Incl1';	% 'All';	% 'Incl1';	% 'Incl2';
+
 % Specify sheet(s) and cell ranges in source workbooks, from which values are copied from
 % and sheet(s) and cell ranges in destination workbook(s), to which values are copied to
 % Source sheets and ranges
@@ -61,20 +67,26 @@ no_valuesPerSet			= 7;
 % strRange_source_group_2		= '';
 %acellSheets_source_groups	= cell(no_groups, no_valueSets);
 %acellRanges_source_groups	= cell(no_groups, no_valueSets);
-% Hardcoded initialization (for now)
-% acellSheets_source_groups	= { 'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'; ...
-% 								'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'};
-% acellRanges_source_groups	= { 'D25:J25', 'D25:J25'; ...
-% 								'D26:J26', 'D26:J26'};
-% acellSheets_source_groups	= { 'Subjects_Diff_Incl1_L_DOPA', 'Subjects_Diff_Incl1_Placebo'; ...
-% 								'Subjects_Diff_Incl1_L_DOPA', 'Subjects_Diff_Incl1_Placebo'};
-% acellRanges_source_groups	= { 'D24:J24', 'D24:J24'; ...
-% 								'D25:J25', 'D25:J25'};
-acellSheets_source_groups	= { 'Subjects_Diff_Incl2_L_DOPA', 'Subjects_Diff_Incl2_Placebo'; ...
-								'Subjects_Diff_Incl2_L_DOPA', 'Subjects_Diff_Incl2_Placebo'};
-acellRanges_source_groups	= { 'D23:J23', 'D23:J23'; ...
-								'D24:J24', 'D24:J24'};
+switch(strSheets_source_groups)
+	case 'All'
+		acellSheets_source_groups	= { 'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'; ...
+			'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'};
+		acellRanges_source_groups	= { 'D25:J25', 'D25:J25'; ...
+			'D26:J26', 'D26:J26'};
+	case 'Incl1'
+		acellSheets_source_groups	= { 'Subjects_Diff_Incl1_L_DOPA', 'Subjects_Diff_Incl1_Placebo'; ...
+			'Subjects_Diff_Incl1_L_DOPA', 'Subjects_Diff_Incl1_Placebo'};
+		acellRanges_source_groups	= { 'D24:J24', 'D24:J24'; ...
+			'D25:J25', 'D25:J25'};
+	case 'Incl2'
+		acellSheets_source_groups	= { 'Subjects_Diff_Incl2_L_DOPA', 'Subjects_Diff_Incl2_Placebo'; ...
+			'Subjects_Diff_Incl2_L_DOPA', 'Subjects_Diff_Incl2_Placebo'};
+		acellRanges_source_groups	= { 'D23:J23', 'D23:J23'; ...
+			'D24:J24', 'D24:J24'};
 
+	otherwise
+		error('%s: ERROR: Unknown strSheets_soure_groups =  %s!', sFunctionName, strSheets_source_groups);
+end		% End of switch(strSheets_source_groups)
 
 % Destination sheets and ranges
 % strSheet_dest_group_1		= '';
@@ -88,9 +100,22 @@ acellRanges_source_groups	= { 'D23:J23', 'D23:J23'; ...
 % 							'MRS_DOPA_3_2_Diff_Conc_All', 'MRS_DOPA_3_2_Diff_Conc_All'};
 % acellRanges_dest_groups	= { 'B5:H5', 'I5:O5'; ...
 % 							'P5:V5', 'W5:AC5'};
-%strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_All';
-strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_Incl2';
+% Destination sheets and ranges are selected by a separate switch statement to allow for
+% more flexibility; for the L_DOPA study this was not necessary
+% For L_DOPA study cell range / starting cellin destination workbook is the same for all 
+% options
 strRange_dest			= 'B5';
+switch(strSheets_dest_groups)
+	case 'All'
+		strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_All';
+	case 'Incl1'
+		strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_Incl1';
+	case 'Incl2'
+		strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_Incl2';
+
+	otherwise
+		error('%s: ERROR: Unknown strSheets_dest_groups =  %s!', sFunctionName, strSheets_dest_groups);
+end		% End of switch(strSheets_dest_groups)
 
 % Allocate array for all values
 % (here: write values for all groups and value sets into same row)
@@ -101,14 +126,14 @@ values_all			= zeros(no_source_files, (no_groups*no_sets*no_valuesPerSet));
 % output, if required, and then write resulting array (table) of values formatted or 
 % using a template into destination workbook
 for i=1 : 1 : no_source_files		% no_source_files	% 1
-	source_files(i).name
+	fprintf('\n\n');
+	fprintf('source_files(%d).name = %s\n\n', i, source_files(i).name); 
 	fullFileNameExcelsource		= fullfile(dirExcelsources, source_files(i).name);
 	%opts_source					= detectImportOptions(fullFileNameExcelsource);
     %preview(fullFileNameExcelsource, opts_source)
 	for j=1 : 1 : no_sets
 		for k=1 : 1 : no_groups
-			acellSheets_source_groups{j, k}
-			acellRanges_source_groups{j, k}
+			fprintf('acellSheets_source_groups{%d, %d} = %s \t acellRanges_source_groups{%d, %d} = %s\n', j, k, acellSheets_source_groups{j, k}, j, k, acellRanges_source_groups{j, k});
 			indices					= ( ((j-1)*no_groups*no_valuesPerSet+(k-1)*no_valuesPerSet) + [1:no_valuesPerSet] );
 			%opts_source.Sheet		= acellSheets_source_groups{j, k};
 			%opts_source.SelectedVariableNames = [4:10];
@@ -116,7 +141,7 @@ for i=1 : 1 : no_source_files		% no_source_files	% 1
 			%values_all(i, indices)	= readmatrix(fullFileNameExcelsource, 'Sheet', acellSheets_source_groups{j, k}, 'Range', acellRanges_source_groups{j, k});
 			%values_read				= values_all(i, indices)
 			%values_read				= readmatrix(fullFileNameExcelsource, 'Sheet', acellSheets_source_groups{j, k}, 'Range', acellRanges_source_groups{j, k})
-			values_read				= readmatrix(fullFileNameExcelsource, 'Sheet', acellSheets_source_groups{j, k}, 'Range', acellRanges_source_groups{j, k})
+			values_read				= readmatrix(fullFileNameExcelsource, 'Sheet', acellSheets_source_groups{j, k}, 'Range', acellRanges_source_groups{j, k});
 			values_all(i, indices)	= values_read;
 			%tmp						= readmatrix(fullFileNameExcelsource, opts_source)
 %  			T						= readtable(fullFileNameExcelsource, 'Sheet', acellSheets_source_groups{j, k}, 'Range', acellRanges_source_groups{j, k}, 'ReadVariableNames',false);
@@ -126,13 +151,16 @@ for i=1 : 1 : no_source_files		% no_source_files	% 1
 		end			% End of for k=1 : 1 : no_groups
 	end			% End of for j=1 : 1 : no_sets
 end		% End of for i=1 : 1 : no_source_files
+fprintf('\n\n');
+fprintf('values_all = \n');
 disp(values_all);
 
-% Write resulting array (table) of values into destination workbook
+% Write resulting array (table) of values into destination workbook, if selected
 fullFileNameExceldest		= fullfile(dirExceldest, fileNameExceldest);
-writematrix(values_all, fullFileNameExceldest, 'Sheet', strSheet_dest, 'Range', strRange_dest, 'AutoFitWidth', false);
-%writetable(values_all, fullFileNameExceldest, 'Sheet', strSheet_dest, 'Range', strRange_dest, 'WriteVariableNames', false, 'AutoFitWidth', false);
-
+if bCopyValues
+	writematrix(values_all, fullFileNameExceldest, 'Sheet', strSheet_dest, 'Range', strRange_dest, 'AutoFitWidth', false);
+	%writetable(values_all, fullFileNameExceldest, 'Sheet', strSheet_dest, 'Range', strRange_dest, 'WriteVariableNames', false, 'AutoFitWidth', false);
+end		% End of if bCopyValues
 
 
 
