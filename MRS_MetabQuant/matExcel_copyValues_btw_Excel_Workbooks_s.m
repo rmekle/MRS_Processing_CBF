@@ -25,7 +25,7 @@ disp(sMsg_newLines);
 % (assuming that all source Excel workbooks are in the same directory)
 % Fileneame of one source file
 % Directory of filename destination Excel workbook
-dirExcelsources			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2/Diff_Results_Excel_editOFF_water/';
+dirExcelsources			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2/Diff_Results_Excel_editOFF_water_values/';
 fullFileNameExcelsource = '';
 dirExceldest			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Dopamin/MRS_DOPA_DataAnalysis/';
 fileNameExceldest		= '3T_MRS_DOPA_Results_2023_Info_Values_mat.xlsx';
@@ -48,7 +48,7 @@ disp(sMsg_newLines);
 % Specify # of groups, # of value sets (per group), and # of values per vaöue set
 % (as a start, # of values per value set is same for all value sets and all groups)
 no_groups				= 2;
-no_sets		= 2;	% E.g. Mean and STDEV
+no_sets					= 2;	% E.g. Mean and STDEV
 no_valuesPerSet			= 7;
 % no_Sheets				= 3;	% 
 
@@ -62,10 +62,19 @@ no_valuesPerSet			= 7;
 %acellSheets_source_groups	= cell(no_groups, no_valueSets);
 %acellRanges_source_groups	= cell(no_groups, no_valueSets);
 % Hardcoded initialization (for now)
-acellSheets_source_groups	= { 'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'; ...
-								'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'};
-acellRanges_source_groups	= { 'D25:J25', 'D25:J25'; ...
-								'D26:J26', 'D26:J26'};
+% acellSheets_source_groups	= { 'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'; ...
+% 								'Subjects_Diff_All_L_DOPA', 'Subjects_Diff_All_Placebo'};
+% acellRanges_source_groups	= { 'D25:J25', 'D25:J25'; ...
+% 								'D26:J26', 'D26:J26'};
+% acellSheets_source_groups	= { 'Subjects_Diff_Incl1_L_DOPA', 'Subjects_Diff_Incl1_Placebo'; ...
+% 								'Subjects_Diff_Incl1_L_DOPA', 'Subjects_Diff_Incl1_Placebo'};
+% acellRanges_source_groups	= { 'D24:J24', 'D24:J24'; ...
+% 								'D25:J25', 'D25:J25'};
+acellSheets_source_groups	= { 'Subjects_Diff_Incl2_L_DOPA', 'Subjects_Diff_Incl2_Placebo'; ...
+								'Subjects_Diff_Incl2_L_DOPA', 'Subjects_Diff_Incl2_Placebo'};
+acellRanges_source_groups	= { 'D23:J23', 'D23:J23'; ...
+								'D24:J24', 'D24:J24'};
+
 
 % Destination sheets and ranges
 % strSheet_dest_group_1		= '';
@@ -75,11 +84,12 @@ acellRanges_source_groups	= { 'D25:J25', 'D25:J25'; ...
 %acellSheets_dest_groups		= cell(no_groups, no_valueSets);
 %acellRanges_dest_groups		= cell(no_groups, no_valueSets);
 % Hardcoded initialization (for now)
-acellSheets_dest_groups	= { 'MRS_DOPA_3_2_Diff_Conc_all', 'MRS_DOPA_3_2_Diff_Conc_all'; ...
-							'MRS_DOPA_3_2_Diff_Conc_all', 'MRS_DOPA_3_2_Diff_Conc_all'};
-acellRanges_dest_groups	= { 'B5:H5', 'I5:O5'; ...
-							'P5:V5', 'W5:AC5'};
-strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_all';
+% acellSheets_dest_groups	= { 'MRS_DOPA_3_2_Diff_Conc_All', 'MRS_DOPA_3_2_Diff_Conc_All'; ...
+% 							'MRS_DOPA_3_2_Diff_Conc_All', 'MRS_DOPA_3_2_Diff_Conc_All'};
+% acellRanges_dest_groups	= { 'B5:H5', 'I5:O5'; ...
+% 							'P5:V5', 'W5:AC5'};
+%strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_All';
+strSheet_dest			= 'MRS_DOPA_3_2_Diff_Conc_Incl2';
 strRange_dest			= 'B5';
 
 % Allocate array for all values
@@ -90,7 +100,7 @@ values_all			= zeros(no_source_files, (no_groups*no_sets*no_valuesPerSet));
 % sets into array of all values, reorder array of all values according to order of desired
 % output, if required, and then write resulting array (table) of values formatted or 
 % using a template into destination workbook
-for i=1 : 1 : 2	%no_source_files		% no_source_files	% 1
+for i=1 : 1 : no_source_files		% no_source_files	% 1
 	source_files(i).name
 	fullFileNameExcelsource		= fullfile(dirExcelsources, source_files(i).name);
 	%opts_source					= detectImportOptions(fullFileNameExcelsource);
@@ -120,7 +130,7 @@ disp(values_all);
 
 % Write resulting array (table) of values into destination workbook
 fullFileNameExceldest		= fullfile(dirExceldest, fileNameExceldest);
-%writematrix(values_all, fullFileNameExceldest, 'Sheet', strSheet_dest, 'Range', strRange_dest, 'AutoFitWidth', false);
+writematrix(values_all, fullFileNameExceldest, 'Sheet', strSheet_dest, 'Range', strRange_dest, 'AutoFitWidth', false);
 %writetable(values_all, fullFileNameExceldest, 'Sheet', strSheet_dest, 'Range', strRange_dest, 'WriteVariableNames', false, 'AutoFitWidth', false);
 
 
