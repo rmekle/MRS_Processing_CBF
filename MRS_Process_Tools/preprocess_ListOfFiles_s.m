@@ -409,9 +409,22 @@ switch seqType_MRS
 				case 'IMA'
 					% MRS DICOM data (.IMA)
 					dirString_In_IMA	= [dirString_In structFileListing(ind).name];
-					dirString_w_In_IMA	= [dirString_In structFileListing(ind+1).name];
-					dirParts_In_IMA		= strsplit(dirString_In_IMA, filesep);
-					dirParts_w_In_IMA	= strsplit(dirString_w_In_IMA, filesep);
+					% Select directory for DICOM water signals (.IMA) depending on data 
+					% type, i.e. how many different signals  (spectra and/or water 
+					% signals) are included
+					switch dataType_MRS
+						case {'mrs_w', 'mrs_w_ref'}
+							% Spectra and water signals in list of files/directories
+							dirString_w_In_IMA	= [dirString_In structFileListing(ind+1).name];
+						case {'mrs', 'mrs_ref', 'water', 'water_ref'}
+							% Only spectra or only water signals in list of files/directories
+							dirString_w_In_IMA	= '';
+
+						otherwise
+							error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+					end		% End of switch dataType_MRS
+					%dirParts_In_IMA		= strsplit(dirString_In_IMA, filesep);
+					%dirParts_w_In_IMA	= strsplit(dirString_w_In_IMA, filesep);
 					disp(sMsg_newLines);
 					disp([sprintf('ind = %d\t', ind), sprintf('\t'), dirParts_In_IMA{end-1}, sprintf('\t'), dirParts_w_In_IMA{end-1}, sprintf('\n\n')]);
 					
