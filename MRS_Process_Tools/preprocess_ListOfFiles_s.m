@@ -24,17 +24,17 @@ disp(sMsg_newLines);
 %% Init input parameters for preprocessing
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_MMs';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
 strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w_ref';			% 'mrs_w_ref';		'mrs_w';
-signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
+dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
+signals_MRS				= 'MMs';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
+leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 strMinUserIn_In			= 'y';
@@ -356,8 +356,23 @@ switch seqType_MRS
 		%
 		% if neither reference scans nor water scans exist,
 		%	coil phases from MR spectra for MR spectra
+		%
+		% Select size for stepping through indices, i.e. list of files (.dat) or list of
+		% directoried (.IMA), depending on data type, i.e. how many different signals 
+		% (spectra and/or water signals) are included
 		indexStart		= 1;
-		indexStep		= 2;	% For sLASER, since only one water signals exists
+		indexStep		= 2;	% Default for sLASER spectrum with one water signal
+		switch dataType_MRS
+			case {'mrs_w', 'mrs_w_ref'}
+				% Spectra and water signals in list of files/directories
+				indexStep		= 2;	
+			case {'mrs', 'mrs_ref', 'water', 'water_ref'}
+				% Only spectra or only water signals in list of files/directories
+				indexStep		= 1;
+
+			otherwise
+				error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+		end		% End of switch dataType_MRS
 		for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 			% FLAG: CHANGE
 			% Preprocess MR spectrum and water
