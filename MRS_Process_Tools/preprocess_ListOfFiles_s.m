@@ -423,10 +423,15 @@ switch seqType_MRS
 						otherwise
 							error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
 					end		% End of switch dataType_MRS
-					%dirParts_In_IMA		= strsplit(dirString_In_IMA, filesep);
-					%dirParts_w_In_IMA	= strsplit(dirString_w_In_IMA, filesep);
+					% Display some info
+					dirParts_In_IMA		= strsplit(dirString_In_IMA, filesep);
+					dirParts_w_In_IMA	= strsplit(dirString_w_In_IMA, filesep);
 					disp(sMsg_newLines);
-					disp([sprintf('ind = %d\t', ind), sprintf('\t'), dirParts_In_IMA{end-1}, sprintf('\t'), dirParts_w_In_IMA{end-1}, sprintf('\n\n')]);
+					if ~isempty(dirString_w_In_IMA)
+						disp([sprintf('ind = %d\t', ind), sprintf('\t'), dirParts_In_IMA{end-1}, sprintf('\t'), dirParts_w_In_IMA{end-1}, sprintf('\n\n')]);
+					else
+						disp([sprintf('ind = %d\t', ind), sprintf('\t'), dirParts_In_IMA{end-1}, sprintf('\n\n')]);
+					end		% End of if ~isempty(dirString_w_In_IMA)
 					
 					[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(...
 						dirString_In_IMA,...
