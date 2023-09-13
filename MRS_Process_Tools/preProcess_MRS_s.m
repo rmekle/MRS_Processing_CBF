@@ -210,9 +210,13 @@ end
 
 [sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
 if strcmp(ext_w, '.dat')
-    isIMA_w = 0;
+	isIMA_w = 0;
 else
-    isIMA_w = 1;
+	if isempty(dirString_w)
+		isIMA_w = 0;
+	else
+		isIMA_w = 1;
+	end
 end
 
 % FLAG: Modified
@@ -337,11 +341,11 @@ switch dataType
 		% Check on filename or directory name depending on MRS data type
         if(isIMA_w)
             if isempty(dirString_w)
-                error('%s: Error: Directory name for unsuppresed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+                error('%s: Error: Directory name for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
             end
         else
             if isempty(filename_w)
-                error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
+                error('%s: Error: Filename for unsuppressed water signal %s is empty!\n\n', sFunctionName, filename_w);
             end
         end
 		disp('Data is MR spectrum with additional unsuppressed water signal ...');
@@ -358,11 +362,11 @@ switch dataType
 		% Check on filename or directory name depending on MRS data type
         if(isIMA_w)
             if isempty(dirString_w)
-                error('%s: Error: Directory name for unsuppresed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+                error('%s: Error: Directory name for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
             end
         else
             if isempty(filename_w)
-                error('%s: Error: Filename for unsuppresed water signal %s is empty!\n\n', sFunctionName, filename_w);
+                error('%s: Error: Filename for unsuppressed water signal %s is empty!\n\n', sFunctionName, filename_w);
             end
         end
 		disp('Data is MR spectrum with additional unsuppressed water signal and with reference scans ...');
@@ -496,7 +500,7 @@ switch seqType
 		% acquisition slightly earlier)
 		% Specific # of points in this case should be equal to 3 for oversampled raw 
 		% data (.dat on Siemens)
-		% Leftshift MR spectrum and, if existent, also the unsuppresed water signal
+		% Leftshift MR spectrum and, if existent, also the unsuppressed water signal
 		if isSVSdkd_seq
 			%leftshift	= 3;
 			out_raw		= op_leftshift(out_raw, leftshift);
