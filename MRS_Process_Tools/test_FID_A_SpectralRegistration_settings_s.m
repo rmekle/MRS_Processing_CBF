@@ -63,6 +63,7 @@ while iter<iterin
 		case 6
 			% % Generate array of 6 ppmmax values 
 			ppmmaxarray		= ppmmaxarray_fix;
+			
 		otherwise
 			error('%s: No option for noValues_ppmmax = %d!', sFunctionName, noValues_ppmmax);
 	end		% End of switch noValues_ppmmax
