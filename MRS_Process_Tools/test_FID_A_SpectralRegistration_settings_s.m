@@ -58,10 +58,10 @@ while iter<iterin
 	ppmmin			= ppmmin_fix+0.1*randn(1)
 	switch noValues_ppmmax
 		case 3
-			% Generate array of 6 ppmmax values using random number variations
+			% Generate array of iamax (=6) ppmmax values using random number variations
 			ppmmaxarray		= [ppmmaxarray_fix(1)+0.1*randn(1,2),ppmmaxarray_fix(2)+0.1*randn(1,3),ppmmaxarray_fix(3)+0.1*randn(1,1)];
 		case 6
-			% % Generate array of 6 ppmmax values 
+			% Generate array of iamax (=6) ppmmax values 
 			ppmmaxarray		= ppmmaxarray_fix;
 
 		otherwise
