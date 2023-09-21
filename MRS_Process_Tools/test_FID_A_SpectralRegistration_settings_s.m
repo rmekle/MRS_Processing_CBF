@@ -53,8 +53,8 @@ while iter<iterin
 	%ppmmin			= 1.6+0.1*randn(1);
 	%ppmmaxarray	= [3.5+0.1*randn(1,2),4+0.1*randn(1,3),5.5+0.1*randn(1,1)];
 	%ppmmax			= ppmmaxarray(randi(6,1));
-	%tmax			= tmaxin+0.03*randn(1)
-	tmax			= tmaxin+0.04*randn(1)
+	%tmax			= tmaxin+0.03*randn(1)	 % From run_pressProc_auto.m
+	tmax			= tmaxin+0.04*randn(1)   % From run_specialProc_auto.m
 	ppmmin			= ppmmin_fix+0.1*randn(1)
 	switch noValues_ppmmax
 		case 3
@@ -63,7 +63,7 @@ while iter<iterin
 		case 6
 			% % Generate array of 6 ppmmax values 
 			ppmmaxarray		= ppmmaxarray_fix;
-			
+
 		otherwise
 			error('%s: No option for noValues_ppmmax = %d!', sFunctionName, noValues_ppmmax);
 	end		% End of switch noValues_ppmmax
