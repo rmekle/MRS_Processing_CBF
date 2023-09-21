@@ -37,6 +37,7 @@ switch dataType
 	otherwise
 		error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
 end		% End of switch dataType
+% Determine # of initial values for ppmmax
 noValues_ppmmax		= length(ppmmaxarray_fix);
 
 
