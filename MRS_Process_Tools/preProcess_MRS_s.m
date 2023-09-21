@@ -977,7 +977,9 @@ switch seqType
 			otherwise
 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
 		end		% End of switch dataType
-		
+		% Determine # of initial values for ppmmax
+		noValues_ppmmax		= length(ppmmaxarray_fix);
+
 		% Do not perform drift correction, if either not selected or if dimension of 
 		% averages does not exist (index for dimension of averages = 0), 
 		% e.g. when data is already averaged
@@ -1012,16 +1014,32 @@ switch seqType
 				phscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
 				iter		= 1;
 				while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
+					fprintf(1, 'Aligning averages iteration iter = %d\n', iter);
 					%iter			= iter+1
 					close all
 					%tmax			= 0.25+0.03*randn(1);
 					%ppmmin			= 1.6+0.1*randn(1);
 					%ppmmaxarray	= [3.5+0.1*randn(1,2),4+0.1*randn(1,3),5.5+0.1*randn(1,1)];
 					%ppmmax			= ppmmaxarray(randi(6,1));
-					tmax			= tmaxin+0.03*randn(1);
+					%tmax			= tmaxin+0.03*randn(1);	 % From run_pressProc_auto.m
+					tmax			= tmaxin+0.04*randn(1);  % From run_specialProc_auto.m
 					ppmmin			= ppmmin_fix+0.1*randn(1);
-					ppmmaxarray		= [ppmmaxarray_fix(1)+0.1*randn(1,2),ppmmaxarray_fix(2)+0.1*randn(1,3),ppmmaxarray_fix(3)+0.1*randn(1,1)];
+					switch noValues_ppmmax
+						case 3
+							% Generate array of iamax (=6) ppmmax values using random number variations
+							ppmmaxarray		= [ppmmaxarray_fix(1)+0.1*randn(1,2),ppmmaxarray_fix(2)+0.1*randn(1,3),ppmmaxarray_fix(3)+0.1*randn(1,1)];
+						case 6
+							% Generate array of iamax (=6) ppmmax values
+							ppmmaxarray		= ppmmaxarray_fix;
+
+						otherwise
+							error('%s: No option for noValues_ppmmax = %d!', sFunctionName, noValues_ppmmax);
+					end		% End of switch noValues_ppmmax
 					ppmmax			= ppmmaxarray(randi(iamax,1));
+					fprintf('\n');
+					fprintf('ppmmaxarray = [%s]\n', join(string(ppmmaxarray), ' '));
+					fprintf('ppmmin = %f \t ppmmax = %f\n\n\n', ppmmin, ppmmax);					
+					
 					switch aaDomain
 						case 't'
 							[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
@@ -1029,6 +1047,7 @@ switch seqType
 						case 'f'
 							[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
 							%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'n');
+
 						otherwise
 							error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
 					end
@@ -1037,7 +1056,7 @@ switch seqType
 					phsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',phs,1)
 					%iter
 					%disp( sprintf('Aligning averages iteration %d', iter) );
-					fprintf(1, 'Aligning averages iteration %d\n', iter) ;
+					%fprintf(1, 'Aligning averages iteration %d\n', iter);
 					
 					fscum		= fscum+fs;
 					phscum		= phscum+phs;
