@@ -37,13 +37,22 @@ strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-strMinUserIn_In			= 'y';
-aaDomain_In				= 'f';			% 'f';		% 't';
-tmaxin_In				= 0.2;
+
+% Parameters for spectral registration (aligning of averages/frequency and phase drift
+% correction) performed in either frequency or time domain
+strDriftCorr_In			= 'y';			% 'y';		'n';
 iterin_In				= 20;
-alignSS_In				= 2;
+aaDomain_In				= 'f';			% 'f';		't';
+tmaxin_In				= 0.2;			% 0.2;		0.1;
+bTmaxset_In				= 1;
+medin_In				= 'y';			% 'y';	'n';	'a';	'ref';
+ppmmin_fix_In			= 1.6;			% 1.6;		1.8;
+alignSS_In				= 2;			% For aligning subspectra (e.g. in SPECIAL)
+
+% Additional parameter settings
 bECC_In					= 1;
 bPhaseCorrFreqShift_In	= 0;
+strMinUserIn_In			= 'y';
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
 
@@ -373,7 +382,7 @@ switch seqType_MRS
 			otherwise
 				error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
 		end		% End of switch dataType_MRS
-		for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
+		for ind=indexStart : indexStep : 2%noEntriesListing	% noEntriesListing	% 2  % 1
 			% FLAG: CHANGE
 			% Preprocess MR spectrum and water
             % with parameters set accoprding to data type (file extension)
