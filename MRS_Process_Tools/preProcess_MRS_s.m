@@ -75,10 +75,10 @@
 %					 should be performed or not. Default is 0.
 % bPhaseCorrFreqShift = (Optional) ['PhaseFrequencyCorrection'] Boolean that specifies whether phase correction and
 %					frequency shifting should be performed or not. Default is 0.
-% plotSwitch   = (Optional)	['ShowPlots'] Switch for displaying plots: 1 = ON, 0 = OFF. Default is 0
 % strMinUserIn = (Optional) ['MinimizeUserInput'] String that specifies whether user input/interaction should be
 %					 minimized or not; 'y' or 'Y' lead to minimization, 'n' or 'N' do not
 %					Default is 'y'.
+% plotSwitch   = (Optional)	['ShowPlots'] Switch for displaying plots: 1 = ON, 0 = OFF. Default is 0
 % reportSwitch = (Optional) ['GenerateReport'] Switch for generating an html report with corresponding  
 %					figures and a readme file: 1 = ON, 0 = OFF. Default is 1. 
 % 
@@ -127,8 +127,8 @@ arguments
     options.Iterations				(1,1) {mustBeNumeric}   = 20
     options.ECC						(1,1) {islogical}       = 0
     options.PhaseFrequencyCorrection(1,1) {islogical}		= 0
-    options.ShowPlots				(1,1) {islogical}       = 0
-    options.MinimizeUserInput		{mustBeMember(options.MinimizeUserInput,{'y', 'Y', 'n', 'N'})} = 'y'
+	options.MinimizeUserInput		{mustBeMember(options.MinimizeUserInput,{'y', 'Y', 'n', 'N'})} = 'y'
+    options.ShowPlots				(1,1) {islogical}       = 0 
     options.GenerateReport          (1,1) {islogical}       = 1
 end
 
@@ -145,15 +145,16 @@ end
     else
         leftshift_w = options.WaterLeftshift;
     end
-    nSD             = options.noStandardDeviation;
-    aaDomain        = options.aaDomain;
-    tmaxin          = options.MaxTimeAlignment;
-    iterin          = options.Iterations;
-    bECC            = options.ECC;
-    bPhaseCorrFreqShift = options.PhaseFrequencyCorrection;
-    plotSwitch      = options.ShowPlots;
-    strMinUserIn    = options.MinimizeUserInput;
-    reportSwitch    = options.GenerateReport;
+    nSD						= options.noStandardDeviation;
+    aaDomain				= options.aaDomain;
+    tmaxin					= options.MaxTimeAlignment;
+    iterin					= options.Iterations;
+    bECC					= options.ECC;
+	bPhaseCorrFreqShift		= options.PhaseFrequencyCorrection;
+	strMinUserIn			= options.MinimizeUserInput;
+	plotSwitch				= options.ShowPlots;
+	reportSwitch			= options.GenerateReport;
+
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'preProcess_MRS_s.m';
@@ -967,18 +968,18 @@ switch seqType
 				ppmmin_fix		= 1.6;
 				%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
 				ppmmaxarray_fix = [2.4,2.85,3.35,4.2,4.4,5.2];
-				iamax			= 6;
+				%iamax			= 6;
 			case {'water', 'water_ref'}
 				% MR spectrum is water signal itself without or with reference scans
 				ppmmin_fix		= 4.2;
 				ppmmaxarray_fix	= [5.5 5.5 5.2];
-				iamax			= 6;
+				%iamax			= 6;
 			
 			otherwise
 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
 		end		% End of switch dataType
 		% Determine # of initial values for ppmmax
-		noValues_ppmmax		= length(ppmmaxarray_fix);
+		noVals_ppmmax_fix		= length(ppmmaxarray_fix);
 
 		% Do not perform drift correction, if either not selected or if dimension of 
 		% averages does not exist (index for dimension of averages = 0), 
@@ -1024,17 +1025,19 @@ switch seqType
 					%tmax			= tmaxin+0.03*randn(1);	 % From run_pressProc_auto.m
 					tmax			= tmaxin+0.04*randn(1);  % From run_specialProc_auto.m
 					ppmmin			= ppmmin_fix+0.1*randn(1);
-					switch noValues_ppmmax
+					switch noVals_ppmmax_fix
 						case 3
-							% Generate array of iamax (=6) ppmmax values using random number variations
+							% Generate array of ppmmax values using random number variations
 							ppmmaxarray		= [ppmmaxarray_fix(1)+0.1*randn(1,2),ppmmaxarray_fix(2)+0.1*randn(1,3),ppmmaxarray_fix(3)+0.1*randn(1,1)];
 						case 6
-							% Generate array of iamax (=6) ppmmax values
+							% Generate array of ppmmax values using given values
 							ppmmaxarray		= ppmmaxarray_fix;
 
 						otherwise
-							error('%s: No option for noValues_ppmmax = %d!', sFunctionName, noValues_ppmmax);
-					end		% End of switch noValues_ppmmax
+							error('%s: No option for noVals_ppmmax_fix = %d!', sFunctionName, noVals_ppmmax_fix);
+					end		% End of switch noVals_ppmmax_fix
+					% Select value for ppmmax
+					iamax			= length(ppmmaxarray);
 					ppmmax			= ppmmaxarray(randi(iamax,1));
 					fprintf('\n');
 					fprintf('ppmmaxarray = [%s]\n', join(string(ppmmaxarray), ' '));
