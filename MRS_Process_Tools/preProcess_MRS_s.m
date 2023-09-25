@@ -1036,7 +1036,7 @@ switch seqType
 						otherwise
 							error('%s: No option for noVals_ppmmax_fix = %d!', sFunctionName, noVals_ppmmax_fix);
 					end		% End of switch noVals_ppmmax_fix
-					% Select value for ppmmax
+					% Select value for ppmmax used in this iteration
 					iamax			= length(ppmmaxarray);
 					ppmmax			= ppmmaxarray(randi(iamax,1));
 					fprintf('\n');
