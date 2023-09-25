@@ -40,7 +40,7 @@ digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strDriftCorr_In			= 'y';			% 'y';		'n';
+strDriftCorr_In			= 'n';			% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';			% 'f';		't';
 tmaxin_In				= 0.2;			% 0.2;		0.1;
@@ -48,6 +48,7 @@ bTmaxset_In				= 1;
 medin_In				= 'y';			% 'y';	'n';	'a';	'ref';
 ppmmin_fix_In			= 1.6;			% 1.6;		1.8;
 alignSS_In				= 2;			% For aligning subspectra (e.g. in SPECIAL)
+strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
 
 % Additional parameter settings
 bECC_In					= 1;
@@ -217,6 +218,12 @@ switch seqType_MRS
 		if leftshift_In > 0
 			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
 		end		% End of if leftshift_In > 0
+		% Indicate in output directory name which type of spectral registration was used
+		if strDriftCorr_In == 'y' || strDriftCorr_In == 'Y'
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_', strSpecReg];
+		else
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoSR'];
+		end
 		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
 		
