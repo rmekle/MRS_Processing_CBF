@@ -994,7 +994,7 @@ switch seqType
 		% Do not perform drift correction, if either not selected or if dimension of 
 		% averages does not exist (index for dimension of averages = 0), 
 		% e.g. when data is already averaged
-		driftCorr		= 'y';
+		%driftCorr		= 'y';
 		%if driftCorr=='n' || driftCorr=='N'
 		if driftCorr=='n' || driftCorr=='N' || out_rm.dims.averages == 0
 			out_av		= op_averaging(out_rm);
@@ -1008,6 +1008,7 @@ switch seqType
 			fs			= 0;
 			phs			= 0;
 		else
+			% Perform drift correction (alignment of averages)
 			if with_water
 				%out_w_aa		= op_alignAverages(out_w_cc,tmaxin,'n');
 				out_w_aa			= op_alignAverages(out_w_cc,0.2,'n');
@@ -1055,11 +1056,21 @@ switch seqType
 					
 					switch aaDomain
 						case 't'
-							[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
-							%[out_aa,fs,phs]		= op_alignAverages(out_rm2);
+							% Perform alignment of averages in time domain
+							% either using a given value for tmax or let tmax be
+							% calculated in op_AlignAverages (which also requires that
+							% median alignemnt of averages is set in op_AlignAverages)
+							if bTmaxSet == 1
+								% Use given tmax
+								%[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
+								[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,medin);
+							else
+								[out_aa,fs,phs]		= op_alignAverages(out_rm2);
+							end
 						case 'f'
-							[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
-							%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'n');
+							% Perform alignment of averages in frequency domain
+							%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
+							[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,medin);
 
 						otherwise
 							error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
