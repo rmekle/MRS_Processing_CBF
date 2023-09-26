@@ -122,9 +122,14 @@ arguments
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
     options.noStandardDeviation     (1,1) double            = 3.2
+	options.DriftCorr				{mustBeMember(options.DriftCorr,{'y', 'Y', 'n', 'N'})} = 'y'
+	options.Iterations				(1,1) {mustBeNumeric}   = 20
     options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
     options.MaxTimeAlignment		(1,1) double            = 0.2
-    options.Iterations				(1,1) {mustBeNumeric}   = 20
+	options.MaxTimeAlignmentSet		(1,1) {islogical}       = 1
+	options.medianAlignment			{mustBeMember(options.medianAlignment,{'y', 'Y', 'n', 'N', 'a', 'A', 'r', 'R'})} = 'y'
+	options.ppmMinimum_fix			(1,1) double            = 1.6
+	options.ppmMaximumArray_fix		(1,:) double			= [3.5; 4.0; 5.5]
     options.ECC						(1,1) {islogical}       = 0
     options.PhaseFrequencyCorrection(1,1) {islogical}		= 0
 	options.MinimizeUserInput		{mustBeMember(options.MinimizeUserInput,{'y', 'Y', 'n', 'N'})} = 'y'
@@ -146,9 +151,14 @@ end
         leftshift_w = options.WaterLeftshift;
     end
     nSD						= options.noStandardDeviation;
+	driftCorr				= options.DriftCorr;
+	iterin					= options.Iterations;
     aaDomain				= options.aaDomain;
     tmaxin					= options.MaxTimeAlignment;
-    iterin					= options.Iterations;
+	bTmaxSet				= options.MaxTimeAlignmentSet;
+	medin					= options.medianAlignment;
+	ppmmin_fix				= options.ppmMinimum_fix;
+	ppmmaxarray_fix			= options.ppmMaximumArray_fix;
     bECC					= options.ECC;
 	bPhaseCorrFreqShift		= options.PhaseFrequencyCorrection;
 	strMinUserIn			= options.MinimizeUserInput;
