@@ -40,14 +40,32 @@ digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strDriftCorr_In			= 'y';			% 'y';		'n';
+strDriftCorr_In			= 'y';		% 'y';		'n';
 iterin_In				= 20;
-aaDomain_In				= 'f';			% 'f';		't';
-tmaxin_In				= 0.2;			% 0.2;		0.1;
+aaDomain_In				= 'f';		% 'f';		't';
+tmaxin_In				= 0.2;		% 0.2;		0.1;
 bTmaxset_In				= 1;
-medin_In				= 'y';			% 'y';	'n';	'a';	'ref';
-ppmmin_fix_In			= 1.6;			% 1.6;		1.8;
-alignSS_In				= 2;			% For aligning subspectra (e.g. in SPECIAL)
+medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
+% Set parameters for drift correction depending on type of data, i.e. whether MRS
+% data is spectrum or water signal
+% NOTE: Check whether aligning of averages in frequency domain works, if the MR
+% spectrum is water signal itself; if not, simply align averages in time domain
+switch dataType_MRS
+	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+		% MR spectrum is provided together without or with unsuppressed water
+		% signal and/or with reference scans
+		ppmmin_fix_In		= 1.6;		% 1.6;		1.8;
+		%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+		ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
+	case {'water', 'water_ref'}
+		% MR spectrum is water signal itself without or with reference scans
+		ppmmin_fix_In		= 4.2;
+		ppmmaxarray_fix_In	= [5.5 5.5 5.2];
+
+	otherwise
+		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+end		% End of switch dataType_MRS
+alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
 
 % Additional parameter settings
