@@ -40,7 +40,7 @@ digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strDriftCorr_In			= 'n';			% 'y';		'n';
+strDriftCorr_In			= 'y';			% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';			% 'f';		't';
 tmaxin_In				= 0.2;			% 0.2;		0.1;
@@ -230,7 +230,17 @@ switch seqType_MRS
 		% If output directory is non-existent, create it
 		if ~exist( dirString_Out, 'dir' )
 			mkdir(dirString_Out);
-		end
+		else
+			% Output directory already exists, ask user whether to overwrite or not
+			% (should help to avoid accidentally overwriting previosuly processed data)
+			strOverwrite	= input('\n\nDo you want to overwrite the existing output directory (y/n)?  ','s');
+			if strOverwrite == 'n' || strOverwrite  == 'N'
+				fprintf('\n%s: Already existing output directory is not overwritten! Processing is aborted!\n\n', sFunctionName)
+				return;
+			else
+				fprintf('\n%s: Already existing output directory is overwritten! Processing is continued!\n\n', sFunctionName)
+			end		% End of if strOverwrite == 'n' || strOverwrite  == 'N'
+		end		% End of if ~exist( dirString_Out, 'dir' )
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
