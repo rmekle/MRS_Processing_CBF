@@ -961,23 +961,23 @@ switch seqType
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain 
 		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-		switch dataType
-			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
-				% MR spectrum is provided together without or with unsuppressed water 
-				% signal and/or with reference scans
-				ppmmin_fix		= 1.6;
-				%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
-				ppmmaxarray_fix = [2.4,2.85,3.35,4.2,4.4,5.2];
-				%iamax			= 6;
-			case {'water', 'water_ref'}
-				% MR spectrum is water signal itself without or with reference scans
-				ppmmin_fix		= 4.2;
-				ppmmaxarray_fix	= [5.5 5.5 5.2];
-				%iamax			= 6;
-			
-			otherwise
-				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
-		end		% End of switch dataType
+% 		switch dataType
+% 			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+% 				% MR spectrum is provided together without or with unsuppressed water 
+% 				% signal and/or with reference scans
+% 				ppmmin_fix		= 1.6;
+% 				%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+% 				ppmmaxarray_fix = [2.4,2.85,3.35,4.2,4.4,5.2];
+% 				%iamax			= 6;
+% 			case {'water', 'water_ref'}
+% 				% MR spectrum is water signal itself without or with reference scans
+% 				ppmmin_fix		= 4.2;
+% 				ppmmaxarray_fix	= [5.5 5.5 5.2];
+% 				%iamax			= 6;
+% 			
+% 			otherwise
+% 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+% 		end		% End of switch dataType
 		% Determine # of initial values for ppmmax
 		noVals_ppmmax_fix		= length(ppmmaxarray_fix);
 
