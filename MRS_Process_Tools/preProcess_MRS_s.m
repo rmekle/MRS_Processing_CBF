@@ -997,6 +997,7 @@ switch seqType
 		%driftCorr		= 'y';
 		%if driftCorr=='n' || driftCorr=='N'
 		if driftCorr=='n' || driftCorr=='N' || out_rm.dims.averages == 0
+			fprintf(1, 'Drift correction by aligning averages is not performed!\n\n');
 			out_av		= op_averaging(out_rm);
 			if with_water
 				out_w_av			= op_averaging(out_w_cc);
@@ -1026,7 +1027,7 @@ switch seqType
 				phscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
 				iter		= 1;
 				while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
-					fprintf(1, 'Aligning averages iteration iter = %d\n', iter);
+					fprintf(1, 'Drift correction by aligning averages: iteration iter = %d\n', iter);
 					%iter			= iter+1
 					close all
 					%tmax			= 0.25+0.03*randn(1);
