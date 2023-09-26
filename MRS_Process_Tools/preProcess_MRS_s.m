@@ -996,6 +996,7 @@ switch seqType
 		% e.g. when data is already averaged
 		%driftCorr		= 'y';
 		%if driftCorr=='n' || driftCorr=='N'
+		fprintf('\n\n');
 		if driftCorr=='n' || driftCorr=='N' || out_rm.dims.averages == 0
 			fprintf(1, 'Drift correction by aligning averages is not performed!\n\n');
 			out_av		= op_averaging(out_rm);
