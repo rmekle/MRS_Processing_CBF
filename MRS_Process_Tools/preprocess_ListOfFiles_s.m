@@ -40,7 +40,7 @@ digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-driftCorr_In			= 'n';		% 'y';		'n';
+driftCorr_In			= 'y';		% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';		% 'f';		't';
 tmaxin_In				= 0.2;		% 0.2;		0.1;
@@ -417,7 +417,7 @@ switch seqType_MRS
 			otherwise
 				error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
 		end		% End of switch dataType_MRS
-		for ind=indexStart : indexStep : 2%noEntriesListing	% noEntriesListing	% 2  % 1
+		for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 			% FLAG: CHANGE
 			% Preprocess MR spectrum and water
             % with parameters set accoprding to data type (file extension)
