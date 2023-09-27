@@ -63,14 +63,30 @@
 %					 datapoints from the FID  to get rid of 1st order phase. Default is the same as leftshift.
 % nSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average removal. Default
 %					value is 3.2.
+% driftCorr	   = (Optional) ['DriftCorrection'] Character array that specifies whether 
+%					spectral registration (drift correction) should be performed or not. 
+%					Default is 'y'.
+% iterin       = (Optional) ['Iterations']  Maximum number of allowed iterations for the spectral
+%                   registration to converge. Default is 20.
 % aaDomain     = (Optional) ['aaDomain'] Perform the spectral registration (drift correction) using
-%                   the full spectrum ('t'), or only a limited frequency
-%                   range ('f').  Default is 'f'.
+%                   the full spectrum ('t'), or only a limited frequency range ('f').  Default is 'f'.
 % tmaxin       = (Optional) ['DriftCorrectionDuration'] Duration (in sec.) of the time domain signal
 %                   used in the spectral registration (drift correction).
 %                   Default is 0.2 sec.
-% iterin       = (Optional) ['Iterations']  Maximum number of allowed iterations for the spectral
-%                   registration to converge. Default is 20.
+% bTmaxSet	   = (Optional) ['MaxTimeAlignmentSet'] Boolean, if 1, the given value for
+%					tmaxin is used; if 0, the routine that aligns all averages determines
+%					tmax from the data (currently only implemented for the time domain).
+%					Default is 1.
+% medin		   = (Optional) ['medianALignment] Selects reference, to which all averages
+%					are aligned to; 'y', 'n', 'a' or 'ref' are possible; see
+%					op_alignAverages_fd.m and op_alignAverages.m from FID-A for details.
+%					Default is 'y'.
+% ppmmin_fix   = (Optional) ['ppmMinimum_fix'] Initial minimum ppm value, for which
+%					spectral registration is applied in the frequency domain. 
+%					Default is 1.6.
+% ppmmaxarreay_fix = (Optional) ['ppmMaximumArray_fix'] Initial array of maximum ppm
+%					values, for which spectral registration is applied in the frequency
+%					domain. Default is [3.5; 4.0; 5.5].
 % bECC 		   = (optional) ['ECC'] Boolean that specifies whether eddy current correction (ECC) 
 %					 should be performed or not. Default is 0.
 % bPhaseCorrFreqShift = (Optional) ['PhaseFrequencyCorrection'] Boolean that specifies whether phase correction and
@@ -122,7 +138,7 @@ arguments
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
     options.noStandardDeviation     (1,1) double            = 3.2
-	options.DriftCorr				{mustBeMember(options.DriftCorr,{'y', 'Y', 'n', 'N'})} = 'y'
+	options.DriftCorrection			{mustBeMember(options.DriftCorrection,{'y', 'Y', 'n', 'N'})} = 'y'
 	options.Iterations				(1,1) {mustBeNumeric}   = 20
     options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
     options.MaxTimeAlignment		(1,1) double            = 0.2
@@ -151,7 +167,7 @@ end
         leftshift_w = options.WaterLeftshift;
     end
     nSD						= options.noStandardDeviation;
-	driftCorr				= options.DriftCorr;
+	driftCorr				= options.DriftCorrection;
 	iterin					= options.Iterations;
     aaDomain				= options.aaDomain;
     tmaxin					= options.MaxTimeAlignment;
