@@ -54,7 +54,7 @@ end		% End of if ~exist( dirString_Out, 'dir' )
 
 %% Parameters for processing
 % Parameters for aligning multiple spectra with each other
-bAlignSpectra			= 0;
+bAlignSpectra			= 1;
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
@@ -76,7 +76,7 @@ switch dataType_MRS
 		% signal and/or with reference scans
 		ppmmin_fix			= 1.6;		% 1.6;		1.8;
 		ppmmaxarray_fix		= [3.5; 4.0; 5.5];
-		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
+		%ppmmaxarray_fix		= [2.4,2.85,3.35,4.2,4.4,5.2];
 	case {'water', 'water_ref'}
 		% MR spectrum is water signal itself without or with reference scans
 		ppmmin_fix_In		= 4.2;
@@ -92,7 +92,8 @@ reportSwitch			= 1;
 
 % Select indices of spectra to be averaged
 indSpectra_All			= [1:noEntriesListing];
-indSpectra_Sel			= [1:noEntriesListing];
+%indSpectra_Sel			= [1:noEntriesListing];
+indSpectra_Sel			= [1:2];
 noSpectra_All			= length(indSpectra_All);
 noSpectra_Sel			= length(indSpectra_Sel);
 indexStart				= 1;
@@ -309,14 +310,17 @@ if bAlignSpectra
 		saveas(h7,[reportDir 'phaseDriftFig'],'jpg');
 		saveas(h7,[reportDir 'phaseDriftFig'],'fig');
 	end
-% 	close(h7);
-% 	close(h6);
-% 	close(h5);
+	%close(h7);
+	%close(h6);
+	%close(h5);
+	% Clear all figure handles from workspace to avoid warning when saving workspace
+	vars		= {'h5','h6','h7'};
+	clear(vars{:});
 
 	% Compute total frequency and phase drifts
 	totalFreqDrift		= mean(max(fscum)-min(fscum));
 	totalPhaseDrift		= mean(max(phscum)-min(phscum));
-% 	close all
+	%close all
 
 	% Pass on aligned cell array of selected spectra (scans) to ouput cell array
 	ceSpectra_Sel_out	= ceSpectra_Sel_as;
