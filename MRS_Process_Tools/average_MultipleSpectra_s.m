@@ -119,6 +119,7 @@ filename_Out			= [filename_Out_Base, filename_Out_AddOn1, filename_Out_AddOn2];
 
 % Set subdirectory for report (figures)
 reportFigDirStr			= [filename_Out, filesep];
+reportDir				= [dirString_Out reportFigDirStr];
 
 % Make a new directory for the output report figures, if not already existent,
 % and if desired
@@ -128,13 +129,18 @@ if reportSwitch == 1
 % 	if ~exist([outDirString reportDirStr], 'dir' )
 % 		mkdir([outDirString reportDirStr]);
 % 	end
-	if ~exist( [dirString_Out reportFigDirStr], 'dir' )
-		mkdir([dirString_Out reportFigDirStr]);
+	if ~exist( reportDir, 'dir' )
+		mkdir(reportDir);
 	end
 end
 
 
 %% Set parameters for figure display
+% For figure(s) of (avaraged) MR spectra
+strTitle				= 'Averaged 3T MMs Spectra';
+strFigFile_Add			= '';
+
+% For figures of aligned MR spectra
 % h		= figure('position', [left bottom width height]);
 fig_left	= 20;
 fig_bottom	= 50;
@@ -296,12 +302,12 @@ if bAlignSpectra
 	
 	% Save figures, if report switch is turned ON
 	if reportSwitch == 1
-		saveas(h5,[dirString_Out reportFigDirStr 'alignScans_prePostFig'],'jpg');
-		saveas(h5,[dirString_Out reportFigDirStr 'alignScans_prePostFig'],'fig')
-		saveas(h6,[dirString_Out reportFigDirStr 'freqDriftFig'],'jpg');
-		saveas(h6,[dirString_Out reportFigDirStr 'freqDriftFig'],'fig');
-		saveas(h7,[dirString_Out reportFigDirStr 'phaseDriftFig'],'jpg');
-		saveas(h7,[dirString_Out reportFigDirStr 'phaseDriftFig'],'fig');
+		saveas(h5,[reportDir 'alignScans_prePostFig'],'jpg');
+		saveas(h5,[reportDir 'alignScans_prePostFig'],'fig')
+		saveas(h6,[reportDir 'freqDriftFig'],'jpg');
+		saveas(h6,[reportDir 'freqDriftFig'],'fig');
+		saveas(h7,[reportDir 'phaseDriftFig'],'jpg');
+		saveas(h7,[reportDir 'phaseDriftFig'],'fig');
 	end
 % 	close(h7);
 % 	close(h6);
@@ -333,6 +339,12 @@ out.fids	= out.fids./noSpectra_Sel;
 % Re-calculate spectra (specs) using fft
 % Flags of FID_A data struct do not need to be updated for these last steps
 out.specs	= fftshift(ifft(out.fids,[],out.dims.t),out.dims.t);
+
+
+%% Plot averaged spectra
+if (plot_MR_Spectrum_s(out, dataType_MRS, reportDir, filename_Out, strTitle, strFigFile_Add, 600, 1)) == -1
+	error('%s: ERROR: Plotting of MR spectrum and/or saving of figures was NOT successful!', sFunctionName);
+end
 
 
 %% Save result in selected output data format
