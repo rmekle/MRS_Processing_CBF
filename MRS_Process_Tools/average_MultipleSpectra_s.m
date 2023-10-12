@@ -54,7 +54,7 @@ end		% End of if ~exist( dirString_Out, 'dir' )
 
 %% Parameters for processing
 % Parameters for aligning multiple spectra with each other
-bAlignSpectra			= 1;
+bAlignSpectra			= 0;
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
@@ -125,15 +125,25 @@ reportDir				= [dirString_Out reportFigDirStr];
 % Make a new directory for the output report figures, if not already existent,
 % and if desired
 if reportSwitch == 1
-%     reportDirStr		= [nameSpec '_report/'];
-%     reportFigDirStr		= [nameSpec '_report/figs/'];	
-% 	if ~exist([outDirString reportDirStr], 'dir' )
-% 		mkdir([outDirString reportDirStr]);
-% 	end
+	%     reportDirStr		= [nameSpec '_report/'];
+	%     reportFigDirStr		= [nameSpec '_report/figs/'];
+	% 	if ~exist([outDirString reportDirStr], 'dir' )
+	% 		mkdir([outDirString reportDirStr]);
+	% 	end
 	if ~exist( reportDir, 'dir' )
 		mkdir(reportDir);
-	end
-end
+	else
+		% Output directory already exists, ask user whether to overwrite or not
+		% (should help to avoid accidentally overwriting previosuly processed data)
+		strOverwrite	= input('\n\nDo you want to overwrite the existing report directory (y/n)?  ','s');
+		if strOverwrite == 'n' || strOverwrite  == 'N'
+			fprintf('\n%s: Already existing report directory is not overwritten! Processing is aborted!\n\n', sFunctionName)
+			return;
+		else
+			fprintf('\n%s: Already existing report directory is overwritten! Processing is continued!\n\n', sFunctionName)
+		end		% End of if strOverwrite == 'n' || strOverwrite  == 'N'
+	end		% End of if ~exist( reportDir, 'dir' )
+end		% End of if reportSwitch == 1
 
 
 %% Set parameters for figure display
