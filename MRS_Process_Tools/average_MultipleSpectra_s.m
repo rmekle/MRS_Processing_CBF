@@ -67,6 +67,8 @@ ppmmaxOption			= 1;
 medin					= 'y';		% 'y';	'n';	'a';	'ref';
 refin					= 'f';		% 'f';	'a';
 modein					= 'fp';		% 'fp';		''f';		'p';
+strSpecReg				= 'SRs1';	% To distinguish settings for spectral registration
+
 % Set parameters for drift correction depending on type of data, i.e. whether MRS
 % data is spectrum or water signal
 % NOTE: Check whether aligning of averages in frequency domain works, if the MR
@@ -94,7 +96,6 @@ switch dataType_MRS
 		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
 end		% End of switch dataType_MRS
 %alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
-strSpecReg				= 'SRs1';	% To distinguish settings for spectral registration
 plotSwitch				= 1;
 reportSwitch			= 1;
 
@@ -267,7 +268,7 @@ if bAlignSpectra
 		h5	= figure('visible','off');
 	end
 	subplot(1,2,1);
-	plot(ceSpectra_Sel{1}.ppm,real(specsSpectra_Sel(:,:)));xlim([1 4.5]);
+	plot(ceSpectra_Sel{1}.ppm,real(specsSpectra_Sel(:,:)));xlim([0.2 4.5]);
 	set(gca,'FontSize',8);
 	set(gca,'XDir','reverse');
 	xlabel('Frequency (ppm)','FontSize',10);
@@ -275,7 +276,7 @@ if bAlignSpectra
 	title('Before','FontSize',12);
 	box off;
 	subplot(1,2,2);
-	plot(ceSpectra_Sel_as{1}.ppm,real(specsSpectra_Sel_as(:,:)));xlim([1 4.5]);
+	plot(ceSpectra_Sel_as{1}.ppm,real(specsSpectra_Sel_as(:,:)));xlim([0.2 4.5]);
 	set(gca,'FontSize',8);
 	set(gca,'XDir','reverse');
 	xlabel('Frequency (ppm)','FontSize',10);
