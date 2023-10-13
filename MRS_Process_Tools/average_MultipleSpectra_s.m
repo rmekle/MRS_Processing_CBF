@@ -63,6 +63,7 @@ iterin					= 20;
 aaDomain				= 'f';		% 'f';		't';
 tmaxin					= 0.2;		% 0.2;		0.1;
 bTmaxset				= 1;
+ppmmaxOption			= 1;
 medin					= 'y';		% 'y';	'n';	'a';	'ref';
 refin					= 'f';		% 'f';	'a';
 modein					= 'fp';		% 'fp';		''f';		'p';
@@ -75,8 +76,15 @@ switch dataType_MRS
 		% MR spectrum is provided together without or with unsuppressed water
 		% signal and/or with reference scans
 		ppmmin_fix			= 1.6;		% 1.6;		1.8;
-		ppmmaxarray_fix		= [3.5; 4.0; 5.5];
-		%ppmmaxarray_fix		= [2.4,2.85,3.35,4.2,4.4,5.2];
+		switch ppmmaxOption
+			case 1
+				ppmmaxarray_fix		= [2.4,2.85,3.35,4.2,4.4,5.2];
+			case 2
+				ppmmaxarray_fix		= [3.5; 4.0; 5.5];
+
+			otherwise
+				error('%s: Unknown ppmmaxOption = %d!', sFunctionName, ppmmaxOption);
+		end			% End of switch ppmmaxOption
 	case {'water', 'water_ref'}
 		% MR spectrum is water signal itself without or with reference scans
 		ppmmin_fix_In		= 4.2;
