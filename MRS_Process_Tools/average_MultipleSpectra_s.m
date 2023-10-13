@@ -54,7 +54,7 @@ end		% End of if ~exist( dirString_Out, 'dir' )
 
 %% Parameters for processing
 % Parameters for aligning multiple spectra with each other
-bAlignSpectra			= 0;
+bAlignSpectra			= 1;
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
@@ -63,11 +63,11 @@ iterin					= 20;
 aaDomain				= 'f';		% 'f';		't';
 tmaxin					= 0.2;		% 0.2;		0.1;
 bTmaxset				= 1;
-ppmmaxOption			= 1;
+ppmOption				= 3;
 medin					= 'y';		% 'y';	'n';	'a';	'ref';
 refin					= 'f';		% 'f';	'a';
 modein					= 'fp';		% 'fp';		''f';		'p';
-strSpecReg				= 'SRs1';	% To distinguish settings for spectral registration
+strSpecReg				= 'SRs5';	% To distinguish settings for spectral registration
 
 % Set parameters for drift correction depending on type of data, i.e. whether MRS
 % data is spectrum or water signal
@@ -78,18 +78,23 @@ switch dataType_MRS
 		% MR spectrum is provided together without or with unsuppressed water
 		% signal and/or with reference scans
 		ppmmin_fix			= 1.6;		% 1.6;		1.8;
-		switch ppmmaxOption
+		switch ppmmOption
 			case 1
+				ppmmin_fix			= 1.6;		% 1.6;		1.8;
 				ppmmaxarray_fix		= [2.4,2.85,3.35,4.2,4.4,5.2];
 			case 2
+				ppmmin_fix			= 1.6;		% 1.6;		1.8;
 				ppmmaxarray_fix		= [3.5; 4.0; 5.5];
+			case 3
+				ppmmin_fix			= 4.2;
+				ppmmaxarray_fix		= [5.5 5.5 5.2];
 
 			otherwise
-				error('%s: Unknown ppmmaxOption = %d!', sFunctionName, ppmmaxOption);
-		end			% End of switch ppmmaxOption
+				error('%s: Unknown ppmOption = %d!', sFunctionName, ppmOption);
+		end			% End of switch ppmOption
 	case {'water', 'water_ref'}
 		% MR spectrum is water signal itself without or with reference scans
-		ppmmin_fix_In		= 4.2;
+		ppmmin_fix			= 4.2;
 		ppmmaxarray_fix		= [5.5 5.5 5.2];
 
 	otherwise
@@ -102,7 +107,7 @@ reportSwitch			= 1;
 % Select indices of spectra to be averaged
 indSpectra_All			= [1:noEntriesListing];
 %indSpectra_Sel			= [1:noEntriesListing];
-indSpectra_Sel			= [1:2];	% [1:2];	[3:noEntriesListing];
+indSpectra_Sel			= [3:noEntriesListing];		% [1:2];	[3:noEntriesListing];
 noSpectra_All			= length(indSpectra_All);
 noSpectra_Sel			= length(indSpectra_Sel);
 indexStart				= 1;
