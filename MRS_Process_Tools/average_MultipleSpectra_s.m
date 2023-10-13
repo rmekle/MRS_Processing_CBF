@@ -102,7 +102,7 @@ reportSwitch			= 1;
 % Select indices of spectra to be averaged
 indSpectra_All			= [1:noEntriesListing];
 %indSpectra_Sel			= [1:noEntriesListing];
-indSpectra_Sel			= [1:2];
+indSpectra_Sel			= [1:2];	% [1:2];	[3:noEntriesListing];
 noSpectra_All			= length(indSpectra_All);
 noSpectra_Sel			= length(indSpectra_Sel);
 indexStart				= 1;
