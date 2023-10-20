@@ -1,10 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% partialVolumeCorrection_s_id.m
+% partialVolumeCorrection_s.m
 %
 %% Script to calculate partial volume correction tissue coefficients in MRS for brain
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020, 2021, 2022; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020, 2021, 2022, 2023; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -14,7 +14,7 @@
 
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
-sFunctionName		= 'partialVolumeCorrection_s_id';
+sFunctionName		= 'partialVolumeCorrection_s';
 sMsg_newLines		= sprintf('\n\n');
 sMsg_newLine		= newline;
 disp(sMsg_newLines);
@@ -27,14 +27,30 @@ noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
 seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
-strDataFormat           = 'DICOM';      % 'DICOM';      % 'RawData';      %'rda';
-strDataExtension        = '*.IMA';      %'*.IMA';       %'*.dat';       %'*.rda';
-strPVoxel               = 'pvoxel4_DICOM.py';     %'pvoxel4_rda.py' for rda data;      %'pvoxel4_RawData.py' for RawData;    %'pvoxel4_DICOM.py' for DICOM
+strDataFormat           = 'rda';     % 'DICOM';      % 'RawData';      %'rda';
+%strDataExtension        = '*.rda';      %'*.IMA';       %'*.dat';       %'*.rda';
+%strPVoxel               = 'pvoxel4_rda.py';     %'pvoxel4_rda.py' for rda data;      %'pvoxel4_RawData.py' for RawData;    %'pvoxel4_DICOM.py' for DICOM
 strVOI					= 'PCG';			% 'HC';		% 'PCG';
 strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
 strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
 strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
 
+% Select some parameters based on data format, i.e. which data is used to obtain
+% positional information about the VOI
+switch strDataFormat
+	case 'rda'
+		strDataExtension        = '*.rda';
+		strPVoxel               = 'pvoxel4_rda.py';
+	case 'RawData'
+		strDataExtension        = '*.dat';
+		strPVoxel               = 'pvoxel4_RawData.py';
+	case 'DICOM'
+		strDataExtension        = '*.IMA';
+		strPVoxel               = 'pvoxel4_DICOM.py';
+
+	otherwise
+		error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
+end		% End of switch strDataFormat
 
 % Set (additional) parameters depending on sequence type 
 switch seqType
@@ -53,15 +69,21 @@ switch seqType
 		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_PartialVolumeCorrection/PVCorr_bet_87_115_180_fractThresh_0_3_DistCorr/Test/';
     case 'sLASER'
 		outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
-        %dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI, filesep];
-        %dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_Water_', strVOI, filesep];
-        dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_DICOM_Files_MRS_', strVOI, filesep];
+		% Select directory for MRS data based on data format
+		switch strDataFormat
+			case 'rda'
+				dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI, filesep];      
+			case 'RawData'
+				dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_Water_', strVOI, filesep];
+			case 'DICOM'
+				dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_DICOM_Files_MRS_', strVOI, filesep];
+
+			otherwise
+				error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
+		end		% End of switch strDataFormat
 		dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI, filesep];
 		dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
-		%dirData_MRS	            = ['/home/destiana/CSB_NeuroRad/destiana/Data/MRS_', strDataFormat, '_', strVOI, filesep];
-		%dirData_NIfTI 			= ['/home/destiana/CSB_NeuroRad/destiana/Data/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI, filesep];
-		%dirData_Seg				= ['/home/destiana/CSB_NeuroRad/destiana/Data/Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3_', strVOI, filesep];
-		outputDir_PVCorr_Base	= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
+		outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
 			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
