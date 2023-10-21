@@ -80,21 +80,26 @@ switch dataType_MRS
 		%ppmmin_fix			= 1.6;		% 1.6;		1.8;
 		switch ppmOption
 			case 1
+				% For MR spectra
 				ppmmin_fix			= 1.6;		% 1.6;		1.8;
 				ppmmaxarray_fix		= [2.4,2.85,3.35,4.2,4.4,5.2];
 			case 2
+				% For MR spectra
 				ppmmin_fix			= 1.6;
 				ppmmaxarray_fix		= [3.5; 4.0; 5.5];
 			case 3
 				ppmmin_fix			= 4.2;
 				ppmmaxarray_fix		= [5.5 5.5 5.2];
 			case 4
+				% Wide range to always inlcude water resonance
 				ppmmin_fix			= 1.6;
 				ppmmaxarray_fix		= [5.5 5.5 5.2];
 			case 5
+				% For MMs signals
 				ppmmin_fix			= 0.2;
 				ppmmaxarray_fix		= [3.35,4.2,4.4];
 			case 6
+				% For MMs signals
 				ppmmin_fix			= 0.2;
 				ppmmaxarray_fix		= [3.35,4.0,4.1];
 
