@@ -24,17 +24,17 @@ disp(sMsg_newLines);
 %% Init input parameters for preprocessing
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_MMs';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
+strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
 strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
-signals_MRS				= 'MMs';		% 'MMs';	% 'Spectra';
+dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
+signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
+leftshift_In			= 2;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
@@ -45,6 +45,7 @@ iterin_In				= 20;
 aaDomain_In				= 'f';		% 'f';		't';
 tmaxin_In				= 0.2;		% 0.2;		0.1;
 bTmaxset_In				= 1;
+ppmOption				= 1;
 medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
 % Set parameters for drift correction depending on type of data, i.e. whether MRS
 % data is spectrum or water signal
@@ -54,9 +55,38 @@ switch dataType_MRS
 	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
 		% MR spectrum is provided together without or with unsuppressed water
 		% signal and/or with reference scans
-		ppmmin_fix_In		= 1.6;		% 1.6;		1.8;
+		%ppmmin_fix_In		= 1.6;		% 1.6;		1.8;
 		%ppmmaxarray_fix_In	= [3.5; 4.0; 5.5];
-		ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
+		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
+		switch ppmOption
+			case 1
+				% For MR spectra
+				ppmmin_fix_In			= 1.6;		% 1.6;		1.8;
+				ppmmaxarray_fix_In		= [2.4,2.85,3.35,4.2,4.4,5.2];
+			case 2
+				% For MR spectra
+				ppmmin_fix_In			= 1.6;
+				ppmmaxarray_fix_In		= [3.5; 4.0; 5.5];
+			case 3
+				% For MR spectra using settings for water signals
+				ppmmin_fix_In			= 4.2;
+				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
+			case 4
+				% Wide range to always inlcude water resonance
+				ppmmin_fix_In			= 1.6;
+				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
+			case 5
+				% For MMs signals
+				ppmmin_fix_In			= 0.2;
+				ppmmaxarray_fix_In		= [3.35,4.2,4.4];
+			case 6
+				% For MMs signals
+				ppmmin_fix_In			= 0.2;
+				ppmmaxarray_fix_In		= [3.35,4.0,4.1];
+
+			otherwise
+				error('%s: Unknown ppmOption = %d!', sFunctionName, ppmOption);
+		end			% End of switch ppmOption
 	case {'water', 'water_ref'}
 		% MR spectrum is water signal itself without or with reference scans
 		ppmmin_fix_In		= 4.2;
@@ -118,7 +148,7 @@ switch seqType_MRS
 				%dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
 				
 				% Output data directory
-				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
 				
 				% Directories depending on MRS data type
 				switch fileExtension
@@ -141,8 +171,9 @@ switch seqType_MRS
 				
 				% Output data directory
 				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/ZZZZ_Test/';
+				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/ZZZZ_Test/';
 				%dirString_Out_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/CodeResults/';
+				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_MMs_Analysis/';
 
 				% Directories depending on MRS data type
 				switch fileExtension
