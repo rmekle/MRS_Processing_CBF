@@ -26,12 +26,12 @@ fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'HC'; 			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'PCG'; 			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 2;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
@@ -197,8 +197,16 @@ switch seqType_MRS
 		end			% End of switch strStudy
 
 		% Complete output data directory name for preprocessing
-		dirString_Out_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
-		dirString_Out_AddOn2		= '';
+		% Select directory for output data depending on voxel location, data type,
+		% # of SDs, and other options used for pre-processing of MR spectra
+		% Make output directories for acquired macromolecules (MMs) distinguishable from 
+		% those for spectra
+		if strcmp(signals_MRS, 'MMs')
+			dirString_Out_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
+		else
+			dirString_Out_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
+		end		% End of if strcmp(signals_MRS, 'MMs')
+		dirString_Out_AddOn2	= '';
 		if bECC_In
 			% Use reference (water) signals for ECC, if acquired
 			% If not, then use an unsuppressed water signal, if acquired
@@ -226,6 +234,15 @@ switch seqType_MRS
 			end		% if ~isempty(refInd)
 			%dirString_Out_AddOn2	= '_ECC_Test';
 		end		% End of if bECC_In
+		if leftshift_In > 0
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
+		end		% End of if leftshift_In > 0
+		% Indicate in output directory name which type of spectral registration was used
+		if driftCorr_In == 'y' || driftCorr_In == 'Y'
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_', strSpecReg];
+		else
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoSR'];
+		end
 		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		
 		% Create strings for output directory and list of filenames of MR spectra and 
