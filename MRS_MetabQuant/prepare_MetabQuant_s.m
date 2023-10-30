@@ -107,11 +107,38 @@ reportSwitch_In			= 1;
 %% Additional input parameters specific to this routine
 % 'bCopyFiles' used to turn on/off any copying of files (mostly used for debugging)
 bCopyFiles				= 1;
-bCopyFiles_MRS			= 1;
-bCopyFiles_ref_Quant	= 0;
+%bCopyFiles_MRS			= 1;
+%bCopyFiles_ref_Quant	= 0;
 bCopyFiles_ref_ECC		= 0;
-bCopyFiles_w			= 1;
+%bCopyFiles_w			= 1;
 bWriteFilenames			= 1;
+switch dataType_MRS
+	case {'mrs_w_ref', 'mrs_ref'}
+		% MR spectrum was acquired with reference scans that are typically used for
+		% quantification
+		bCopyFiles_MRS			= 1;
+		bCopyFiles_ref_Quant	= 1;
+		bCopyFiles_w			= 0;
+	case {'mrs_w'}
+		% MR spectrum was acquired without reference scans, but with water signals
+		bCopyFiles_MRS			= 1;
+		bCopyFiles_ref_Quant	= 0;
+		bCopyFiles_w			= 1;
+	case {'mrs'}
+		% MR spectrum was acquired without reference scans and without water signals
+		bCopyFiles_MRS			= 1;
+		bCopyFiles_ref_Quant	= 0;
+		bCopyFiles_w			= 0;
+	case {'water', 'water_ref'}
+		% MR spectrum is water signal itself without or with reference scans
+		% (not really used for quantification)
+		bCopyFiles_MRS			= 0;
+		bCopyFiles_ref_Quant	= 0;
+		bCopyFiles_w			= 1;
+
+	otherwise
+		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+end		% End of switch dataType_MRS
 
 
 %% Set (additional) parameters depending on sequence type
