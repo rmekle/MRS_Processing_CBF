@@ -4,7 +4,7 @@
 %
 %% Script to prepare metabolite quantification of magnetic resonance spectroscopy (MRS) data
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2020, 2021, 2022; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2020, 2021, 2022, 2023; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -22,28 +22,89 @@ sMsg_newLines		= sprintf('\n\n');
 %% Init input parameters for preparing metabolite quantification
 %dirString_Out			= '';
 %dirString_Out			= '';
+fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '7T_KCL';		% '3T_Trauma';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
+strVOI					= 'HC'; 			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';
-% strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-% strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-% leftshift_In			= 0;
+dataType_MRS			= 'mrs_w_ref';			% 'mrs_w_ref';		% 'mrs_w';
+signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
+strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
+leftshift_In			= 2;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-% strMinUserIn_In			= 'y';
-% aaDomain_In				= 'f';			% 'f';		% 't';
-% tmaxin_In				= 0.2;
-% iterin_In				= 20;
-% alignSS_In				= 2;
-bECC_In					= 0;
-% bPhaseCorrFreqShift_In	= 0;
-% plotSwitch_In			= 0;
-% reportSwitch_In			= 1;
 
-% Additional input parameters specific to this routine
+% Parameters for spectral registration (aligning of averages/frequency and phase drift
+% correction) performed in either frequency or time domain
+driftCorr_In			= 'y';		% 'y';		'n';
+iterin_In				= 20;
+aaDomain_In				= 'f';		% 'f';		't';
+tmaxin_In				= 0.2;		% 0.2;		0.1;
+bTmaxset_In				= 1;
+ppmOption				= 1;
+medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
+% Set parameters for drift correction depending on type of data, i.e. whether MRS
+% data is spectrum or water signal
+% NOTE: Check whether aligning of averages in frequency domain works, if the MR
+% spectrum is water signal itself; if not, simply align averages in time domain
+switch dataType_MRS
+	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+		% MR spectrum is provided together without or with unsuppressed water
+		% signal and/or with reference scans
+		%ppmmin_fix_In		= 1.6;		% 1.6;		1.8;
+		%ppmmaxarray_fix_In	= [3.5; 4.0; 5.5];
+		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
+		switch ppmOption
+			case 1
+				% For MR spectra
+				ppmmin_fix_In			= 1.6;		% 1.6;		1.8;
+				ppmmaxarray_fix_In		= [2.4,2.85,3.35,4.2,4.4,5.2];
+			case 2
+				% For MR spectra
+				ppmmin_fix_In			= 1.6;
+				ppmmaxarray_fix_In		= [3.5; 4.0; 5.5];
+			case 3
+				% For MR spectra using settings for water signals
+				ppmmin_fix_In			= 4.2;
+				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
+			case 4
+				% Wide range to always inlcude water resonance
+				ppmmin_fix_In			= 1.6;
+				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
+			case 5
+				% For MMs signals
+				ppmmin_fix_In			= 0.2;
+				ppmmaxarray_fix_In		= [3.35,4.2,4.4];
+			case 6
+				% For MMs signals
+				ppmmin_fix_In			= 0.2;
+				ppmmaxarray_fix_In		= [3.35,4.0,4.1];
+
+			otherwise
+				error('%s: Unknown ppmOption = %d!', sFunctionName, ppmOption);
+		end			% End of switch ppmOption
+	case {'water', 'water_ref'}
+		% MR spectrum is water signal itself without or with reference scans
+		ppmmin_fix_In		= 4.2;
+		ppmmaxarray_fix_In	= [5.5 5.5 5.2];
+
+	otherwise
+		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+end		% End of switch dataType_MRS
+alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
+strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
+
+% Additional parameter settings
+bECC_In					= 1;
+bPhaseCorrFreqShift_In	= 0;
+strMinUserIn_In			= 'y';
+plotSwitch_In			= 0;
+reportSwitch_In			= 1;
+
+
+%% Additional input parameters specific to this routine
 % 'bCopyFiles' used to turn on/off any copying of files (mostly used for debugging)
 bCopyFiles				= 1;
 bCopyFiles_MRS			= 1;
@@ -55,7 +116,7 @@ bWriteFilenames			= 1;
 
 %% Set (additional) parameters depending on sequence type
 % 'dirString_Out' inidcates output directories from preprocessing of MR spectra
-% Using 'dirString_Out' instead of 'dirString_Out' allows to use same code for generating
+% Using 'dirString_Out' instead of 'dirString_In' allows to use same code for generating
 % directory names as in routine preprocess_ListOfFiles_s.m
 % 'outDirString_LCM' then holds information about directory, into which files are copied
 % for use with metabolite quantification software (e.g. LCModel)
@@ -93,15 +154,21 @@ switch seqType_MRS
 		switch strStudy
 			case '3T_Trauma'
 				% Output data directory for preprocessing
-				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-			case '7T_KCL'				
+				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+			case '3T_MMs'								
+				% Output data directory
+				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/ZZZZ_Test/';
+				%dirString_Out_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/CodeResults/';
+				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_MMs_Analysis/';
+			case '7T_KCL'
 				% Output data directory for preprocessing
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
-							
+				
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end			% End of switch strStudy
-		
+
 		% Complete output data directory name for preprocessing
 		dirString_Out_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 		dirString_Out_AddOn2		= '';
