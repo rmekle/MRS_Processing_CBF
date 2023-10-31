@@ -112,7 +112,7 @@ reportSwitch_In			= 1;
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
 strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
-b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
+%b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
 charWaterScaling		= 'Yes';			% 'Yes';	'No';
@@ -460,11 +460,13 @@ switch seqType_MRS
 		fullFilename_listOfFiles_w			= [dirData, textFileName_w];
 		
 		% Select output directory based on type of data and type of analysis being used
+		% and add control filename to directory
 		outDir		= [dirData_Processed, strVOI, '_LCM_Out_', strTissue, strWaterQuant];
-		if b0nratio
-			outDir		= [outDir, '_0nratio'];
-		end
-		outDir		= [outDir, filesep];
+		%if b0nratio
+		%	outDir		= [outDir, '_0nratio'];
+		%end
+		%outDir		= [outDir, filesep];
+		outDir		= [outDir, '_', LCM_Control, filesep];
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
