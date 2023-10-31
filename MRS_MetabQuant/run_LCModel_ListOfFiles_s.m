@@ -379,12 +379,12 @@ switch seqType_MRS
 		% study, # of SDs and other options used for pre-processing of MR spectra and 
 		% on settings for LCModel analysis
 		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-		dirData_AddOn2		= '';
+		%dirData_AddOn2		= '';
 		switch strStudy
 			case '3T_Trauma'
 				% svs_dkd_slaser with TE = 23 ms
-				dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-				dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+				dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+				%dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 				%dirData_AddOn2		= '';
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
@@ -396,6 +396,17 @@ switch seqType_MRS
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end			% End of switch strStudy
 		
+		% Complete output data directory name for preprocessing
+		% Select directory for output data depending on voxel location, data type,
+		% # of SDs, and other options used for pre-processing of MR spectra
+		% Make output directories for acquired macromolecules (MMs) distinguishable from 
+		% those for spectra
+		if strcmp(signals_MRS, 'MMs')
+			dirData_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
+		else
+			dirData_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
+		end		% End of if strcmp(signals_MRS, 'MMs')
+		dirData_AddOn2	= '';
 		if bECC_In
 			% Use reference (water) signals for ECC, if acquired
 			% If not, then use an unsuppressed water signal, if acquired
@@ -423,6 +434,15 @@ switch seqType_MRS
 			end		% if ~isempty(refInd)
 			%dirData_AddOn2	= '_ECC_Test';
 		end		% End of if bECC_In
+		if leftshift_In > 0
+			dirData_AddOn2	= [dirData_AddOn2, sprintf('_ls%d', leftshift_In)];
+		end		% End of if leftshift_In > 0
+		% Indicate in output directory name which type of spectral registration was used
+		if driftCorr_In == 'y' || driftCorr_In == 'Y'
+			dirData_AddOn2	= [dirData_AddOn2, '_', strSpecReg];
+		else
+			dirData_AddOn2	= [dirData_AddOn2, '_NoSR'];
+		end
 		dirData_Processed	= [dirData_Base, dirData_AddOn1, dirData_AddOn2, filesep];
 		% Add elements for voxel location and quantification analysis to input directory
 		% name
