@@ -30,12 +30,12 @@ fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 2;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
@@ -110,7 +110,7 @@ reportSwitch_In			= 1;
 
 %% Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
@@ -118,7 +118,7 @@ strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 charWaterScaling		= 'Yes';			% 'Yes';	'No';
 strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 % Set parameters for copying results from .csv file into formatted Excel file
-bCopyIntoExcel			= 0;
+bCopyIntoExcel			= 1;
 bTestOutput				= 0;
 
 % Check(s) on oarameter settings
@@ -385,12 +385,14 @@ switch seqType_MRS
 		switch strStudy
 			case '3T_Trauma'
 				% svs_dkd_slaser with TE = 23 ms
-				dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+				dirData_Analysis	= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+				dirData_Base		= dirData_Analysis;
 				%dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 				%dirData_AddOn2		= '';
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
-				dirData_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
+				dirData_Analysis	= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
+				dirData_Base		= dirData_Analysis;
 				dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 				%dirData_AddOn2		= '';
 				
@@ -1014,9 +1016,120 @@ if( noFiles_table > 0 )
 					end			% End of for templ=1 : 1 : noTemplateFilesUsed
 				end		% End of if bCopyIntoExcel
 		case 'sLASER'
-			fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', seqType_MRS);
-			bCopyIntoExcel			= 0;
+			%fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', seqType_MRS);
+			%bCopyIntoExcel			= 0;
+
+			% Insert selected # of columns for additional parameters, e.g. water 
+			% linewidth (LW_H2O), into table of results
+			% Create new variables of empty strings and zeros with fitting variable names 
+			% and same # of rows as table of results; create table from these variables,
+			% use # of colums to be moved for reordering of columns within table,
+			% concatenate this table with table of results; then reorder columns in 
+			% resulting table to obtain desired order of columns 
+			% or alternatively, only delete selected column(s) from table of results, do 
+			% NOT insert any new columns, and only copy remaining table into Excel
+			% Set variables for deleting and/or moving columns
+			% Select whether variable names for data in table are also written to Excel
+			COL_ADD1				= strings(noFiles_MRS, 1);
+			LW_H2O					= zeros(noFiles_MRS, 1);
+			nLastRowsToDel			= 3;
+			bDeleteColumns			= true;
+			IndicesColsToDel		= 1;
+			bMoveColumns			= false;
+			nColsToMove				= 1;
+			bToWriteVariableNames	= false;
 			
+			% List available Excel template files 
+			bUseTemplateFile		= 1;
+			switch strStudy
+				case '3T_Trauma'
+					% Select template according to selected VOI
+					switch strVOI
+						case 'HC'
+							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_HC.xltx"];
+						case 'PCG'
+							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_PCG.xltx"];
+
+						otherwise
+							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI);
+					end			% End of switch strVOI
+				case '3T_MMs'
+					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy);
+					bCopyIntoExcel			= 0;		
+				case '7T_KCL'
+					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy);
+					bCopyIntoExcel			= 0;	
+
+				otherwise
+					error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+			end			% End of switch strStudy
+			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
+
+			% Init # of template files used, template filename and list substrings and 
+			% additional variables
+			noTemplateFilesUsed		= 1;
+			templateFileExcel		= char(astrTemplateFilesExcel(1));
+			
+			% Select sheet and range of Excel file, where table of results is to be saved
+			% and # of columns to be inserted into final table
+			% depending on type of spectra being analyzed
+			if strcmp(strAnalysisData, 'MRS_reg')
+				% Regular MR spectra
+				strSheetSel				= ['MRS_', strVOI, '_All'];	
+				if bDeleteColumns
+					% Select range in Excel for only deleting columns in table
+					strRangeSel				= 'D5';		% 'D5';
+				else
+					% Select range in Excel for adding and moving columns to create table
+					strRangeSel				= 'A5';		% 'A4';
+				end
+				% Set parameters for additional table to be saved into Excel
+				newColsTable_Add		= table(COL_ADD1, LW_H2O);
+
+				% Select set of template files, to which data are copied to	
+				% Init first value of selected template files to avoid an empty array
+				%indTemplateFiles		= [1];
+				%noTemplateFilesUsed		= length(indTemplateFiles);
+				noTemplateFilesUsed			= 1;
+				astrTemplatesSelected		= strings([noTemplateFilesUsed,1]);
+				astrTemplatesSelected(1)	= astrTemplateFilesExcel(1);
+
+				% Set additions to Excel file to be able to distinguish Excel files
+				% created from multiple Excel templates and display info
+				astrExelFileAdds	= [""];
+			else
+				error('%s: ERROR: Study %s not with %s data!', sFunctionName, strStudy, strAnalysisData);
+			end		% End of if strcmp(strAnalysisData, 'MRS_reg')
+
+			% Display info
+			disp(sMsg_newLines);
+			fprintf('strAnalysisData \t= %s\t\tbCopyIntoExcel \t= %d\n\n', strAnalysisData, bCopyIntoExcel);
+			
+			% Save/copy results from .csv file also into (formatted) Excel file(s), if
+				% selected
+				if bCopyIntoExcel
+					% Insert selected # of columns for additional parameters, e.g. water
+					% linewidth (LW_H2O), into table of results, reorder final table of
+					% results and save it into Excelfile;
+					% or alternatively, only delete selected column(s) from table of
+					% results, do NOT insert any new columns, and only copy remaining
+					% table into Excel
+					% Excel file will be formatted, if Excel template file is used
+					% If data are copied into multiple Excel files, all formatting remains
+					% the same, only resulting filename and Excel template file change
+					for j=1 : 1 : noTemplateFilesUsed
+						templateFileExcel		= char(astrTemplatesSelected(j));
+						% Check for empty template filename, if template to be used
+						if bUseTemplateFile && isempty(templateFileExcel)
+							error('%s: ERROR: bUseTemplateFile = %d, but empty templateFileExcel = %s!', sFunctionName, bUseTemplateFile, templateFileExcel);
+						end				
+						fprintf('No. of template = %d\t\ttemplateFileExcel \t= %s\n', j, templateFileExcel);
+						fullPath_TemplateFile	= [dirDataAnalysis templateFileExcel];
+						FileName_Excel			= [FileName_all, char(astrExelFileAdds(j)), '.xlsx'];				
+						[resultsTable_Out]		= copyMetabResults_IntoExcel_s(fullFileName_all,nLastRowsToDel,bDeleteColumns,IndicesColsToDel,bMoveColumns,nColsToMove,newColsTable_Add,outDir,FileName_Excel,strSheetSel,strRangeSel,bToWriteVariableNames,bUseTemplateFile,fullPath_TemplateFile);
+					end			% End of for templ=1 : 1 : noTemplateFilesUsed
+				end		% End of if bCopyIntoExcel
+
 		otherwise
 			error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 	end			% End of switch seqType_MRS
