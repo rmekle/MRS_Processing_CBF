@@ -24,40 +24,101 @@ disp(sMsg_newLines);
 
 
 %% Init parameter settings for running LCModel analysis
+%dirString_In			= '';
 %dirString_Out			= '';
-%dirString_Out			= '';
+fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_Dopa';		% '3T_Trauma';	% '3T_Dopa';	% '7T_KCL';	
-strVOI					= 'OCC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';	% 'OCC';
-seqType_MRS				= 'MEGA-PRESS';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w';			% 'mrs_w_ref';	% 'mrs_w';
-% strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-% strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-% leftshift_In			= 0;
+strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
+strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
+signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
+strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+leftshift_In			= 2;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-% strMinUserIn_In			= 'y';
-% aaDomain_In				= 'f';			% 'f';		% 't';
-% tmaxin_In				= 0.2;
-% iterin_In				= 20;
-% alignSS_In				= 2;
-bECC_In					= 0;
-% bPhaseCorrFreqShift_In	= 0;
-% plotSwitch_In			= 0;
-% reportSwitch_In			= 1;
 
-% Additional input parameters specific to this routine
+% Parameters for spectral registration (aligning of averages/frequency and phase drift
+% correction) performed in either frequency or time domain
+strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
+driftCorr_In			= 'y';		% 'y';		'n';
+iterin_In				= 20;
+aaDomain_In				= 'f';		% 'f';		't';
+tmaxin_In				= 0.2;		% 0.2;		0.1;
+bTmaxset_In				= 1;
+ppmOption				= 1;
+medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
+alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
+% Set parameters for drift correction depending on type of data, i.e. whether MRS
+% data is spectrum or water signal
+% NOTE: Check whether aligning of averages in frequency domain works, if the MR
+% spectrum is water signal itself; if not, simply align averages in time domain
+switch dataType_MRS
+	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+		% MR spectrum is provided together without or with unsuppressed water
+		% signal and/or with reference scans
+		%ppmmin_fix_In		= 1.6;		% 1.6;		1.8;
+		%ppmmaxarray_fix_In	= [3.5; 4.0; 5.5];
+		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
+		switch ppmOption
+			case 1
+				% For MR spectra
+				ppmmin_fix_In			= 1.6;		% 1.6;		1.8;
+				ppmmaxarray_fix_In		= [2.4,2.85,3.35,4.2,4.4,5.2];
+			case 2
+				% For MR spectra
+				ppmmin_fix_In			= 1.6;
+				ppmmaxarray_fix_In		= [3.5; 4.0; 5.5];
+			case 3
+				% For MR spectra using settings for water signals
+				ppmmin_fix_In			= 4.2;
+				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
+			case 4
+				% Wide range to always inlcude water resonance
+				ppmmin_fix_In			= 1.6;
+				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
+			case 5
+				% For MMs signals
+				ppmmin_fix_In			= 0.2;
+				ppmmaxarray_fix_In		= [3.35,4.2,4.4];
+			case 6
+				% For MMs signals
+				ppmmin_fix_In			= 0.2;
+				ppmmaxarray_fix_In		= [3.35,4.0,4.1];
+
+			otherwise
+				error('%s: Unknown ppmOption = %d!', sFunctionName, ppmOption);
+		end			% End of switch ppmOption
+	case {'water', 'water_ref'}
+		% MR spectrum is water signal itself without or with reference scans
+		ppmmin_fix_In		= 4.2;
+		ppmmaxarray_fix_In	= [5.5 5.5 5.2];
+
+	otherwise
+		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+end		% End of switch dataType_MRS
+
+% Additional parameter settings
+bECC_In					= 1;
+bPhaseCorrFreqShift_In	= 0;
+strMinUserIn_In			= 'y';
+plotSwitch_In			= 0;
+reportSwitch_In			= 1;
+
+
+%% Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'OCC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
-strAnalysisData			= 'MRS_diff';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
-b0nratio				= 0;		% Currently, only used for seqType_MRS =  'sLASER'
+strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
+b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
 % (in later version, this should be determined from loaded control file)
-charWaterScaling		= 'No';		% 'Yes';	'No';
-strWaterQuant			= '_w';			% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
+charWaterScaling		= 'Yes';			% 'Yes';	'No';
+strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 % Set parameters for copying results from .csv file into formatted Excel file
-bCopyIntoExcel			= 1;
+bCopyIntoExcel			= 0;
 bTestOutput				= 0;
 
 % Check(s) on oarameter settings
@@ -105,7 +166,7 @@ switch seqType_MRS
 			%LCM_Basis						= '3t_IU_MEGAPRESS_1915_te68_Kaiser_diff.basis';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_JM_Config1_noECC_nratio0';
-			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41';
+			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK03';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK06';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_JM_Method15_185to41_DK50';
@@ -130,7 +191,7 @@ switch seqType_MRS
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config8_185to41_DK06';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41';
 			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK03';
-			LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK06';
+			%LCM_Control						= '3T_RAW_MEGA-PRESS_MM-Symm_Diff_Config9_185to41_DK06';
 			
 			% Set pattern to be searched for in filename of control file to shorten final
 			% name of output directory
@@ -190,15 +251,17 @@ switch seqType_MRS
 						%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-						LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
+						LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
 					case 'PCG'
 						%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
-						LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
+						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-						
+						LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
 				end				% End of switch strTissue			
