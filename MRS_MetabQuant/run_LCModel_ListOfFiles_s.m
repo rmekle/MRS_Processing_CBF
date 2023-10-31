@@ -253,6 +253,7 @@ switch seqType_MRS
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
 						LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
+						LCM_ControlAdd					= '_Con1';
 					case 'PCG'
 						%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
@@ -261,6 +262,7 @@ switch seqType_MRS
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
 						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
 						LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+						LCM_ControlAdd					= '_Con1';
 
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
@@ -466,7 +468,8 @@ switch seqType_MRS
 		%	outDir		= [outDir, '_0nratio'];
 		%end
 		%outDir		= [outDir, filesep];
-		outDir		= [outDir, '_', LCM_Control, filesep];
+		%outDir		= [outDir, '_', LCM_Control, filesep];
+		outDir		= [outDir, LCM_ControlAdd, filesep];
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
