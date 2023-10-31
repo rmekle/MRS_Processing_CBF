@@ -385,14 +385,14 @@ switch seqType_MRS
 		switch strStudy
 			case '3T_Trauma'
 				% svs_dkd_slaser with TE = 23 ms
-				dirData_Analysis	= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
-				dirData_Base		= dirData_Analysis;
+				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+				dirData_Base		= dirDataAnalysis;
 				%dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 				%dirData_AddOn2		= '';
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
-				dirData_Analysis	= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
-				dirData_Base		= dirData_Analysis;
+				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
+				dirData_Base		= dirDataAnalysis;
 				dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
 				%dirData_AddOn2		= '';
 				
