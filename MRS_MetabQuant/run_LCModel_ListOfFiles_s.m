@@ -26,7 +26,7 @@ disp(sMsg_newLines);
 %% Init parameter settings for running LCModel analysis
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
@@ -36,7 +36,7 @@ dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 2;		% 3;	% 2;	% 0;	% 1;
+leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
@@ -64,11 +64,11 @@ switch dataType_MRS
 		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
 		switch ppmOption
 			case 1
-				% For MR spectra
+				% For MR spectra as in example script run_specialproc_auto.m
 				ppmmin_fix_In			= 1.6;		% 1.6;		1.8;
 				ppmmaxarray_fix_In		= [2.4,2.85,3.35,4.2,4.4,5.2];
 			case 2
-				% For MR spectra
+				% For MR spectra as in example script run_pressProc_auto.m
 				ppmmin_fix_In			= 1.6;
 				ppmmaxarray_fix_In		= [3.5; 4.0; 5.5];
 			case 3
@@ -76,7 +76,7 @@ switch dataType_MRS
 				ppmmin_fix_In			= 4.2;
 				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
 			case 4
-				% Wide range to always inlcude water resonance
+				% Wide range to always include water resonance
 				ppmmin_fix_In			= 1.6;
 				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
 			case 5
@@ -248,21 +248,73 @@ switch seqType_MRS
 					case 'GM'
 						LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
 					case 'HC'
-						%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
-						LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
-						LCM_ControlAdd					= '_Con1';
+						switch fileExtension
+							case 'dat'
+								% RAW4094 for leftshit = 2
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_43772';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592_mac';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
+								%LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722_mac';
+								%LCM_ControlAdd					= '_Con2';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722_nratio0';
+								%LCM_ControlAdd					= '_Con3';
+								LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722';
+								LCM_ControlAdd					= '_Con4';
+								% RAW4093 for leftshit = 3
+								%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
+								%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
+								%LCM_ControlAdd					= '_Con1';
+							case 'IMA'
+								% IMA2047 for leftshit = 1
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
+								LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722_mac';
+								%LCM_ControlAdd					= '_Con2';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722_nratio0';
+								%LCM_ControlAdd					= '_Con3';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722';
+								%LCM_ControlAdd					= '_Con4';
+
+							otherwise
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+						end			% End of switch fileExtension
 					case 'PCG'
-						%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
-						%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
-						LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
-						LCM_ControlAdd					= '_Con1';
+						switch fileExtension
+							case 'dat'
+								% RAW4094 for leftshit = 2
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708_mac';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_42708';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+								%LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422_mac';
+								%LCM_ControlAdd					= '_Con2';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422_nratio0';
+								%LCM_ControlAdd					= '_Con3';
+								LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422';
+								LCM_ControlAdd					= '_Con4';
+								% RAW4093 for leftshit = 3
+								%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+								%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+								%LCM_ControlAdd					= '_Con1';
+							case 'IMA'
+								% IMA2047 for leftshit = 1
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+								LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422_mac';
+								%LCM_ControlAdd					= '_Con2';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422_nratio0';
+								%LCM_ControlAdd					= '_Con3';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422';
+								%LCM_ControlAdd					= '_Con4';
+
+							otherwise
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+						end			% End of switch fileExtension
 
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
