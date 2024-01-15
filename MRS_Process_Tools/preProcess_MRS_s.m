@@ -701,9 +701,11 @@ switch seqType
 			    coilcombos_ref_ECC		= op_getcoilcombos(out_ref_ECC_raw,nPos_cc_w,'w');
 			    coilcombos_ref_Quant	= op_getcoilcombos(out_ref_Quant_raw,nPos_cc_w,'w');
 			    % Combine reference scans using respective coil phases
-			    [out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,ph_ref_ECC,sig_ref_ECC]			= ...
+			    %[out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,ph_ref_ECC,sig_ref_ECC]			= ...
+				[out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,coilcombos_ref_ECC]			= ...
 				    op_addrcvrs(out_ref_ECC_raw,nPos_cc_ref_ECC,'w',coilcombos_ref_ECC);
-			    [out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,ph_ref_Quant,sig_ref_Quant]	= ...
+			    %[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,ph_ref_Quant,sig_ref_Quant]	= ...
+				[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,coilcombos_ref_Quant]	= ...
 				    op_addrcvrs(out_ref_Quant_raw,nPos_cc_ref_Quant,'w',coilcombos_ref_Quant);
 		    end		% End of if with_ref		
 		    if with_water && ~isIMA_w
@@ -711,7 +713,8 @@ switch seqType
 			    %coilcombos		= op_getcoilcombos(out_w_raw,1);
 			    coilcombos_w	= op_getcoilcombos(out_w_raw,nPos_cc_w,'w');
 			    % Combine water scans using respective coil phases
-			    [out_w_cc,fid_w_pre,spec_w_pre,ph_w,sig_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
+			    %[out_w_cc,fid_w_pre,spec_w_pre,ph_w,sig_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
+				[out_w_cc,fid_w_pre,spec_w_pre,coilcombos_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
             end			% % End of if with_water
 		    
 		    % Obtain coil phases and amplitudes from (averaged) MR spectra
@@ -735,8 +738,9 @@ switch seqType
 		    % Combine coil channels before and after signal averaging for comparison and
 		    % plotting
             if ~isIMA
-		        [out_cc,fid_pre,spec_pre,ph,sig]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
-		        [out_av_cc,fid_av_pre,spec_av_pre]	= op_addrcvrs(op_averaging(out_raw),nPos_cc,'w',coilcombos);   
+		        %[out_cc,fid_pre,spec_pre,ph,sig]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+				[out_cc,fid_pre,spec_pre,coilcombos]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+		        [out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(op_averaging(out_raw),nPos_cc,'w',coilcombos);   
             end
             out_raw_av							= op_averaging(out_raw);
 		    
