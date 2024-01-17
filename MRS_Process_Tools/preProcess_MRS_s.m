@@ -341,6 +341,27 @@ fig_height	= 420;
 fig_dist_b	= 510;
 fig_dist_l	= 570;
 
+% Set plotting resolution and properties of axes depending on data type
+resolution		= 600;
+switch dataType
+	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+		% MR spectrum is provided together without or with unsuppressed water
+		% signal and/or with reference scans
+		xLimValues1		= [0.0 5.5];
+		xLimValues2		= [0.2 4.2];
+		xTickValues2	= [0.5:0.5:4.0];
+		strTitle_mrs	= sprintf('Preprocessed MR Spectrum');
+	case {'water', 'water_ref'}
+		% MR spectrum is water signal itself without or with reference scans,
+		xLimValues1		= [3.3 5.9];
+		xLimValues2		= [4.2 5.1];
+		xTickValues2	= [4.2:0.2:5.0];
+		strTitle_mrs	= sprintf('Preprocessed Water Spectrum');
+
+	otherwise
+		error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+end		% End of switch dataType
+
 
 %% Depending on type of data provided load all corresponding data files
 % Init # of shots (averages) for water unsuppressed signals and water reference signals 
@@ -1577,29 +1598,30 @@ switch seqType
 		%xlabel('Frequency (ppm)','FontSize',10);
 		%ylabel('Amplitude(a.u.)','FontSize',10);
 		
-		% Set figure parameters
-		% Set plotting resolution and properties of axes depending on data type
-		resolution		= 600;
-		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-		switch dataType
-			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
-				% MR spectrum is provided together without or with unsuppressed water
-				% signal and/or with reference scans
-				xLimValues1		= [0.0 5.5];
-				xLimValues2		= [0.2 4.2];
-				xTickValues2	= [0.5:0.5:4.0];
-				strTitle_mrs	= sprintf('Preprocessed MR Spectrum');
-			case {'water', 'water_ref'}
-				% MR spectrum is water signal itself without or with reference scans,
-				xLimValues1		= [3.3 5.9];
-				xLimValues2		= [4.2 5.1];
-				xTickValues2	= [4.2:0.2:5.0];
-				strTitle_mrs	= sprintf('Preprocessed Water Spectrum');
-				
-			otherwise
-				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
-		end		% End of switch dataType
+% 		% Set (additional) figure parameters
+% 		% Set plotting resolution and properties of axes depending on data type
+% 		resolution		= 600;
+% 		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
+% 		switch dataType
+% 			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+% 				% MR spectrum is provided together without or with unsuppressed water
+% 				% signal and/or with reference scans
+% 				xLimValues1		= [0.0 5.5];
+% 				xLimValues2		= [0.2 4.2];
+% 				xTickValues2	= [0.5:0.5:4.0];
+% 				strTitle_mrs	= sprintf('Preprocessed MR Spectrum');
+% 			case {'water', 'water_ref'}
+% 				% MR spectrum is water signal itself without or with reference scans,
+% 				xLimValues1		= [3.3 5.9];
+% 				xLimValues2		= [4.2 5.1];
+% 				xTickValues2	= [4.2:0.2:5.0];
+% 				strTitle_mrs	= sprintf('Preprocessed Water Spectrum');
+% 				
+% 			otherwise
+% 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+% 		end		% End of switch dataType
 		
+		% Plot spectra
 		h_mrs			= figure('visible','on');
 		plot(out.ppm,real(out.specs),'linewidth',1.5);xlim(xLimValues1);
 		set(gca,'FontSize',12, 'FontWeight','bold');
