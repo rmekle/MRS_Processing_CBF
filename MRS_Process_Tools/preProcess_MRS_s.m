@@ -1930,7 +1930,8 @@ switch seqType
 				fprintf(fid2,'\n<p>Total frequency drift was: \t%5.6f </p>',max(totalFreqDrift));
 				fprintf(fid2,'\n<p>Total phase drift was: \t%5.6f </p>',max(totalPhaseDrift));
 				%fprintf(fid2,'\n<img src= " %s%salignAvgs_prePostFig.jpg " width="800" height="600">', outDirString, reportFigDirStr);
-				fprintf(fid2,'\n<img src= " %s " width="800" height="600">', fullfile('./figs/','alignAvgs_prePostFig.jpg'));
+				%fprintf(fid2,'\n<img src= " %s " width="800" height="600">', fullfile('./figs/','alignAvgs_prePostFig.jpg'));
+				fprintf(fid2,'\n<img src= " %s " width="800" height="600"><img src= " %s " width="800" height="600">', fullfile('./figs/','alignAvgs_prePostFig.jpg'), fullfile('./figs/','alignAvgs_prePostFig_Limits_2.jpg'));
 				fprintf(fid2,'\n\n<p> </p>');
 				%fprintf(fid2,'\n<img src= " %s%sfreqDriftFig.jpg " width="400" height="400"><img src="%s/%s/report/figs/phaseDriftFig.jpg " width="400" height="400">', outDirString, reportFigDirStr, outDirString, reportFigDirStr);
 				fprintf(fid2,'\n<img src= " %s " width="400" height="400"><img src=" %s " width="400" height="400">', fullfile('./figs/','freqDriftFig.jpg'), fullfile('./figs/','phaseDriftFig.jpg'));
