@@ -804,7 +804,8 @@ switch seqType
 			    h1	= figure('visible','off');
 		    end
 		    subplot(1,2,1);
-		    plot(out_raw_av.ppm,real(out_raw_av.specs(:,:,1)));xlim([1 5]);
+		    %plot(out_raw_av.ppm,real(out_raw_av.specs(:,:,1)));xlim([1 5]);
+			plot(out_raw_av.ppm,real(out_raw_av.specs(:,:,1)));xlim(xLimValues1);
 		    set(gca,'FontSize',8);
 		    set(gca,'XDir','reverse');
 		    xlabel('Frequency (ppm)','FontSize',10);
@@ -812,7 +813,8 @@ switch seqType
 		    title('Before correction','FontSize',12);
 		    box off;
 		    subplot(1,2,2);
-		    plot(out_raw_av.ppm,real(spec_av_pre(:,:,1)));xlim([1 5]);
+		    %plot(out_raw_av.ppm,real(spec_av_pre(:,:,1)));xlim([1 5]);
+			plot(out_raw_av.ppm,real(spec_av_pre(:,:,1)));xlim(xLimValues1);
 		    set(gca,'FontSize',12);
 		    set(gca,'XDir','reverse');
 		    xlabel('Frequency (ppm)','FontSize',10);
@@ -925,7 +927,8 @@ switch seqType
 					h3	= figure('visible','off');
 				end
 				subplot(1,2,1);
-				plot(out_cc.ppm,real(out_cc.specs(:,:)));xlim([1 5]);
+				%plot(out_cc.ppm,real(out_cc.specs(:,:)));xlim([1 5]);
+				plot(out_cc.ppm,real(out_cc.specs(:,:)));xlim(xLimValues1);
 				set(gca,'FontSize',8);
 				set(gca,'XDir','reverse');
 				xlabel('Frequency (ppm)','FontSize',10);
@@ -933,7 +936,8 @@ switch seqType
 				title('Before','FontSize',12);
 				box off;
 				subplot(1,2,2);
-				plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim([1 5]);
+				%plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim([1 5]);
+				plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim(xLimValues1);
 				set(gca,'FontSize',8);
 				set(gca,'XDir','reverse');
 				xlabel('Frequency (ppm)','FontSize',10);
@@ -1141,7 +1145,8 @@ switch seqType
 					h5	= figure('visible','off');
 				end
 				subplot(1,2,1);
-				plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim([1 5]);
+				%plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim([1 5]);
+				plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim(xLimValues1);
 				set(gca,'FontSize',8);
 				set(gca,'XDir','reverse');
 				xlabel('Frequency (ppm)','FontSize',10);
@@ -1149,7 +1154,8 @@ switch seqType
 				title('Before','FontSize',12);
 				box off;
 				subplot(1,2,2);
-				plot(out_aa.ppm,real(out_aa.specs(:,:)));xlim([1 5]);
+				%plot(out_aa.ppm,real(out_aa.specs(:,:)));xlim([1 5]);
+				plot(out_aa.ppm,real(out_aa.specs(:,:)));xlim(xLimValues1);
 				set(gca,'FontSize',8);
 				set(gca,'XDir','reverse');
 				xlabel('Frequency (ppm)','FontSize',10);
@@ -1164,6 +1170,13 @@ switch seqType
 				%saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'fig');
 				%close(h5);
 				
+				% Copy figure to prepare version with different axis limits
+				% Get handles to all axes of copied figure and readjust limits on x-axis
+				% and set xTick values
+				h5_2		= copyobj(h5, groot);
+				hax5_2		= get(h5_2,'children');
+				set(hax5_2, 'XLim',xLimValues2, 'XTick',xTickValues2 );
+
 				% Only display figure(s), if selected
 				if plotSwitch == 1
 					h6	= figure('position',[fig_left (fig_bottom+fig_dist_b) fig_width fig_height]);
@@ -1208,7 +1221,9 @@ switch seqType
 				% Save figures, if report switch is turned ON
 				if reportSwitch == 1
 					saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'jpg');
-					saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'fig')
+					saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'fig');
+					saveas(h5_2,[outDirString reportFigDirStr 'alignAvgs_prePostFig_Limits_2'],'jpg');
+					saveas(h5_2,[outDirString reportFigDirStr 'alignAvgs_prePostFig_Limits_2'],'fig');
 					saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'jpg');
 					saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'fig');
 					saveas(h7,[outDirString reportFigDirStr 'phaseDriftFig'],'jpg');
@@ -1217,6 +1232,7 @@ switch seqType
 				close(h7);
 				close(h6);
 				close(h5);
+				close(h5_2);
 				
 				sat='y';
 				if sat=='n'
