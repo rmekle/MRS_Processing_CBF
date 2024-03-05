@@ -63,7 +63,7 @@
 %					 datapoints from the FID  to get rid of 1st order phase. Default is the same as leftshift.
 % nSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average removal. Default
 %					value is 3.2.
-% strSpecRegIn = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
+% strSpecReg   = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
 %					i.e. name, of spectral registration (drift correction) that might be 
 %					performed to distinguish results. Default is 'SR00'.
 % driftCorr	   = (Optional) ['DriftCorrection'] Character array that specifies whether 
@@ -171,7 +171,7 @@ end
         leftshift_w = options.WaterLeftshift;
     end
     nSD						= options.noStandardDeviation;
-	strSpecRegIn			= options.SpectralRegistrationID;
+	strSpecReg				= options.SpectralRegistrationID;
 	driftCorr				= options.DriftCorrection;
 	iterin					= options.Iterations;
     aaDomain				= options.aaDomain;
@@ -670,7 +670,7 @@ switch seqType
 		% Include information about # of standard deviations for removal of bad averages
 		% and about spectral registration
 		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-		outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD), '_', strSpecRegIn];
+		outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD), '_', strSpecReg];
 		outFileName_w			= [name_w, '_w', '_', strOVS_w];
 		%outFileName_w			= [name_w, '_w', sprintf('%d', noAvg_w), '_', strOVS_w];
 		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', noAvg_ref_ECC), '_', strOVS];
