@@ -27,18 +27,18 @@ disp(sMsg_newLines);
 %% Init input parameters for preprocessing
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strStudy				= '3T_MMs';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
+strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
-signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
+dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
+signals_MRS				= 'MMs';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 2;		% 3;	% 2;	% 0;	% 1;
-noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
+leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
+noSD_In					= 3.0;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
@@ -77,7 +77,7 @@ switch dataType_MRS
 				ppmmin_fix_In			= 4.2;
 				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
 			case 4
-				% Wide range to always inlcude water resonance
+				% Wide range to always include water resonance
 				ppmmin_fix_In			= 1.6;
 				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
 			case 5
@@ -168,7 +168,8 @@ switch seqType_MRS
 			case '3T_MMs'
 				% Data (input) directories
 				%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
-				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
+				%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
 				%dirString_In_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
 				
 				
@@ -226,6 +227,7 @@ switch seqType_MRS
 		end				% End of switch strStudy
 		
 		% Complete names of data (input) directories
+		%dirString_In_AddOn1		= [dirString_In_AddOn1, '_Test'];
 		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
 			
 		% Select directory for output data depending on voxel location, data type,
@@ -475,6 +477,7 @@ switch seqType_MRS
 						'WaterOVS', strOVS_w_In,...
 						'Leftshift', leftshift_In,...
 						'noStandardDeviation', noSD_In,...
+						'SpectralRegistrationID', strSpecReg,...
 						'DriftCorrection', driftCorr_In,...
 						'Iterations', iterin_In,...
 						'aaDomain', aaDomain_In,...
@@ -526,6 +529,7 @@ switch seqType_MRS
 						'WaterOVS', strOVS_w_In,...
 						'Leftshift', leftshift_In,...
 						'noStandardDeviation', noSD_In,...
+						'SpectralRegistrationID', strSpecReg,...
 						'DriftCorrection', driftCorr_In,...
 						'Iterations', iterin_In,...
 						'aaDomain', aaDomain_In,...
