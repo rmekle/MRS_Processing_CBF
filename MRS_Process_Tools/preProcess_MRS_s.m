@@ -63,6 +63,9 @@
 %					 datapoints from the FID  to get rid of 1st order phase. Default is the same as leftshift.
 % nSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average removal. Default
 %					value is 3.2.
+% strSpecRegIn = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
+%					i.e. name, of spectral registration (drift correction) that might be 
+%					performed to distinguish results. Default is ''.
 % driftCorr	   = (Optional) ['DriftCorrection'] Character array that specifies whether 
 %					spectral registration (drift correction) should be performed or not. 
 %					Default is 'y'.
@@ -138,6 +141,7 @@ arguments
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
     options.noStandardDeviation     (1,1) double            = 3.2
+	options.SpectralRegistrationID	{mustBeText} = ''
 	options.DriftCorrection			{mustBeMember(options.DriftCorrection,{'y', 'Y', 'n', 'N'})} = 'y'
 	options.Iterations				(1,1) {mustBeNumeric}   = 20
     options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
@@ -167,6 +171,7 @@ end
         leftshift_w = options.WaterLeftshift;
     end
     nSD						= options.noStandardDeviation;
+	strSpecRegIn			= options.SpectralRegistrationID;
 	driftCorr				= options.DriftCorrection;
 	iterin					= options.Iterations;
     aaDomain				= options.aaDomain;
