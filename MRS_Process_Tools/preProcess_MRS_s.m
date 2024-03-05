@@ -65,7 +65,7 @@
 %					value is 3.2.
 % strSpecRegIn = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
 %					i.e. name, of spectral registration (drift correction) that might be 
-%					performed to distinguish results. Default is ''.
+%					performed to distinguish results. Default is 'SR00'.
 % driftCorr	   = (Optional) ['DriftCorrection'] Character array that specifies whether 
 %					spectral registration (drift correction) should be performed or not. 
 %					Default is 'y'.
@@ -141,7 +141,7 @@ arguments
     options.Leftshift               (1,1) {mustBeNumeric}   = 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
     options.noStandardDeviation     (1,1) double            = 3.2
-	options.SpectralRegistrationID	{mustBeText} = ''
+	options.SpectralRegistrationID	{mustBeText} = 'SR00'
 	options.DriftCorrection			{mustBeMember(options.DriftCorrection,{'y', 'Y', 'n', 'N'})} = 'y'
 	options.Iterations				(1,1) {mustBeNumeric}   = 20
     options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
@@ -667,7 +667,10 @@ switch seqType
 		% Assuming that water reference signals for quantification are always acquired 
 		% without OVS ('woutOVS') to avoid MT effects
 		% Assuming that no bad average removal is applied for any of the water signals
-		outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
+		% Include information about # of standard deviations for removal of bad averages
+		% and about spectral registration
+		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
+		outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD), '_', strSpecRegIn];
 		outFileName_w			= [name_w, '_w', '_', strOVS_w];
 		%outFileName_w			= [name_w, '_w', sprintf('%d', noAvg_w), '_', strOVS_w];
 		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', noAvg_ref_ECC), '_', strOVS];
