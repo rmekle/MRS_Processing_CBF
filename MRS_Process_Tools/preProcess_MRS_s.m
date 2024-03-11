@@ -908,7 +908,7 @@ switch seqType
 			out_cc			= averaging_Blocks_s(out_cc_orig, avgBlockSize);
 		end 
         
-		
+
 		%% Remove bad averages from MRS data
 		%%%%%%%% OPTIONAL REMOVAL OF BAD AVERAGES FROM DATASET %%%%%%%%%%%%%%%%%%%%
 		close all;
@@ -1021,6 +1021,10 @@ switch seqType
 				fid1		= fopen([outDirString reportDirStr outFileName '_readme.txt'],'w+');
 				fprintf(fid1,'Original number of averages: \t%5.6f',out_raw.sz(out_raw.dims.averages));
 				disp(['Original number of averages:  ' num2str(out_raw.sz(out_raw.dims.averages))]);
+				if avgBlockSize > 0
+					fprintf(fid1,'Number of averages after block averaging: \t%5.6f',out_cc.sz(out_rcc.dims.averages));
+					disp(['Number of averages after block averaging:  ' num2str(out_cc.sz(out_cc.dims.averages))]);
+				end
 				fprintf(fid1,'\nNumber of bad Averages removed:  \t%5.6f',nBadAvgTotal);
 				disp(['Number of bad averages removed:  ' num2str(nBadAvgTotal)]);
 				fprintf(fid1,'\nNumber of remaining averages in processed dataset:  \t%5.6f',out_rm.sz(out_rm.dims.averages));
@@ -1929,12 +1933,24 @@ switch seqType
 				fprintf(fid2,'\n\n<p> </p>');
 			%end		% End of  if ~(isIMA && isIMA_w)
 			end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
+
+			% Indicate in report, if averaging of blocks of averages was perfromed prior
+			% to processing
+			if avgBlockSize > 0
+				fprintf(fid2,'\n\n<h2>Averaging of blocks to averages prior to processing was performed ti improve SNR of data.</h2>');
+				fprintf(fid2,'\n<p>Original number of averages: \t%5.6f </p>', out_raw.sz(out_raw.dims.averages));
+				fprintf(fid2,'\n<p>Number of averages after block averaging: \t%5.6f </p>', out_cc.sz(out_cc.dims.averages));
+				fprintf(fid2,'\n\n<p> </p>');
+			end
 			
 			% Write results from removing bad averages into html report, only if step was
 			% actually performed, i.e. it was selected and dimension of averages existed
 			if (rmbadav=='y' || rmbadav=='Y') && out_cc.dims.averages > 0
 				fprintf(fid2,'\n\n<h2>Results of removal of bad averages:</h2>');
 				fprintf(fid2,'\n<p>Original number of averages: \t%5.6f </p>', out_raw.sz(out_raw.dims.averages));
+				if avgBlockSize > 0
+					fprintf(fid2,'\n<p>Number of averages after block averaging: \t%5.6f </p>', out_cc.sz(out_cc.dims.averages));
+				end
 				fprintf(fid2,'\n<p>Number of bad Averages removed:  \t%5.6f </p>',nBadAvgTotal);
 				fprintf(fid2,'\n<p>Number of remaining averages in processed dataset:  \t%5.6f </p>',out_rm.sz(out_rm.dims.averages));
 				fprintf(fid2,'\n<p>Bad Averages Removal Threshold was:  \t%2.2f </p>', nSD);
