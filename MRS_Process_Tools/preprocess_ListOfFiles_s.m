@@ -38,18 +38,19 @@ signals_MRS				= 'MMs';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
+avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
 noSD_In					= 3.0;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strSpecReg_In			= 'SR1';	% To distinguish settings for spectral registration
+strSpecReg_In			= 'SR8';	% To distinguish settings for spectral registration
 driftCorr_In			= 'y';		% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';		% 'f';		't';
-tmaxin_In				= 0.2;		% 0.2;		0.1;
+tmaxin_In				= 0.1;		% 0.2;		0.1;
 bTmaxset_In				= 1;
-ppmOption				= 1;
+ppmOption				= 6;
 medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
 alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 % Set parameters for drift correction depending on type of data, i.e. whether MRS
@@ -272,6 +273,11 @@ switch seqType_MRS
 		if leftshift_In > 0
 			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
 		end		% End of if leftshift_In > 0
+		% Indicate in output directory name which size of block averaging (Bavg) was used,
+		% only if averaging of blocks was indeed performed
+		if avgBlockSize_In > 0
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_Bavg%d', avgBlockSize_In)];
+		end
 		% Indicate in output directory name which type of spectral registration was used
 		if driftCorr_In == 'y' || driftCorr_In == 'Y'
 			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_', strSpecReg_In];
@@ -476,6 +482,7 @@ switch seqType_MRS
 						'OVS', strOVS_In,...
 						'WaterOVS', strOVS_w_In,...
 						'Leftshift', leftshift_In,...
+						'avgBlockSize', avgBlockSize_In,...
 						'noStandardDeviation', noSD_In,...
 						'SpectralRegistrationID', strSpecReg_In,...
 						'DriftCorrection', driftCorr_In,...
@@ -528,6 +535,7 @@ switch seqType_MRS
 						'OVS', strOVS_In,...
 						'WaterOVS', strOVS_w_In,...
 						'Leftshift', leftshift_In,...
+						'avgBlockSize', avgBlockSize_In,...
 						'noStandardDeviation', noSD_In,...
 						'SpectralRegistrationID', strSpecReg_In,...
 						'DriftCorrection', driftCorr_In,...
