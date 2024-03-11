@@ -1022,7 +1022,7 @@ switch seqType
 				fprintf(fid1,'Original number of averages: \t%5.6f',out_raw.sz(out_raw.dims.averages));
 				disp(['Original number of averages:  ' num2str(out_raw.sz(out_raw.dims.averages))]);
 				if avgBlockSize > 0
-					fprintf(fid1,'Number of averages after block averaging: \t%5.6f',out_cc.sz(out_rcc.dims.averages));
+					fprintf(fid1,'Number of averages after block averaging: \t%5.6f',out_cc.sz(out_cc.dims.averages));
 					disp(['Number of averages after block averaging:  ' num2str(out_cc.sz(out_cc.dims.averages))]);
 				end
 				fprintf(fid1,'\nNumber of bad Averages removed:  \t%5.6f',nBadAvgTotal);
