@@ -61,6 +61,9 @@
 %					 datapoints from the FID  to get rid of 1st order phase. Default is 0.
 % leftshift_w  = (optional) ['WaterLeftshift'] # of points to leftshift all water unsupressed FIDs, i.e. to remove leading 
 %					 datapoints from the FID  to get rid of 1st order phase. Default is the same as leftshift.
+% avgBlockSize = (Optional) ['avgBlockSize'] Block size of averages used for block
+%					averaging prior to processing for noisy data. If equal to 0, block
+%					averaging is not applied. Default value is 0.
 % nSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average removal. Default
 %					value is 3.2.
 % strSpecReg   = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
@@ -138,9 +141,10 @@ arguments
     options.ReportFilename          {mustBeText} = ''
     options.OVS			            {mustBeMember(options.OVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
     options.WaterOVS				{mustBeMember(options.WaterOVS,{'wOVS', 'woutOVS'})} = 'woutOVS'
-    options.Leftshift               (1,1) {mustBeNumeric}   = 0
-    options.WaterLeftshift          (1,1) {mustBeNumeric}   = NaN
-    options.noStandardDeviation     (1,1) double            = 3.2
+    options.Leftshift               (1,1) {mustBeNumeric}		= 0
+    options.WaterLeftshift          (1,1) {mustBeNumeric}		= NaN
+	options.avgBlockSize			(1,1) {mustBeNonnegative}   = 0
+    options.noStandardDeviation     (1,1) double				= 3.2
 	options.SpectralRegistrationID	{mustBeText} = 'SR00'
 	options.DriftCorrection			{mustBeMember(options.DriftCorrection,{'y', 'Y', 'n', 'N'})} = 'y'
 	options.Iterations				(1,1) {mustBeNumeric}   = 20
@@ -169,7 +173,8 @@ end
         leftshift_w = leftshift;
     else
         leftshift_w = options.WaterLeftshift;
-    end
+	end
+	avgBlockSize			= options.avgBlockSize;
     nSD						= options.noStandardDeviation;
 	strSpecReg				= options.SpectralRegistrationID;
 	driftCorr				= options.DriftCorrection;
@@ -891,7 +896,19 @@ switch seqType
 		%end		% End of  if ~(isIMA && isIMA_w)
 		end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 		
+
+		%% Block average spectra to improve SNR of data prior to processing, if desired
+		% Optional step that most often is not performed (only for noisy data)
+		% Block averaging is applied, only If avgBlockSize > 0
+		% Blocks of avgBlockSize averages are averaged and concatenated to yield new
+		% dataset with reduced # of averages (and increased SNR)
+		% Note that only spectra are block averaged
+		if avgBlockSize > 0
+			out_cc_orig		= out_cc;
+			out_cc			= averaging_Blocks_s(out_cc_orig, avgBlockSize);
+		end 
         
+		
 		%% Remove bad averages from MRS data
 		%%%%%%%% OPTIONAL REMOVAL OF BAD AVERAGES FROM DATASET %%%%%%%%%%%%%%%%%%%%
 		close all;
