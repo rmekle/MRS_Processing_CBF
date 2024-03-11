@@ -1937,7 +1937,7 @@ switch seqType
 			% Indicate in report, if averaging of blocks of averages was perfromed prior
 			% to processing
 			if avgBlockSize > 0
-				fprintf(fid2,'\n\n<h2>Averaging of blocks to averages prior to processing was performed ti improve SNR of data.</h2>');
+				fprintf(fid2,'\n\n<h2>Averaging of blocks of averages prior to processing was performed to improve SNR of data.</h2>');
 				fprintf(fid2,'\n<p>Original number of averages: \t%5.6f </p>', out_raw.sz(out_raw.dims.averages));
 				fprintf(fid2,'\n<p>Number of averages after block averaging: \t%5.6f </p>', out_cc.sz(out_cc.dims.averages));
 				fprintf(fid2,'\n\n<p> </p>');
