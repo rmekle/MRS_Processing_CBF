@@ -111,6 +111,7 @@ bPhaseCorrFreqShift_In	= 0;
 strMinUserIn_In			= 'y';
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
+strProcessTool			= 'FID-A';
 
 
 %% Set (additional) parameters depending on sequence type
@@ -236,17 +237,60 @@ switch seqType_MRS
 			
 		% Select directory for output data depending on voxel location, data type,
 		% # of SDs, and other options used for pre-processing of MR spectra
-		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-		%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-		%dirString_Out_AddOn1	= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+		% Use variable 'dirSting_out_AddOn1' to include information about the type of
+		% signals (spectra or MMs), selected voxel location, data type (.dat or .IMA),
+		% and processing software (e.g. FID-A)
+		% Use variable 'dirSting_out_AddOn2' to cinclude information about most important
+		% processing options, preferrably in the order of application
+		
 		% Make output directories for acquired macromolecules (MMs) distinguishable from 
 		% those for spectra
+		%if strcmp(signals_MRS, 'MMs')
+		%	dirString_Out_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
+		%else
+		%	dirString_Out_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
+		%end		% End of if strcmp(signals_MRS, 'MMs')
 		if strcmp(signals_MRS, 'MMs')
-			dirString_Out_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
+			dirString_Out_AddOn1	= sprintf('%s_%s_%s_%s', signals_MRS, strVOI, fileExtension, strProcessTool);
 		else
-			dirString_Out_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
+			dirString_Out_AddOn1	= sprintf('%s_%s_%s', strVOI, fileExtension, strProcessTool);
 		end		% End of if strcmp(signals_MRS, 'MMs')
+		
+		% Init information about processing of MRS data
 		dirString_Out_AddOn2	= '';
+		% Leftshifting of data (to cut off points before true first point of FID)
+		% Include info about Leftshifting of data, only if applied
+		if leftshift_In > 0
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
+		end		% End of if leftshift_In > 0
+		
+		% Block averaging prior to processing to improve SNR
+		% Indicate in output directory name which size of block averaging (Bavg) was used,
+		% only if averaging of blocks was indeed performed
+		if avgBlockSize_In > 0
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_Bavg%d', avgBlockSize_In)];
+		end
+
+		% Removal of bad averages
+		% Always include info about removal of bad averages independent of whether it was
+		% performed or not
+		if strcmpi(rmbadav_In, 'y')	% Case-insensitive strcmp
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_%d_%d', digits(1), digits(2))];
+		else
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoRM'];
+		end		% End of if strcmpi(rmbadav_In, 'y')
+
+		% Spectral registreation / drift correction
+		% Always include info about spectral registration independent of whether it was
+		% performed or not
+		if strcmpi(driftCorr_In, 'y')	% Case-insensitive strcmp
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_', strSpecReg_In];
+		else
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoSR'];
+		end		% if strcmpi(driftCorr_In, 'y')
+
+		% Eddy current correction (ECC)
+		% Include info about ECC, only if applied
 		if bECC_In
 			% Use reference (water) signals for ECC, if acquired
 			% If not, then use an unsuppressed water signal, if acquired
@@ -258,35 +302,23 @@ switch seqType_MRS
 			wInd		= strfind(dataType_MRS, '_w');
 			waterInd	= strfind(dataType_MRS, 'water');
 			if ~isempty(refInd)
-				dirString_Out_AddOn2	= '_ECCref';
+				dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_ECCref'];
 			else
 				if ~isempty(wInd)
-					dirString_Out_AddOn2	= '_ECCw';
+					dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_ECCw'];
 				else
 					if ~isempty(waterInd)
-						dirString_Out_AddOn2	= '_ECCwater';
+						dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_ECCwater'];
 					else
 						% No reference and no water signals and MR spectrum is not water
 						% signal itself => ECC not possible
 						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
 					end		% End of if ~isempty(waterInd)
 				end		% End of if ~isempty(wInd)
-			end		% if ~isempty(refInd)
+			end		% End of if ~isempty(refInd)
 		end		% End of if bECC_In
-		if leftshift_In > 0
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
-		end		% End of if leftshift_In > 0
-		% Indicate in output directory name which size of block averaging (Bavg) was used,
-		% only if averaging of blocks was indeed performed
-		if avgBlockSize_In > 0
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_Bavg%d', avgBlockSize_In)];
-		end
-		% Indicate in output directory name which type of spectral registration was used
-		if driftCorr_In == 'y' || driftCorr_In == 'Y'
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_', strSpecReg_In];
-		else
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoSR'];
-		end
+		
+		% Complete output directory name
 		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
 		
