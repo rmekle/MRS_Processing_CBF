@@ -64,6 +64,9 @@
 % avgBlockSize = (Optional) ['avgBlockSize'] Block size of averages used for block
 %					averaging prior to processing for noisy data. If equal to 0, block
 %					averaging is not applied. Default value is 0.
+% rmbadav	   = (Optional) ['RemoveBadAverages'] Character array that specifies whether 
+%					removal of bad averages should be performed or not. 
+%					Default is 'y'.
 % nSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average removal. Default
 %					value is 3.2.
 % strSpecReg   = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
@@ -144,6 +147,7 @@ arguments
     options.Leftshift               (1,1) {mustBeNumeric}		= 0
     options.WaterLeftshift          (1,1) {mustBeNumeric}		= NaN
 	options.avgBlockSize			(1,1) {mustBeNonnegative}   = 0
+	options.RemoveBadAverages		{mustBeMember(options.RemoveBadAverages,{'y', 'Y', 'n', 'N'})} = 'y'
     options.noStandardDeviation     (1,1) double				= 3.2
 	options.SpectralRegistrationID	{mustBeText} = 'SR00'
 	options.DriftCorrection			{mustBeMember(options.DriftCorrection,{'y', 'Y', 'n', 'N'})} = 'y'
@@ -175,6 +179,7 @@ end
         leftshift_w = options.WaterLeftshift;
 	end
 	avgBlockSize			= options.avgBlockSize;
+	rmbadav					= options.RemoveBadAverages;
     nSD						= options.noStandardDeviation;
 	strSpecReg				= options.SpectralRegistrationID;
 	driftCorr				= options.DriftCorrection;
@@ -915,7 +920,7 @@ switch seqType
 		out_cc2			= out_cc;
 		nBadAvgTotal	= 0;
 		nbadAverages	= 1;
-		rmbadav			= 'y';
+		%rmbadav			= 'y';
 		
 		% Do not remove bad averages, if either not selected or if dimension of 
 		% averages does not exist (index for dimension of averages = 0), 
