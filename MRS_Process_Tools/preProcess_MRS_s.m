@@ -680,7 +680,19 @@ switch seqType
 		% Include information about # of standard deviations for removal of bad averages
 		% and about spectral registration
 		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-		outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD), '_', strSpecReg];
+		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD), '_', strSpecReg];
+		digits_SD				= [fix(nSD) round(abs(nSD-fix(nSD))*10)];
+		if strcmpi(rmbadav, 'y')	% Case-insensitive strcmp
+			strAdd_1		= sprintf('%d_%d', digits_SD(1), digits_SD(2));
+		else
+			strAdd_1		= 'NoRM';
+		end		% End of if strcmpi(rmbadav, 'y')
+		if strcmpi(driftCorr, 'y')	% Case-insensitive strcmp
+			strAdd_2		= strSpecReg;
+		else
+			strAdd_2		= 'NoSR';
+		end		% End of if strcmpi(driftCorr, 'y')
+		outFileName				= [nameSpec, '_', strOVS, '_', strAdd_1, '_', strAdd_2];
 		outFileName_w			= [name_w, '_w', '_', strOVS_w];
 		%outFileName_w			= [name_w, '_w', sprintf('%d', noAvg_w), '_', strOVS_w];
 		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', noAvg_ref_ECC), '_', strOVS];
