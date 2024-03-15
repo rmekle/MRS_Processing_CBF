@@ -115,7 +115,7 @@ strProcessTool			= 'FID-A';
 
 %% Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
