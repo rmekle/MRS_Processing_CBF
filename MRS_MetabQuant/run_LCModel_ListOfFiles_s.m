@@ -30,14 +30,18 @@ fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
+strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
-noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
+avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
+
+% Parameters for removal of bad averages
+rmbadav_In				= 'y';		% 'y';		'n';
+noSD_In					= 3.0;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
@@ -106,6 +110,7 @@ bPhaseCorrFreqShift_In	= 0;
 strMinUserIn_In			= 'y';
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
+strProcessTool			= 'FID-A';
 
 
 %% Additional input parameters specific to this routine
