@@ -267,10 +267,14 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con3';
 								LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722';
 								LCM_ControlAdd					= '_Con4';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_42677';
+								%LCM_ControlAdd					= '_Con5';
 								% RAW4093 for leftshit = 3
 								%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
 								%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
 								%LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
 							case 'IMA'
 								% IMA2047 for leftshit = 1
 								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
@@ -281,6 +285,8 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con3';
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722';
 								%LCM_ControlAdd					= '_Con4';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
 
 							otherwise
 								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
@@ -302,10 +308,14 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con3';
 								LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422';
 								LCM_ControlAdd					= '_Con4';
+								%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
 								% RAW4093 for leftshit = 3
 								%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
 								%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
 								%LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
 							case 'IMA'
 								% IMA2047 for leftshit = 1
 								LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
@@ -316,6 +326,8 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con3';
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422';
 								%LCM_ControlAdd					= '_Con4';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
 
 							otherwise
 								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
