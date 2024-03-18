@@ -321,21 +321,27 @@ switch seqType_MRS
 		% Complete output directory name
 		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
-		
-		% If output directory is non-existent, create it
-		if ~exist( dirString_Out, 'dir' )
-			mkdir(dirString_Out);
+
+		% If directory for results from preprocessing does not exist, create it
+		% else, if it exists, check whether it can be overwritten
+		%if ~exist( dirString_Out, 'dir' )
+		if not(isfolder(dirString_Out))	% Preferred over if ~exist(...) according to MATLAB
+			fprintf('%s: Creating new output directory %s ...\n\n\n', sFunctionName, dirString_Out);
+			if ~mkdir(dirString_Out)
+				error('%s: Could not create (mkdir) new output directory %s!\n', sFunctionName, dirString_Out);
+			end
 		else
 			% Output directory already exists, ask user whether to overwrite or not
-			% (should help to avoid accidentally overwriting previosuly processed data)
-			strOverwrite	= input('\n\nDo you want to overwrite the existing output directory (y/n)?  ','s');
+			% (should help to avoid accidentally overwriting previously processed data)
+			prompt			= sprintf('\n\nOutput directoy = %s\nDo you want to overwrite the existing output directory (y/n)?  ', dirString_Out);
+			strOverwrite	= input(prompt, 's');
 			if strOverwrite == 'n' || strOverwrite  == 'N'
-				fprintf('\n%s: Already existing output directory is not overwritten! Processing is aborted!\n\n', sFunctionName)
+				fprintf('\n%s: Already existing output directory is not overwritten! Preprocessing aborted!\n\n\n', sFunctionName)
 				return;
 			else
-				fprintf('\n%s: Already existing output directory is overwritten! Processing is continued!\n\n', sFunctionName)
+				fprintf('\n%s: Already existing output directory is overwritten! Preprocessing is continued!\n\n\n', sFunctionName)
 			end		% End of if strOverwrite == 'n' || strOverwrite  == 'N'
-		end		% End of if ~exist( dirString_Out, 'dir' )
+		end		% End of iif not(isfolder(dirString_Out))
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
