@@ -30,13 +30,13 @@ fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 2;		% 3;	% 2;	% 0;	% 1;
+leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
 avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
 
 % Parameters for removal of bad averages
@@ -115,7 +115,7 @@ strProcessTool			= 'FID-A';
 
 %% Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
@@ -269,7 +269,7 @@ switch seqType_MRS
 										%LCM_ControlAdd					= '_Con3';
 										%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_43722';
 										%LCM_ControlAdd					= '_Con4';
-										LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_42677';
+										LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0';
 										LCM_ControlAdd					= '_Con5';
 									case 3
 										% RAW4093 for leftshit = 3
@@ -574,14 +574,26 @@ if bTestOutput
 	outDir								= [out_filepath, '_Test', filesep];
 end
 
-% If directory for results does not exist, create it
-if not(isfolder(outDir))
-	sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outDir);
-    disp(sMsg);
-    if ~mkdir(outDir)
-		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outDir);
+% If directory for results from LCM analysis does not exist, create it
+% else, if it exists, check whether it can be overwritten
+%if ~exist( outDir, 'dir' )
+if not(isfolder(outDir))	% Preferred over if ~exist(...) according to MATLAB
+	fprintf('%s: Creating new output directory %s ...\n\n\n', sFunctionName, outDir);
+	if ~mkdir(outDir)
+		error('%s: Could not create (mkdir) new output directory %s!\n', sFunctionName, outDir);
 	end
-end		% End of if not(isfolder(outDir))
+else
+	% Output directory already exists, ask user whether to overwrite or not
+	% (should help to avoid accidentally overwriting previously processed data)
+	prompt			= sprintf('\n\nOutput directoy = %s\nDo you want to overwrite the existing output directory (y/n)?  ', outDir);
+	strOverwrite	= input(prompt, 's');
+	if strOverwrite == 'n' || strOverwrite  == 'N'
+		fprintf('\n%s: Already existing output directory is not overwritten! LCM analysisis aborted!\n\n\n', sFunctionName)
+		return;
+	else
+		fprintf('\n%s: Already existing output directory is overwritten! LCM analysis is continued!\n\n\n', sFunctionName)
+	end		% End of if strOverwrite == 'n' || strOverwrite  == 'N'
+end		% End of iif not(isfolder(outDir))
 
 
 %% Select additional parameters for LCModel analysis or processing options 
