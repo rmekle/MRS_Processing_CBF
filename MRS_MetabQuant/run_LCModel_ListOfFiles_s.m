@@ -30,7 +30,7 @@ fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
@@ -115,7 +115,7 @@ strProcessTool			= 'FID-A';
 
 %% Additional input parameters specific to this routine
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
@@ -317,15 +317,19 @@ switch seqType_MRS
 										%LCM_ControlAdd					= '_Con3';
 										%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_45422';
 										%LCM_ControlAdd					= '_Con4';
-										LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
-										LCM_ControlAdd					= '_Con5';
+										%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+										%LCM_ControlAdd					= '_Con5';
+										LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+										LCM_ControlAdd					= '_Con6';
 									case 3
 										% RAW4093 for leftshit = 3
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
 										%LCM_ControlAdd					= '_Con1';
-										LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
-										LCM_ControlAdd					= '_Con5';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+										%LCM_ControlAdd					= '_Con5';
+										LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+										LCM_ControlAdd					= '_Con6';
 									otherwise
 										error('%s: ERROR: No LCM control file option for fileExtension = %s and leftshift_In = %d!', sFunctionName, fileExtension, leftshift_In);
 								end		% End of switch leftshift_In
@@ -339,8 +343,10 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con3';
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422';
 								%LCM_ControlAdd					= '_Con4';
-								LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
-								LCM_ControlAdd					= '_Con5';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+								LCM_ControlAdd					= '_Con6';
 
 							otherwise
 								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
