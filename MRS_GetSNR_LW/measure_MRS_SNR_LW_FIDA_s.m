@@ -10,7 +10,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  USAGE
-%	[data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
+%	[data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, bOutFile, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
 %
 %  INPUTS
 %	dirString		(required)	String variable for the name of the directory containing
@@ -40,6 +40,8 @@
 %					'water'		= MR spectrum is unsuppressed water signal itself
 %					'water_ref' = MR spectrum is unsuppressed water signal itself with
 %									reference (water) scans (should be very rare!)
+%	bOutToFile		(optional)	Boolean (0 or 1) to select whether output values are
+%									written to file or not; default = 1
 %	plotswitch		(optional)	Switch for displaying plots: 1 = ON, 0 = OFF; default = 1
 %   seqType_MRS     (optional)  String to specify sequence type; essential for processing
 %                                raw data/dat files
@@ -78,7 +80,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
+function [data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, bOutToFile, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -96,7 +98,7 @@ disp(sMsg_newLines);
 % used to validate input arguments to a function
 
 % Set total # and # of required input arguments
-noInputs_max	= 17;
+noInputs_max	= 18;
 noInputs_req	= 10;
 
 % First input arguments have to be provided
@@ -105,11 +107,11 @@ if nargin < noInputs_req
 elseif nargin == noInputs_req
 	disp([sFunctionName, ': Parameter plotswitch will be set to 1!']);
 	plotswitch = 1;
-elseif nargin > noInputs_req 
-    if isnumeric(plotswitch) == 0 | plotswitch < 0 | plotswitch > 1
-        disp([sFunctionName, ': Input parameter plotswitch not correctly identified, will be set to 1!']);
-        plotswitch = 1;
-	end
+% elseif nargin > noInputs_req 
+%     if isnumeric(plotswitch) == 0 | plotswitch < 0 | plotswitch > 1
+%         disp([sFunctionName, ': Input parameter plotswitch not correctly identified, will be set to 1!']);
+%         plotswitch = 1;
+% 	end
 end
 
 % Check on required input arguments
@@ -133,6 +135,12 @@ if nargin < noInputs_max
 					procParams.iterin	= 20;
 					if nargin < (noInputs_max-5)
 						seqType_MRS	= '';
+						if nargin < (noInputs_max-6)
+							plotswitch = 1;
+							if nargin < (noInputs_max-7)
+								bOutToFile = 1;
+							end
+						end
 					end
 				end
 			end
