@@ -90,8 +90,9 @@ function [data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, file
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'measure_MRS_SNR_LW_FIDA_s.m';
-sMsg_newLines		= sprintf('\n\n');
-disp(sMsg_newLines);
+% sMsg_newLines		= sprintf('\n\n');
+% disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Check on input arguments
