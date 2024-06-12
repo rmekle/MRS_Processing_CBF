@@ -269,50 +269,55 @@ fprintf('\nMRS_signal = %.2f\tMRS_noiseSD = %.2f\t=>\tSNR = %.2f \t = %.1f \n', 
 % end
 
 
-%% Write results of measurements to a textfile
+%% Write results of measurements to a textfile, if selected
 % Use same filename as for input filename for MRS data, but replace '.' with '_' to avoid
 % two '.'s in new filename
 [filepath_MRS, name_MRS, ext_MRS]    = fileparts(filename_MRS);
 new_ext_MRS             = ['_', ext_MRS(2:end)];
 filename_MRS_Results    = fullfile(outDirString, [name_MRS, new_ext_MRS, '_Results_SNR_LW.txt']);
 
-% Open textfile and write results to selected textfile
-fid_txt             = fopen(filename_MRS_Results, 'wt');
-if( fid_txt == -1 )
-	error('%s: Could not open textfile %s!\n', sFunctionName, filename_MRS_Results);
-else
-    nbytes = fprintf(fid_txt, 'Results from SNR and Linewidth Measurements for MRS Data\n');
-    nbytes = fprintf(fid_txt, '=========================================================================================\n');
-    nbytes = fprintf(fid_txt, '=========================================================================================\n\n');
-    nbytes = fprintf(fid_txt, 'MRS data path \t= %s\n', dirString);
-    nbytes = fprintf(fid_txt, 'MRS data file \t= %s\n', [name_MRS, ext_MRS]);
-    nbytes = fprintf(fid_txt, 'Data format \t= %s\n', dataFormat_MRS);
-    nbytes = fprintf(fid_txt, '\n\n');
-    nbytes = fprintf(fid_txt, 'Signal-to-Noise Measurement\n');
-    nbytes = fprintf(fid_txt, '-----------------------------------------------------------------------------------------\n\n');
-    nbytes = fprintf(fid_txt, 'Signal as maximum peak height of magnitude spectrum in \t\tppm range = [%.2f, %.2f]\n', signal_ppmRange(1), signal_ppmRange(2));
-    nbytes = fprintf(fid_txt, 'Noise as standard deviation of real part of signal in \t\tppm range = [%.2f, %.2f]\n\n', noise_ppmRange(1), noise_ppmRange(2));
-    
-	% Select precision for printing floating point numbers based on magnitude of values
-	% (If values < 1, a precision string of %.2f will print 0.00 into textfile)
-	if MRS_signal < 1 || MRS_noiseSD < 1
-		nbytes = fprintf(fid_txt, 'MRS Signal \t=\t%.2e\n', MRS_signal);
-		nbytes = fprintf(fid_txt, 'MRS Noise \t=\t%.2e\n', MRS_noiseSD);
+% Open textfile and write results to textfile, if selected
+if bOutToFile
+	fprintf('\n%s: \tbOutToFile = %d => Writing values for SNR and linewidth of spectra to file!\n\n', sFunctionName, bOutToFile);
+	fid_txt             = fopen(filename_MRS_Results, 'wt');
+	if( fid_txt == -1 )
+		error('%s: Could not open textfile %s!\n', sFunctionName, filename_MRS_Results);
 	else
-		nbytes = fprintf(fid_txt, 'MRS Signal \t=\t%.2f\n', MRS_signal);
-		nbytes = fprintf(fid_txt, 'MRS Noise \t=\t%.2f\n', MRS_noiseSD);
-	end
-    nbytes = fprintf(fid_txt, 'MRS SNR \t=\t%.2f \t~=\t%.1f\n', SNR, SNR);
-    nbytes = fprintf(fid_txt, '\n\n');
-    nbytes = fprintf(fid_txt, 'Linewidth / Full Width Half Maximum (FWHM) Measurement\n');
-    nbytes = fprintf(fid_txt, '-----------------------------------------------------------------------------------------\n\n');
-    nbytes = fprintf(fid_txt, 'Linewidth of a reference peak in the spectrum in \t\tppm range = [%.2f, %.2f]\n\n', LWpeak_ppmRange(1), LWpeak_ppmRange(2));
-    nbytes = fprintf(fid_txt, 'FWHM \t\t=\t%.2f Hz \t~=\t%.1f Hz\n', FWHM, FWHM);
-    nbytes = fprintf(fid_txt, '\n\n');
+		nbytes = fprintf(fid_txt, 'Results from SNR and Linewidth Measurements for MRS Data\n');
+		nbytes = fprintf(fid_txt, '=========================================================================================\n');
+		nbytes = fprintf(fid_txt, '=========================================================================================\n\n');
+		nbytes = fprintf(fid_txt, 'MRS data path \t= %s\n', dirString);
+		nbytes = fprintf(fid_txt, 'MRS data file \t= %s\n', [name_MRS, ext_MRS]);
+		nbytes = fprintf(fid_txt, 'Data format \t= %s\n', dataFormat_MRS);
+		nbytes = fprintf(fid_txt, '\n\n');
+		nbytes = fprintf(fid_txt, 'Signal-to-Noise Measurement\n');
+		nbytes = fprintf(fid_txt, '-----------------------------------------------------------------------------------------\n\n');
+		nbytes = fprintf(fid_txt, 'Signal as maximum peak height of magnitude spectrum in \t\tppm range = [%.2f, %.2f]\n', signal_ppmRange(1), signal_ppmRange(2));
+		nbytes = fprintf(fid_txt, 'Noise as standard deviation of real part of signal in \t\tppm range = [%.2f, %.2f]\n\n', noise_ppmRange(1), noise_ppmRange(2));
 
-    % Close textfile
-	status_txt	= fclose(fid_txt);
-end
+		% Select precision for printing floating point numbers based on magnitude of values
+		% (If values < 1, a precision string of %.2f will print 0.00 into textfile)
+		if MRS_signal < 1 || MRS_noiseSD < 1
+			nbytes = fprintf(fid_txt, 'MRS Signal \t=\t%.2e\n', MRS_signal);
+			nbytes = fprintf(fid_txt, 'MRS Noise \t=\t%.2e\n', MRS_noiseSD);
+		else
+			nbytes = fprintf(fid_txt, 'MRS Signal \t=\t%.2f\n', MRS_signal);
+			nbytes = fprintf(fid_txt, 'MRS Noise \t=\t%.2f\n', MRS_noiseSD);
+		end
+		nbytes = fprintf(fid_txt, 'MRS SNR \t=\t%.2f \t~=\t%.1f\n', SNR, SNR);
+		nbytes = fprintf(fid_txt, '\n\n');
+		nbytes = fprintf(fid_txt, 'Linewidth / Full Width Half Maximum (FWHM) Measurement\n');
+		nbytes = fprintf(fid_txt, '-----------------------------------------------------------------------------------------\n\n');
+		nbytes = fprintf(fid_txt, 'Linewidth of a reference peak in the spectrum in \t\tppm range = [%.2f, %.2f]\n\n', LWpeak_ppmRange(1), LWpeak_ppmRange(2));
+		nbytes = fprintf(fid_txt, 'FWHM \t\t=\t%.2f Hz \t~=\t%.1f Hz\n', FWHM, FWHM);
+		nbytes = fprintf(fid_txt, '\n\n');
+
+		% Close textfile
+		status_txt	= fclose(fid_txt);
+	end			% End of if( fid_txt == -1 )
+%else
+	%fprintf('\n%s: \tbOutToFile = %d => Values for SNR and linewidth of spectra NOT written to file!\n\n', sFunctionName, bOutToFile);
+end		% End of if bOutToFile
 
 
 %% Save variables of workspace to file
