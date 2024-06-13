@@ -82,14 +82,39 @@ switch dataFormat_MRS_In
         error('%s: ERROR: Unknown dataFormat_MRS_In %s!', sFunctionName, dataFormat_MRS_In);
 end
 structFileListing		= dir([dirString_In, acSearchString]);
-InoEntriesListing		= length( structFileListing );
+noEntriesListing		= length( structFileListing );
 
 
-%% Preprocess all data files depending on sequence type
+%% Measure SNR and LW for all MRS data files
 
+% Measure desired quantities for each case (spectrum)
+% Select size for stepping through indices, i.e. list of files 
+% depending on data type, i.e. how many different signals
+% (spectra and/or water signals) are included
+indexStart		= 1;
+indexStep		= 1;
+switch dataType_MRS_In
+	case {'mrs_w', 'mrs_w_ref'}
+		% Spectra and water signals in list of files/directories
+		indexStep		= 2;
+	case {'mrs', 'mrs_ref', 'water', 'water_ref'}
+		% Only spectra or only water signals in list of files/directories
+		indexStep		= 1;
 
-[data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
-
+	otherwise
+		error('%s: Unknown MRS dataType_MRS_In = %s!', sFunctionName, dataType_MRS_In);
+end		% End of switch dataType_MRS_In
+for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
+	filename_In			= structFileListing(ind).name;
+	fprintf('\n\n');
+	if indexStep == 2
+		filename_w_In		= structFileListing(ind+1).name;
+		fprintf('ind = %d\t\t%s\t%s\n\n', ind, filename_In, filename_w_In);
+	else	% No water file
+		fprintf('ind = %d\t\t%s\n\n', ind, filename_In);
+	end
+	[data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
+end		% End of or ind=indexStart : indexStep : noEntriesListing
 
 
 
