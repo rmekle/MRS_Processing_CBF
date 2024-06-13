@@ -85,7 +85,11 @@ structFileListing		= dir([dirString_In, acSearchString]);
 noEntriesListing		= length( structFileListing );
 
 
-%% Measure SNR and LW for all MRS data files
+%% Measure SNR and LW (FWHM) for all MRS data files
+% Allocate arrays to store MRS data and measurement values
+data_MRS		= cell(noEntriesListing, 1);
+SNR				= zeros(noEntriesListing, 1);
+FWHM			= zeros(noEntriesListing, 1);
 
 % Measure desired quantities for each case (spectrum)
 % Select size for stepping through indices, i.e. list of files 
@@ -105,17 +109,16 @@ switch dataType_MRS_In
 		error('%s: Unknown MRS dataType_MRS_In = %s!', sFunctionName, dataType_MRS_In);
 end		% End of switch dataType_MRS_In
 for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
-	filename_In			= structFileListing(ind).name;
+	filename_MRS_In			= structFileListing(ind).name;
 	fprintf('\n\n');
 	if indexStep == 2
 		filename_w_In		= structFileListing(ind+1).name;
-		fprintf('ind = %d\t\t%s\t%s\n\n', ind, filename_In, filename_w_In);
+		fprintf('ind = %d\t\t%s\t%s\n\n', ind, filename_MRS_In, filename_w_In);
 	else	% No water file
-		fprintf('ind = %d\t\t%s\n\n', ind, filename_In);
+		fprintf('ind = %d\t\t%s\n\n', ind, filename_MRS_In);
 	end
-	[data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
+	[data_MRS{ind}, SNR(ind), FWHM(ind), info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
 end		% End of or ind=indexStart : indexStep : noEntriesListing
-
 
 
 %% Save variables of workspace to file
