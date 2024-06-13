@@ -54,23 +54,35 @@ TR_In					= [];
 %cd(dirString_In);
 
 
-% Added an option for loading a set of directories containing scans
+% Select file extension to search for depending on format of MRS data
+% (again, here assuming that all MRS data files are in same directory)
+% Then determine filenames and # of files for all corresponding MRS data files
 switch dataFormat_MRS_In
     case 'dat'
-        structFileListing		= dir([dirString_In, '*.dat']);
-        noEntriesListing		= length( structFileListing );
+		acSearchString			= '*.dat';
+        %structFileListing		= dir([dirString_In, '*.dat']);
+        %noEntriesListing		= length( structFileListing );
         %noDataFiles				= noEntriesListing - 2
+	case 'DICOM'
+		acSearchString			= '*.dcm';
     case 'IMA'
-        structFileListingAll	= dir(dirString_In);
-        subDir					= [structFileListingAll(:).isdir];
-        structFileListing		= structFileListingAll(subDir);
+		acSearchString			= '*.IMA';
+        %structFileListingAll	= dir(dirString_In);
+        %subDir					= [structFileListingAll(:).isdir];
+        %structFileListing		= structFileListingAll(subDir);
         % Remove the two directories '.' and '..'
-        structFileListing		= structFileListing(~ismember({structFileListing(:).name},{'.','..'}));
-        noEntriesListing		= length(structFileListing);
+        %structFileListing		= structFileListing(~ismember({structFileListing(:).name},{'.','..'}));
+        %noEntriesListing		= length(structFileListing);
+	case 'rda'
+		acSearchString			= '*.rda';
+	case 'lcmRAW'
+		acSearchString			= '*.RAW';
+
     otherwise
         error('%s: ERROR: Unknown dataFormat_MRS_In %s!', sFunctionName, dataFormat_MRS_In);
 end
-
+structFileListing		= dir([dirString_In, acSearchString]);
+InoEntriesListing		= length( structFileListing );
 
 
 %% Preprocess all data files depending on sequence type
