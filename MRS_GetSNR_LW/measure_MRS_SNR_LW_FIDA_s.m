@@ -74,10 +74,10 @@
 %					 routine dicominfo plus a .csa field that is a struct that contains 
 %					 values from the 'SIEMENS CSA HEADER' private group in a DICOM file 
 %					 produced by a Siemens MR scanner;
-%					If dataFormat_MRS = 'rda' or 'dat': Empty
+%					If dataFormat_MRS = 'rda' or 'dat' or 'lcmRAW': Empty
 %
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2020, 2021; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2020, 2021, 2024; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
