@@ -22,8 +22,10 @@ sFunctionName		= 'measure_MRS_ListOfFiles_SNR_LW_s';
 fprintf('\n\n');
 
 
-%% Init input parameters for easuring SNR and Linewidth (LW) in list of files of MRS data
-dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/Z_Test_Data/Test_MRS_SNR_LW/';
+%% Init parameters for measuring SNR and Linewidth (LW) in list of files of MRS data
+dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/Z_Test_Data/';
+dirString_In_AddOn_1	= 'Test_MRS_SNR_LW';
+dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep];
 %dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCModel_Data_MRS_only/';
 filename_MRS_In			= '3T_SBA_C_0008_20210325_meas_MID00333_FID95325_svs_slaser_dkd_HC_TE23_WS256_wOVS_3.2_processed_lcm.RAW';
 filename_w_In			= '';
@@ -43,6 +45,8 @@ Bo_field_In				= [];
 spectralWidth_In		= [];
 TE_In					= [];
 TR_In					= [];
+bSaveResults			= 1;
+acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
 
 
 %% Obtain information about the list of files for (preprocessed) MR spectra
@@ -119,6 +123,30 @@ for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 	end
 	[data_MRS{ind}, SNR(ind), FWHM(ind), info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
 end		% End of or ind=indexStart : indexStep : noEntriesListing
+
+
+%% Include info about data files and results into one cell array
+% Create cell arrays with info line (header), all MRS data filenames, and combine them
+% with results into new cell array
+% Dimensions of cell arrays have to match for that				% N = noEntriesListing
+cellInfoLine		= {'MRS Data File' 'SNR' 'FWHM / Hz'};		% Yields 1x3 cell array
+cellDataFileNames	= {structFileListing(:).name}';				% Yields Nx1 cell array	
+cellData			= [cellDataFileNames num2cell([SNR FWHM])];	% Yields Nx3 cell array
+cellInfoAndData		= [cellInfoLine; cellData];					% Yields (N+1)x3 cell array
+
+
+%% Save results from SNR and LW measurements to file, if selected
+if bSaveResults
+	% Create output filename for results from input directory AddOn_1, i.e. usually the
+	% name of the subfolder the MRS data are stored in
+	outFileName		= [dirString_In_AddOn_1, '_SNR_FWHM', acOutFileType];
+	
+	% Write cell array with info and results from SNR and LW measurements to file 
+	% File type depends on chosen file extension: .xls is speradsheet and .txt is textfile
+	writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
+		'WriteMode', 'inplace', 'AutoFitWidth', 1)
+
+end		% End of if bSaveResults
 
 
 %% Save variables of workspace to file
