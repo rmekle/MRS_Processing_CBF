@@ -23,15 +23,57 @@ fprintf('\n\n');
 
 
 %% Init parameters for measuring SNR and Linewidth (LW) in list of files of MRS data
+% Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
+% of original MRS data
+seqType_MRS_In			= 'sLASER';
+strStudy				= '3T_Trauma';		% 'Test'; 3T_Trauma'; 
+strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC'; 'Test';
+fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+
+% Parameters for saving of results to file
+bSaveResults			= 1;
+acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
+outNamingOption			= 1;
+outputFileName_Add_1	= '_SNR_FWHM';
+
+% Input directory options
 % Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
 % of output filename, if results are saved to file
-dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/';
-dirString_In_AddOn_1	= 'Z_Test_Data';
-dirString_In_AddOn_2	= 'Test_MRS_SNR_LW';
-%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
-%dirString_In_AddON_1	= 'PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1';
-%dirString_In_AddOn_2	= 'PCG_LCModel_Data_MRS_only';
+switch seqType_MRS_In
+	case 'sLASER'
+		switch strStudy
+			case 'Test'
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/';
+				dirString_In_AddOn_1	= 'Z_Test_Data';
+				dirString_In_AddOn_2	= 'Test_MRS_SNR_LW';
+			case '3T_Trauma'
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+				switch fileExtension
+					case 'dat'
+						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
+					case 'IMA'
+						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
+
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+				end			% End of switch fileExtension
+				dirString_In_AddOn_2	= [strVOI, '_LCModel_Data_MRS_only'];
+
+			otherwise
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+		end				% End of switch strStudy
+
+	otherwise
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS_In);
+end		% End of switch seqType_MRS_In
+% Complete name of input directory
 dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep, dirString_In_AddOn_2, filesep];
+
+% Output directory options
+outDirString_AddOn_1	= '';
+outDirString_In			= [dirString_In, outDirString_AddOn_1];
+
+% Additional parameters
 filename_MRS_In			= '';
 filename_w_In			= '';
 dataFormat_MRS_In		= 'lcmRAW';
@@ -39,21 +81,14 @@ signal_ppmRange_In		= [1.8, 2.2];
 noise_ppmRange_In		= [-2.0, 0];
 LWpeak_ppmRange_In		= [2.85, 3.15];
 zp_factor_In			= 8;
-outDirString_AddOn_1	= '';
-outDirString_In			= [dirString_In, outDirString_AddOn_1];
 dataType_MRS_In			= 'mrs';
 bOutFile_In				= 0;
 plotswitch_In			= 0;
-seqType_MRS_In			= 'sLASER';
 procParams_In			= struct([]);
 Bo_field_In				= [];
 spectralWidth_In		= [];
 TE_In					= [];
 TR_In					= [];
-bSaveResults			= 1;
-acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
-outNamingOption			= 2;
-outputFileName_Add_1	= '_SNR_FWHM';
 
 
 %% Obtain information about the list of files for (preprocessed) MR spectra
