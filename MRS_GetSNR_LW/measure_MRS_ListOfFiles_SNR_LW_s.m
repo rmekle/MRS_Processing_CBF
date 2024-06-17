@@ -27,7 +27,7 @@ fprintf('\n\n');
 % of original MRS data
 seqType_MRS_In			= 'sLASER';
 strStudy				= '3T_Trauma';		% 'Test'; 3T_Trauma'; 
-strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC'; 'Test';
+strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
