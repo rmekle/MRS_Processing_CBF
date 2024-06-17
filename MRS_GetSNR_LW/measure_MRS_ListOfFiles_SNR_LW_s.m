@@ -26,7 +26,7 @@ fprintf('\n\n');
 % Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
 % of original MRS data
 seqType_MRS_In			= 'sLASER';
-strStudy				= '3T_Trauma';		% 'Test'; 3T_Trauma'; 
+strStudy				= '3T_Trauma'; 		% 'Test'; '3T_Trauma'; 
 strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
@@ -48,6 +48,7 @@ switch seqType_MRS_In
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/';
 				dirString_In_AddOn_1	= 'Z_Test_Data';
 				dirString_In_AddOn_2	= 'Test_MRS_SNR_LW';
+				outNamingOption			= 2;
 			case '3T_Trauma'
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
 				switch fileExtension
@@ -60,6 +61,7 @@ switch seqType_MRS_In
 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
 				end			% End of switch fileExtension
 				dirString_In_AddOn_2	= [strVOI, '_LCModel_Data_MRS_only'];
+				outNamingOption			= 1;
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
