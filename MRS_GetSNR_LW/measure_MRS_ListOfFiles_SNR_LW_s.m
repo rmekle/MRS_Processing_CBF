@@ -31,10 +31,12 @@ strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC'; 'Test';
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
+% Select range (here first field)in Excel to write cell array of results to
 bSaveResults			= 1;
-acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
 outNamingOption			= 1;
 outputFileName_Add_1	= '_SNR_FWHM';
+acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
+strRangeSel				= 'A4';		% 'A4';
 
 % Input directory options
 % Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
@@ -200,7 +202,7 @@ if bSaveResults
 	% File type depends on chosen file extension: .xls is speradsheet and .txt is textfile
 	fprintf('Saving results for SNR and LW measurenents to file ...\n\n');
 	writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
-		'WriteMode', 'inplace', 'AutoFitWidth', 1)
+		'WriteMode', 'inplace', 'AutoFitWidth', 1, 'Range', strRangeSel)
 end		% End of if bSaveResults
 
 
