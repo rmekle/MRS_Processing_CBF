@@ -26,15 +26,15 @@ fprintf('\n\n');
 % Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
 % of original MRS data
 seqType_MRS_In			= 'sLASER';
-strStudy				= '3T_Trauma'; 		% 'Test'; '3T_Trauma'; 
+strStudy				= '3T_Trauma';		% 'Test'; '3T_Trauma'; 
 strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
-% Select range (here first field)in Excel to write cell array of results to
+% Select range (here first field) in Excel to write cell array of results to
 bSaveResults			= 1;
 outNamingOption			= 1;
-outputFileName_Add_1	= '_SNR_FWHM';
+%outputFileName_Add_1	= '_SNR_FWHM';
 acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
 strRangeSel				= 'A4';		% 'A4';
 
@@ -73,10 +73,6 @@ end		% End of switch seqType_MRS_In
 % Complete name of input directory
 dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep, dirString_In_AddOn_2, filesep];
 
-% Output directory options
-outDirString_AddOn_1	= '';
-outDirString_In			= [dirString_In, outDirString_AddOn_1];
-
 % Additional parameters
 filename_MRS_In			= '';
 filename_w_In			= '';
@@ -93,6 +89,13 @@ Bo_field_In				= [];
 spectralWidth_In		= [];
 TE_In					= [];
 TR_In					= [];
+
+% Output directory and filenmae options
+outDirString_AddOn_1	= '';
+outDirString_In			= [dirString_In, outDirString_AddOn_1];
+outputFileName_Add_1	= sprintf('_SNR_%.1f_%.1f_%.1f_%.1f_FWHM_%.2f_%.2f', ...
+	signal_ppmRange_In(1), signal_ppmRange_In(2), noise_ppmRange_In(1), noise_ppmRange_In(2), ...
+	LWpeak_ppmRange_In(1), LWpeak_ppmRange_In(2));
 
 
 %% Obtain information about the list of files for (preprocessed) MR spectra
