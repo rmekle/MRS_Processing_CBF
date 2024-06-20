@@ -292,11 +292,13 @@ end
 %% Apply automatic zero order phasing with respect to LWpeak_ppmRange prior to SNR and 
 % linewidth measurements, if selected
 % Init desired zero order phase in degrees to phase reference peak to
+% and subSpec dimension to use for phasing
 ph				= 0;
+dimNum			= 1;
 %ph0				= 0:
 %data_MRS_ph		= data_MRS;
 if bAutoPhase
-	[data_MRS_ph, ph0]		= op_autophase(data_MRS, LWpeak_ppmRange(1), LWpeak_ppmRange(2), ph);
+	[data_MRS_ph, ph0]		= op_autophase(data_MRS, LWpeak_ppmRange(1), LWpeak_ppmRange(2), ph, dimNum);
 else
 	% No phasing applied
 	ph0				= 0;
