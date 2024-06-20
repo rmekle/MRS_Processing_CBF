@@ -10,7 +10,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  USAGE
-%	[data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, bOutFile, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
+%	[data_MRS, SNR, FWHM, ph0, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, bAutoPhase, bOutFile, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
 %
 %  INPUTS
 %	dirString		(required)	String variable for the name of the directory containing
@@ -41,6 +41,9 @@
 %					'water'		= MR spectrum is unsuppressed water signal itself
 %					'water_ref' = MR spectrum is unsuppressed water signal itself with
 %									reference (water) scans (should be very rare!)
+%   bAutoPhase		(optional)	Boolean (0 or 1) to select whether automatic zero order
+%								 phasing with respect to LWpeak_ppmRange is applied prior
+%								 to SNR and linewidth measurements or not; default = 0
 %	bOutToFile		(optional)	Boolean (0 or 1) to select whether output values are
 %									written to file or not; default = 1
 %	plotswitch		(optional)	Switch for displaying plots: 1 = ON, 0 = OFF; default = 1
@@ -68,6 +71,8 @@
 %	data_MRS		MRS dataset in FID-A structure format
 %	SNR				Signal-to-noise ratio (SNR) of MRS data using a selected peak height
 %	FWHM			Linewidth (LW)/FWHM of selected peak
+%   ph0				Zero order phase reference (linewidth) peak of spectrum was phased to;
+%					 equal to zero, if no phasing was applied
 %	info			If dataFormat_MRS = 'DICOM' or 'IMA':
 %					 struct that contains the metadata from the compliant DICOM or DICOS 
 %					 file specified as MRS input data file obtained using the Matlab
@@ -81,7 +86,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [data_MRS, SNR, FWHM, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, bOutToFile, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
+function [data_MRS, SNR, FWHM, ph0, info]	= measure_MRS_SNR_LW_FIDA_s(dirString, filename_MRS, filename_w, dataFormat_MRS, signal_ppmRange, noise_ppmRange, LWpeak_ppmRange, zp_factor, outDirString, dataType_MRS, bAutoPhase, bOutToFile, plotswitch, seqType_MRS, procParams, Bo_field, spectralWidth, TE, TR)
 
 %% Clear all variables from workspace and close all figures
 % clear all;
@@ -100,7 +105,7 @@ fprintf('\n\n');
 % used to validate input arguments to a function
 
 % Set total # and # of required input arguments
-noInputs_max	= 18;
+noInputs_max	= 19;
 noInputs_req	= 10;
 
 % First input arguments have to be provided
@@ -141,6 +146,9 @@ if nargin < noInputs_max
 							plotswitch = 1;
 							if nargin < (noInputs_max-7)
 								bOutToFile = 1;
+								if nargin < (noInputs_max-8)
+									bAutoPhase = 0;
+								end
 							end
 						end
 					end
@@ -254,9 +262,24 @@ end
 % end
 
 
+%% Apply automatic zero order phasing with respect to LWpeak_ppmRange prior to SNR and 
+% linewidth measurements, if selected
+% Init desired zero order phase in degrees to phase reference peak to
+ph				= 0;
+%ph0				= 0:
+%data_MRS_ph		= data_MRS;
+if bAutoPhase
+	[data_MRS_ph, ph0]		= op_autophase(data_MRS, LWpeak_ppmRange(1), LWpeak_ppmRange(2), ph);
+else
+	% No phasing applied
+	ph0				= 0:
+	data_MRS_ph		= data_MRS;
+end		% End of if bAutoPhase
+
+
 %% Compute the SNR of the MRS data for a selected peak and noise range
 %[SNR,MRS_signal,MRS_noisesd]	= op_getSNR(data_MRS, signal_ppmRange(1), signal_ppmRange(2), noise_ppmRange(1), noise_ppmRange(2));
-[SNR,MRS_signal,MRS_noiseSD]	= op_getSNR_s(data_MRS, signal_ppmRange(1), signal_ppmRange(2), noise_ppmRange(1), noise_ppmRange(2), plotswitch);
+[SNR,MRS_signal,MRS_noiseSD]	= op_getSNR_s(data_MRS_ph, signal_ppmRange(1), signal_ppmRange(2), noise_ppmRange(1), noise_ppmRange(2), plotswitch);
 %SNR	= 100;
 if MRS_signal < 1 || MRS_noiseSD < 1
 	fprintf('\nMRS_signal = %.2e\tMRS_noiseSD = %.2e\t=>\tSNR = %.2f \t = %.1f \n', MRS_signal, MRS_noiseSD, SNR, SNR);
@@ -265,11 +288,10 @@ else
 end
 
 
-
 %% Determine the linewidth (LW) of the MRS data
 %figure;		% Since first plot of op_getLW(---) uses plot wout figure command
 %[FWHM]	= op_getLW(data_MRS, LWpeak_ppmRange(1), LWpeak_ppmRange(2), zp_factor);
-[FWHM]	= op_getLW_s(data_MRS, LWpeak_ppmRange(1), LWpeak_ppmRange(2), zp_factor, plotswitch);
+[FWHM]	= op_getLW_s(data_MRS_ph, LWpeak_ppmRange(1), LWpeak_ppmRange(2), zp_factor, plotswitch);
 %FWHM	= 6;
 
 
