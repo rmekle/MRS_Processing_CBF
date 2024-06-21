@@ -1,5 +1,5 @@
 % op_autophase.m
-% Jamie Near, McGill University 2015.
+% Jamie Near, McGill University 2015, Ralf Mekle (RM), Charite, 2024.
 % 
 % USAGE:
 % [out,phaseShift]=op_autophase(in,ppmmin,ppmmax,ph,dimNum);
@@ -65,5 +65,13 @@ ppmindex=find(abs(in_zp.specs(:,dimNum))==max(abs(in_zp.specs(:,dimNum))));
 ph0=-phase(in_zp.specs(ppmindex,dimNum))*180/pi;
 
 %Now phase shift the dataset so that the desired peak has the correct phase:
+% Change RM
+% Call op_addphase(...) with full set of input parameters to suppress plotting by setting
+% corresponding input parameter to 1; additional input parameters are set to their 
+% respective default values in this call
 phShft = ph0 + ph;
-out=op_addphase(in,phShft);
+%out=op_addphase(in,phShft);
+ph1				= 0;
+ppm0			= 4.65;
+suppressPlot	= 1;
+out=op_addphase(in,phShft,ph1,ppm0,suppressPlot);
