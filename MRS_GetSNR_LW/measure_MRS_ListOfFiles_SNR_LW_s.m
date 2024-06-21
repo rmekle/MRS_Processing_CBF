@@ -26,8 +26,8 @@ fprintf('\n\n');
 % Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
 % of original MRS data
 seqType_MRS_In			= 'sLASER';
-strStudy				= 'Test'; 	% 'Test'; '3T_Trauma'; 
-strVOI					= 'HC'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
+strStudy				= '3T_Trauma';  	% 'Test'; '3T_Trauma'; 
+strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
@@ -82,7 +82,7 @@ noise_ppmRange_In		= [-3.0, -1.0];
 LWpeak_ppmRange_In		= [2.9, 3.1];
 zp_factor_In			= 8;
 dataType_MRS_In			= 'mrs';
-bAutoPhase_In			= 1;
+bAutoPhase_In			= 0;
 bOutFile_In				= 0;
 plotswitch_In			= 0;
 procParams_In			= struct([]);
