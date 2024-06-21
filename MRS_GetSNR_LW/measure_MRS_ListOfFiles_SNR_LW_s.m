@@ -26,8 +26,8 @@ fprintf('\n\n');
 % Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
 % of original MRS data
 seqType_MRS_In			= 'sLASER';
-strStudy				= '3T_Trauma';		% 'Test'; '3T_Trauma'; 
-strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
+strStudy				= 'Test'; 	% 'Test'; '3T_Trauma'; 
+strVOI					= 'HC'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
@@ -78,10 +78,11 @@ filename_MRS_In			= '';
 filename_w_In			= '';
 dataFormat_MRS_In		= 'lcmRAW';
 signal_ppmRange_In		= [1.8, 2.2];
-noise_ppmRange_In		= [-2.0, 0];
-LWpeak_ppmRange_In		= [2.85, 3.15];
+noise_ppmRange_In		= [-3.0, -1.0];
+LWpeak_ppmRange_In		= [2.9, 3.1];
 zp_factor_In			= 8;
 dataType_MRS_In			= 'mrs';
+bAutoPhase_In			= 1;
 bOutFile_In				= 0;
 plotswitch_In			= 0;
 procParams_In			= struct([]);
@@ -96,6 +97,10 @@ outDirString_In			= [dirString_In, outDirString_AddOn_1];
 outputFileName_Add_1	= sprintf('_SNR_%.1f_%.1f_%.1f_%.1f_FWHM_%.2f_%.2f', ...
 	signal_ppmRange_In(1), signal_ppmRange_In(2), noise_ppmRange_In(1), noise_ppmRange_In(2), ...
 	LWpeak_ppmRange_In(1), LWpeak_ppmRange_In(2));
+outputFileName_Add_2	= '';
+if bAutoPhase_In
+	outputFileName_Add_2	= '_phasedZO';
+end
 
 
 %% Obtain information about the list of files for (preprocessed) MR spectra
@@ -139,10 +144,12 @@ noEntriesListing		= length( structFileListing );
 
 
 %% Measure SNR and LW (FWHM) for all MRS data files
-% Allocate arrays to store MRS data and measurement values
+% Allocate arrays to store MRS data, measurement values, and zero order phases applied
+% prior to measurements
 data_MRS		= cell(noEntriesListing, 1);
 SNR				= zeros(noEntriesListing, 1);
 FWHM			= zeros(noEntriesListing, 1);
+phase0			= zeros(noEntriesListing, 1);
 
 % Measure desired quantities for each case (spectrum)
 % Select size for stepping through indices, i.e. list of files 
@@ -170,7 +177,7 @@ for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 	else	% No water file
 		fprintf('ind = %d\t\t%s\n\n', ind, filename_MRS_In);
 	end
-	[data_MRS{ind}, SNR(ind), FWHM(ind), info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
+	[data_MRS{ind}, SNR(ind), FWHM(ind), phase0(ind), info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bAutoPhase_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
 end		% End of or ind=indexStart : indexStep : noEntriesListing
 fprintf('\n\n');
 
@@ -179,10 +186,10 @@ fprintf('\n\n');
 % Create cell arrays with info line (header), all MRS data filenames, and combine them
 % with results into new cell array
 % Dimensions of cell arrays have to match for that				% N = noEntriesListing
-cellInfoLine		= {'MRS Data File' 'SNR' 'FWHM / Hz'};		% Yields 1x3 cell array
-cellDataFileNames	= {structFileListing(:).name}';				% Yields Nx1 cell array	
-cellData			= [cellDataFileNames num2cell([SNR FWHM])];	% Yields Nx3 cell array
-cellInfoAndData		= [cellInfoLine; cellData];					% Yields (N+1)x3 cell array
+cellInfoLine		= {'MRS Data File' 'SNR' 'FWHM / Hz' 'Phase0 LW_Peak / deg'};	% Yields 1x4 cell array
+cellDataFileNames	= {structFileListing(:).name}';						% Yields Nx1 cell array	
+cellData			= [cellDataFileNames num2cell([SNR FWHM phase0])];	% Yields Nx4 cell array
+cellInfoAndData		= [cellInfoLine; cellData];							% Yields (N+1)x4 cell array
 
 
 %% Save results from SNR and LW measurements to file, if selected
@@ -201,7 +208,7 @@ if bSaveResults
 		otherwise
 			error('%s: Unknown outNamingOption = %d!', sFunctionName, outNamingOption);
 	end		% End of switch namingOption
-	outFileName		= [outFileName_Base, outputFileName_Add_1, acOutFileType];
+	outFileName		= [outFileName_Base, outputFileName_Add_1, outputFileName_Add_2, acOutFileType];
 
 	% Write cell array with info and results from SNR and LW measurements to file 
 	% File type depends on chosen file extension: .xls is speradsheet and .txt is textfile
