@@ -26,7 +26,7 @@ parentDir_AddOn		= 'MRS_Trauma_00_All_DICOM_Files_MRS_HC/';
 					% 'MRS_Trauma_00_All_DICOM_Files_MRS_PCG/';	% 'MRS_Trauma_00_All_DICOM_Files_MRS_HC/';
 parentDir			= [parentDir_Base, parentDir_AddOn];
 
-% % Select start and end paatern for substring extraction
+% % Select start and end pattern for substring extraction
 % startPat		= 'MRS_Trauma_';
 % endPat			= 'DICOM';
 
