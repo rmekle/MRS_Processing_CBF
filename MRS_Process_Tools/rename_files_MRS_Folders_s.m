@@ -21,7 +21,7 @@ sFunctionName		= 'rename_files_MRS_Folders_s';
 %% Init input parameters for renaming subfolders
 parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
 parentDir_AddOn		= 'SBAM_Test/';	
-					% 'SBAM/';
+					% 'SBAM/';		% SBAM_Test/';
 parentDir			= [parentDir_Base, parentDir_AddOn];
 
 % Select start and end pattern for substring extraction, if required
@@ -29,8 +29,9 @@ parentDir			= [parentDir_Base, parentDir_AddOn];
 % Select string additions that have to be added at start and/or end of new filenames
 startPat		= 'MRS_Trauma_';
 endPat			= '';		% '_DICOM';
-aCh_AddStart	= '3T_';
-aCh_AddEnd		= '';
+strAddStart		= '3T_';
+strAddEnd		= '_';
+lenStartPat		= length(startPat);
 
 % Select whether all files and folders in each subfolder are renamed using the same
 % modification or whether individual modifcations are used
@@ -54,7 +55,7 @@ list_subfolders_name	= {list_subfolders.name};
 % For each subfolder, rename all files in subfolder with info composed of acquisition
 % parameters, subject desgination, and date of data acquisition
 %newChr		= cell(1);
-newName		= '';
+newNames	= '';
 for iFolder = 1:1:numel(list_subfolders_name)
 % 	% Extract desired substring from name of subfolder
 % 	newChr		= extractBetween(list_subfolders_name{iFolder}, startPat, endPat);
@@ -70,13 +71,42 @@ for iFolder = 1:1:numel(list_subfolders_name)
 	% Create new name for each file and subfolder
 	% Check whether renaming of all files and folders is the same
 	if bSameRenaming == 1
+		% Add specific string to all filenames and foldernames of subfolder
+		% Create string to be added by extracting information from the name of each
+		% subfolder and concatenate this with selected additional patterns
+		% Find selected patterns in name of subfolder and extract string between these
+		% patterns
+		strTmp				= list_subfolders_name{iFolder};
+		lenSubfolderName	= length(strTmp);
+		kStart				= strfind(strTmp, startPat);
+		if isempty(kStart)
+			% Starting pattern was not found in name of subfolder
+			error('%s: Error! Starting pattern startPat = %s not found in name of subfolder = %s!\n\n%s', sFunctionName, startPat, list_subfolders_name{iFolder});
+		end		% End of if isempty(kStart)
+		kEnd				= strfind(strTmp, endPat);
+		if isempty(kEnd)
+			% End pattern was not found in name of subfolder
+			% Set to length of name of subfolder plus one, so that subsequent code yields
+			% end index equal to end of name of subfolder
+			kEnd	= lenSubfolderName + 1;			
+		end		% End of if isempty(kEnd)
+		% Determine indices of start and end of string to be extracted from first
+		% occurrences of start and end pattern in name of subfolder
+		indStart		= kStart(1) + lenStartPat;
+		indEnd			= kEnd(1) - 1;		
+		strAddInfo		= strTmp(indStart:indEnd);
 
-	% Assume that only one MRS DICOM file is in each subdirectory
-	newName						= [list_subfolders_name{iFolder}, '.IMA'];
-	% [status,msg]	= movefile( fullfile(subDir, list_subfolders_sub_name{1}), fullfile(subDir, newName) );
-	% if status ~= 1
-	% 	error('%s: Error moving/renaming file %s!\n\n%s', sFunctionName, list_subfolders_sub_name{iSub}, msg);
-	% end
+		% Create specific string  and add it to all filenames and foldernames of subfolder
+		% Strcat(...) works with all elements of cell array
+		strAddSame		= [strAddStart, strAddInfo, strAddEnd];
+		newNames		= strcat(strAddSame	, list_subfolders_sub_name);
+		% Rename all files and folders in subfolder
+		for iFile = 1 : 1 : numel(list_subfolders_sub_name)
+			[status,msg]	= movefile( fullfile(subDir, list_subfolders_sub_name{iFile}), fullfile(subDir, newNames{iFile}) );
+			if status ~= 1
+				error('%s: Error moving/renaming file %s!\n\n%s', sFunctionName, list_subfolders_sub_name{iFile}, msg);
+			end		% End of if status ~= 1
+		end		% End of for iFile = 1 : 1 : numel(list_subfolders_sub_name)
 	else
 		error('%s: Error! Renaming files and folders individually not yet implemented!\n\n', sFunctionName);
 	end		% End of if bSameRenaming == 1
