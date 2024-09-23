@@ -15,9 +15,10 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'dicom2nifti_and_segment_ListOfFiles_s';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= sprintf('\n');
-disp(sMsg_newLines);
+% sMsg_newLines		= sprintf('\n\n');
+% sMsg_newLine		= sprintf('\n');
+% disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Init input parameters
@@ -25,9 +26,10 @@ inputDir				= '';
 command					= '';
 status					= 0;
 bProcessNewFiles		= 0;
-bConvert_dcm2nii		= 'Yes';			% 'Yes';		% 'No';
-bSegmentImages			= 'No';			% 'Yes';		% 'No';
+bConvert_dcm2nii		= 'No';			% 'Yes';		% 'No';
+bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
 
 % Init parameters for brain extraction and segmentation
 % (parameters can be adjusted for each sequence type depending on specific voxel location)
@@ -73,7 +75,7 @@ switch seqType_MRS
 		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI';
 		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented';
 		% Set parameters for brain extraction and segmentation depending on voxel location
-		coordCenterOfBrain		= [87 115 170];	
+		coordCenterOfBrain		= [87 115 170];		% [87 115 180];	[87 115 150];	
 		fractIntensThresh		= 0.3;
 		
 	otherwise
@@ -90,6 +92,10 @@ dirData_DICOM			= [dirData_DICOM, filesep];
 outputDir_NIfTI			= [outputDir_NIfTI, filesep];
 dirData_NIfTI			= outputDir_NIfTI;
 outputDir_Seg			= [outputDir_Seg, filesep];
+
+% Create subdirectory using information about study/data and segementation settings
+digits_fract			= [fix(fractIntensThresh) round(abs(fractIntensThresh-fix(fractIntensThresh))*10)];
+
 
 % If output directories for specific processing opitions do not exist, create them
 if bConvert_dcm2nii
@@ -135,7 +141,8 @@ noDataEntries_DICOM			= noEntriesListing_DICOM - 2;
 % index!)
 indexStart		= 3;	% To skip entries for directories "." and ".."
 indexStep		= 1;	% Optionally adjustable step size
-disp(sMsg_newLines);
+%disp(sMsg_newLines);
+fprintf('\n\n');
 if(strcmp(bConvert_dcm2nii, 'Yes'))
 	fprintf('%s: Conversion of DICOM data into NIfTI format ...\n', sFunctionName);
 	for ind=indexStart : indexStep : noEntriesListing_DICOM		% noEntriesListing_DICOM	% 3		% 4
@@ -174,7 +181,8 @@ end		% End of if(strcmp(bConvert_dcm2nii, 'Yes'))
 % (On Linux, file list in Matlab also includes the two directories "." and "..", which
 % means that the actual # of files in the directory is (# of entries in list - 2)
 %cd(dirData_In);
-disp(sMsg_newLines);
+%disp(sMsg_newLines);
+fprintf('\n\n');
 structFileListing_NIfTI		= dir([dirData_NIfTI, '*.nii']);
 noEntriesListing_NIfTI		= length( structFileListing_NIfTI );
 %noDataEntries_NIfTI			= noEntriesListing_NIfTI - 2
@@ -183,14 +191,16 @@ noEntriesListing_NIfTI		= length( structFileListing_NIfTI );
 % using routines from FSL as system calls 
 indexStart		= 1;	% To possibly skip entries for specific files
 indexStep		= 1;	% Optionally adjustable step size
-disp(sMsg_newLines);
+%disp(sMsg_newLines);
+fprintf('\n\n');
 if(strcmp(bSegmentImages, 'Yes'))
 	disp('Segmenting imaging datasets into tissues WM, GM, and CSF ...');
 	for ind=indexStart : indexStep : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
 		% Select file from list of NIfTI files and obtain parts of filename
 		inputFileNameSeg				= structFileListing_NIfTI(ind).name;
 		[filepathSeg,nameSeg,extSeg]	= fileparts(inputFileNameSeg);
-		disp(sMsg_newLines);
+		%disp(sMsg_newLines);
+		fprintf('\n\n');
 		disp([sprintf('ind = %d\t', ind), sprintf('\t'), inputFileNameSeg, sprintf('\n\n')]);
 		
 		% Use FSL brain extraction routine 'bet' to extract images of only brain tissue
