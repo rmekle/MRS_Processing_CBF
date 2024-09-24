@@ -4,7 +4,8 @@
 %
 %% Script to calculate partial volume correction tissue coefficients in MRS for brain
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020, 2021, 2022, 2023; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2020, 2021, 2022, 2023,
+%	2024;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -28,12 +29,14 @@ noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
 seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
+strStudy				= '3T_SBAM';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';
+strVOI					= 'HC';			% 'HC';		% 'PCG';
 strDataFormat           = 'rda';     % 'DICOM';      % 'RawData';      %'rda';
 %strDataExtension        = '*.rda';      %'*.IMA';       %'*.dat';       %'*.rda';
 %strPVoxel               = 'pvoxel4_rda.py';     %'pvoxel4_rda.py' for rda data;      %'pvoxel4_RawData.py' for RawData;    %'pvoxel4_DICOM.py' for DICOM
-strVOI					= 'HC';			% 'HC';		% 'PCG';
 strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
-strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
+%strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
+strSeg					= '3T_SBAM_bet_BrainCenter_87_115_180_fractThresh_0_3';
 strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
 
 % Select some parameters based on data format, i.e. which data is used to obtain
@@ -69,22 +72,47 @@ switch seqType
 		dirData_Seg				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/DOPA_bet_CenterOfBrain_87_115_180_fractThresh_0_3_DistCorr/';
 		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_PartialVolumeCorrection/PVCorr_bet_87_115_180_fractThresh_0_3_DistCorr/Test/';
     case 'sLASER'
-		outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
-		% Select directory for MRS data based on data format
-		switch strDataFormat
-			case 'rda'
-				dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI, filesep];      
-			case 'RawData'
-				dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_Water_', strVOI, filesep];
-			case 'DICOM'
-				dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_DICOM_Files_MRS_', strVOI, filesep];
+		switch strStudy
+			case '3T_Trauma'
+				outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
+				% Select directory for MRS data based on data format
+				switch strDataFormat
+					case 'rda'
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI, filesep];
+					case 'RawData'
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_Water_', strVOI, filesep];
+					case 'DICOM'
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_DICOM_Files_MRS_', strVOI, filesep];
+
+					otherwise
+						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
+				end		% End of switch strDataFormat
+				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI, filesep];
+				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
+				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
+			case '3T_SBAM'
+				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
+				% Select directory for MRS data based on data format
+				switch strDataFormat
+					case 'rda'
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_rda_Files_MRS_', strVOI, filesep];
+					case 'RawData'
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_RawData_dat_Files_Water_', strVOI, filesep];
+					case 'DICOM'
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_DICOM_Files_MRS_', strVOI, filesep];
+
+					otherwise
+						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
+				end		% End of switch strDataFormat
+				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_', strVOI, filesep];
+				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
+				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_PartialVolumeCorrection/';
 
 			otherwise
-				error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
-		end		% End of switch strDataFormat
-		dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI, filesep];
-		dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
-		outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+		end				% End of switch strStudy
+		
+		% Finalize name of output directory for partial volume coefficients
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
 			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
