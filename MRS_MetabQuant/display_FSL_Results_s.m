@@ -4,7 +4,7 @@
 %
 %% Script to display results from FSL brain extraction (bet) and segmentation (segment)
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2021; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2021, 2024; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -15,9 +15,10 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'display_FSL_Results_s';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= sprintf('\n');
-disp(sMsg_newLines);;
+% sMsg_newLines		= sprintf('\n\n');
+% sMsg_newLine		= sprintf('\n');
+% disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Init input parameters
@@ -90,7 +91,8 @@ structFileListing_Overlays	= structFileListing_Overlays(sortInd);
 % using a system call that invokes the fsl utility "fsleyes"
 indexStart		= 1;	
 indexStep		= 4;	% Optionally adjustable step size
-disp(sMsg_newLines);
+%disp(sMsg_newLines);
+fprintf('\n\n');
 if(strcmp(bShowOverlays, 'Yes'))
 	fprintf('%s: Displaying overlays onto source images ...\n', sFunctionName);
 	for ind=indexStart : indexStep : noEntriesListing_Images	% noEntriesListing_Images	% 2		% 1
@@ -98,7 +100,8 @@ if(strcmp(bShowOverlays, 'Yes'))
 		inputFileNameImage					= structFileListing_Images(ind).name;
 		%[filepathImage,nameImage,extImage]	= fileparts(inputFileNameImage);
 		inputFileNameOverlay					= structFileListing_Overlays(ind).name;
-		disp(sMsg_newLines);
+		%disp(sMsg_newLines);
+		fprintf('\n\n');
 		disp([sprintf('ind = %d\t', ind), sprintf('\t'), inputFileNameImage, newline, sprintf('ind = %d\t', ind), sprintf('\t'), inputFileNameOverlay, sprintf('\n\n')]);
  		
 		% Create command for display of overlays onto source images using "fsleyes" and
@@ -125,7 +128,8 @@ strSavedWorkspaceFileNameFull	= [outputDir, strSavedWorkspaceFileName];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'n';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
-	disp(sMsg_newLines);
+	%disp(sMsg_newLines);
+	fprintf('\n\n');
 	fprintf('%s: Saving variables of workspace to file ...\n', sFunctionName);
 	save(strSavedWorkspaceFileNameFull);
 end
