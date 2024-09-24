@@ -75,7 +75,7 @@ switch seqType_MRS
 		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI';
 		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented';
 		% Set parameters for brain extraction and segmentation depending on voxel location
-		coordCenterOfBrain		= [87 115 170];		% [87 115 180];	[87 115 150];	
+		coordCenterOfBrain		= [87 115 180];		% [87 115 180];	[87 115 170];	[87 115 150];	
 		fractIntensThresh		= 0.3;
 		
 	otherwise
@@ -94,8 +94,12 @@ dirData_NIfTI			= outputDir_NIfTI;
 outputDir_Seg			= [outputDir_Seg, filesep];
 
 % Create subdirectory using information about study/data and segementation settings
+% (assuming that there are three coordinates of the brain center and two digits describing
+% the fractional threshold for the segmentation)
 digits_fract			= [fix(fractIntensThresh) round(abs(fractIntensThresh-fix(fractIntensThresh))*10)];
-
+outSubDir				= sprintf('%s_bet_BrainCenter_%d_%d_%d_fractThrash_%d_%d', ...
+	strStudy, coordCenterOfBrain(1), coordCenterOfBrain(2), coordCenterOfBrain(3), digits_fract(1), digits_fract(2));
+outputDir_Seg			= [outputDir_Seg, outSubDir, filesep];
 
 % If output directories for specific processing opitions do not exist, create them
 if bConvert_dcm2nii
