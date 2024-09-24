@@ -265,7 +265,8 @@ else if(~strcmp(bConvert_dcm2nii, 'Yes'))
 	end
 end
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
-	disp(sMsg_newLines);
+	%disp(sMsg_newLines);
+	fprintf('\n\n');
 	fprintf('%s: Saving variables of workspace to file ...\n', sFunctionName);
 	save(strSavedWorkspaceFileNameFull);
 end
