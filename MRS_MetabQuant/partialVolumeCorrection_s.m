@@ -15,9 +15,10 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'partialVolumeCorrection_s';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= newline;
-disp(sMsg_newLines);
+% sMsg_newLines		= sprintf('\n\n');
+% sMsg_newLine		= newline;
+% disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Init input parameters
@@ -30,7 +31,7 @@ seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
 strDataFormat           = 'rda';     % 'DICOM';      % 'RawData';      %'rda';
 %strDataExtension        = '*.rda';      %'*.IMA';       %'*.dat';       %'*.rda';
 %strPVoxel               = 'pvoxel4_rda.py';     %'pvoxel4_rda.py' for rda data;      %'pvoxel4_RawData.py' for RawData;    %'pvoxel4_DICOM.py' for DICOM
-strVOI					= 'PCG';			% 'HC';		% 'PCG';
+strVOI					= 'HC';			% 'HC';		% 'PCG';
 strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
 strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
 strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
@@ -128,6 +129,7 @@ noEntriesListing_data		= length( structFileListing_data );
 % (On Linux, file list in Matlab also includes the two directories "." and "..", which
 % means that the actual # of files in the directory is (# of entries in list - 2)
 %disp(sMsg_newLines);
+%fprintf('\n\n');
 structFileListing_NIfTI		= dir([dirData_NIfTI, '*.nii']);
 noEntriesListing_NIfTI		= length( structFileListing_NIfTI );
 
@@ -161,7 +163,8 @@ noEntriesListing_Seg		= length( structFileListing_Seg );
 % for displying using option '-l' are not created when using option '-w'
 indexStart		= 1;	
 indexStep		= 1;	% Optionally adjustable step size
-disp(sMsg_newLines);
+%disp(sMsg_newLines);
+fprintf('\n\n');
 if(strcmp(bCalcPartialVolCoeffs, 'Yes'))
 	fprintf('%s: Calculation of tissue volume coefficients for partial volume correction ...\n', sFunctionName);
 	% If output directory(ies) for file output does (do) not exist, create it (them)
@@ -183,6 +186,7 @@ if(strcmp(bCalcPartialVolCoeffs, 'Yes'))
         % (successful execution of 'movefile' returns status = 1)
         %warningMessage	= sprintf('Warning: file %s \n already exists and will be renamed to %s\n\n', fullOutFileName_PVCorr, [outFileName_PVCorr, '_previous.txt']);
         %disp(sMsg_newLines);
+		%fprintf('\n\n');
         %disp(warningMessage);
         %[status,msg]	= movefile(fullOutFileName_PVCorr, [fullOutFileName_PVCorr, '_previous.txt']);
         %if status ~= 1
@@ -198,7 +202,8 @@ if(strcmp(bCalcPartialVolCoeffs, 'Yes'))
 		% File exists, display warning message and rename file
 		% (successful execution of 'movefile' returns status = 1)
 		warningMessage	= sprintf('Warning: file %s \n already exists and will be renamed to %s\n\n', fullOutFileName_PVCorr, [outFileName_PVCorr, '_previous']);
-		disp(sMsg_newLines);
+		%disp(sMsg_newLines);
+		fprintf('\n\n');
 		disp(warningMessage);
 		[status,msg]	= movefile(fullOutFileName_PVCorr, [fullOutFileName_PVCorr, '_previous']);
 		if status ~= 1
@@ -221,7 +226,8 @@ if(strcmp(bCalcPartialVolCoeffs, 'Yes'))
 		% Obtain parts of filename of DataFormat file for renaming some resulting files
 		[filepath_data,name_data,ext_data]		= fileparts(inFileName_data);
 		
- 		disp(sMsg_newLines);
+ 		%disp(sMsg_newLines);
+		fprintf('\n\n');
  		disp([sprintf('ind = %d\t', ind), sprintf('\t'), inFileName_data, sprintf('\t'), inFileName_NIfTI]);
 		disp([sprintf('indTissues = %d\t', indTissues), newline, inFileName_WM, newline, inFileName_GM, newline, inFileName_CSF, sprintf('\n\n')]);
 
@@ -277,7 +283,8 @@ strSavedWorkspaceFileNameFull	= [outputDir_PVCorr, strSavedWorkspaceFileName];
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'y';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
-	disp(sMsg_newLines);
+	%disp(sMsg_newLines);
+	fprintf('\n\n');
 	fprintf('%s: Saving variables of workspace to file ...\n', sFunctionName);
 	save(strSavedWorkspaceFileNameFull);
 end
