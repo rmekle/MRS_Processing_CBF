@@ -27,6 +27,7 @@ command					= '';
 status					= 0;
 bShowOverlays			= 'Yes';			% 'Yes';		% 'No';
 seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
+strStudy				= '3T_SBAM';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';
 
 % Set (additional) parameters depending on sequence type
 switch seqType
@@ -46,13 +47,22 @@ switch seqType
 		%inputDirOverlays		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/DOPA_bet_CenterOfBrain_87_115_170_fractThresh_0_3/';
 		%inputDirOverlays		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/DOPA_bet_CenterOfBrain_87_115_175_fractThresh_0_3/';
 	case 'sLASER'
-		% 3T BCAN MRS Trauma study
-		% SBA
-		%inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI/';
-		%inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented/Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3/';
-		% SBAM
-		inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI/';
-		inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented/3T_Trauma_bet_BrainCenter_87_115_180_fractThresh_0_3/';
+		% Select data input and output directories and other parameters depending on study
+		switch strStudy
+			case '3T_Trauma'
+				% 3T BCAN MRS Trauma study
+				% SBA
+				inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI/';
+				inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented/Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3/';
+			case '3T_SBAM'
+				% 3T BCAN MRS Trauma study
+				% SBAM
+				inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI/';
+				inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented/3T_SBAM_bet_BrainCenter_87_115_180_fractThresh_0_3/';
+
+			otherwise
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+		end				% End of switch strStudy
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
@@ -95,7 +105,7 @@ structFileListing_Overlays	= structFileListing_Overlays(sortInd);
 % Display overlays (from brain extraction) onto (NIfTI) source images, if desired 
 % using a system call that invokes the fsl utility "fsleyes"
 indexStart		= 1;	
-indexStep		= 4;	% Optionally adjustable step size
+indexStep		= 3;	% Optionally adjustable step size
 %disp(sMsg_newLines);
 fprintf('\n\n');
 if(strcmp(bShowOverlays, 'Yes'))
