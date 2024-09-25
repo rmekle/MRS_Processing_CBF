@@ -29,7 +29,7 @@ bProcessNewFiles		= 0;
 bConvert_dcm2nii		= 'No';			% 'Yes';		% 'No';
 bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
+strStudy				= '3T_SBAM';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';
 
 % Init parameters for brain extraction and segmentation
 % (parameters can be adjusted for each sequence type depending on specific voxel location)
@@ -65,15 +65,25 @@ switch seqType_MRS
 		coordCenterOfBrain		= [87 115 180];	
 		fractIntensThresh		= 0.3;
 	case 'sLASER'
-		% 3T BCAN MRS_and_Trauma study
-		% SBA
-		%dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
-		%outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
-		%outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
-		% SBAM
-		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_DICOM';
-		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI';
-		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented';
+		% Select data input and output directories and other parameters depending on study
+		switch strStudy
+			case '3T_Trauma'
+				% 3T BCAN MRS_and_Trauma study
+				% SBA
+				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
+				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
+				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
+			case '3T_SBAM'
+				% 3T BCAN MRS_and_Trauma study
+				% SBAM
+				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_DICOM';
+				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI';
+				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented';
+
+			otherwise
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+		end				% End of switch strStudy
+
 		% Set parameters for brain extraction and segmentation depending on voxel location
 		coordCenterOfBrain		= [87 115 180];		% [87 115 180];	[87 115 170];	[87 115 150];	
 		fractIntensThresh		= 0.3;
