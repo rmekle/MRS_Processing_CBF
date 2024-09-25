@@ -68,13 +68,13 @@ switch seqType_MRS
 		% Select data input and output directories and other parameters depending on study
 		switch strStudy
 			case '3T_Trauma'
-				% 3T BCAN MRS_and_Trauma study
+				% 3T BCAN MRS Trauma study
 				% SBA
 				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
 				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
 			case '3T_SBAM'
-				% 3T BCAN MRS_and_Trauma study
+				% 3T BCAN MRS Trauma study
 				% SBAM
 				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_DICOM';
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI';
