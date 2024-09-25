@@ -36,7 +36,7 @@ strDataFormat           = 'rda';     % 'DICOM';      % 'RawData';      %'rda';
 %strPVoxel               = 'pvoxel4_rda.py';     %'pvoxel4_rda.py' for rda data;      %'pvoxel4_RawData.py' for RawData;    %'pvoxel4_DICOM.py' for DICOM
 strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
 %strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
-strSeg					= '3T_SBAM_bet_BrainCenter_87_115_180_fractThresh_0_3';
+strSeg					= [strStudy, '_bet_BrainCenter_87_115_180_fractThresh_0_3'];
 strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
 
 % Select some parameters based on data format, i.e. which data is used to obtain
@@ -74,6 +74,8 @@ switch seqType
     case 'sLASER'
 		switch strStudy
 			case '3T_Trauma'
+				% 3T BCAN MRS Trauma study
+				% SBA
 				outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
 				% Select directory for MRS data based on data format
 				switch strDataFormat
@@ -90,7 +92,9 @@ switch seqType
 				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI, filesep];
 				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
 				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
-			case '3T_SBAM'
+			case '3T_SBAM'	
+				% 3T BCAN MRS Trauma study
+				% SBAM
 				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
 				% Select directory for MRS data based on data format
 				switch strDataFormat
