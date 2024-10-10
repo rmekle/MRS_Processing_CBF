@@ -2,7 +2,7 @@
 %
 % rename_files_MRS_Folders_s.m
 %
-%% Script to rename files distributed in several directories
+%% Script to rename files distributed in several directories following a specific pattern
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024; 
 %
