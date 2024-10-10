@@ -99,18 +99,18 @@ switch seqType
 				% Select directory for MRS data based on data format
 				switch strDataFormat
 					case 'rda'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_rda_Files_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_rda_Files_MRS_', strVOI, filesep];
 					case 'RawData'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_RawData_dat_Files_Water_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_RawData_dat_Files_Water_', strVOI, filesep];
 					case 'DICOM'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_DICOM_Files_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_DICOM_Files_MRS_', strVOI, filesep];
 
 					otherwise
 						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
 				end		% End of switch strDataFormat
-				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_', strVOI, filesep];
-				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
-				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_PartialVolumeCorrection/';
+				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_', strVOI, filesep];
+				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
+				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_PartialVolumeCorrection/';
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
