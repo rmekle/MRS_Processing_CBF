@@ -57,8 +57,8 @@ switch seqType
 			case '3T_SBAM'
 				% 3T BCAN MRS Trauma study
 				% SBAM
-				inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI/';
-				inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_TraumaM_00_All_MPRAGE_NIfTI_Segmented/3T_SBAM_bet_BrainCenter_87_115_180_fractThresh_0_3/';
+				inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI/';
+				inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented/3T_SBAM_bet_BrainCenter_87_115_180_fractThresh_0_3/';
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
