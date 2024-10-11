@@ -4,7 +4,7 @@
 %
 %% Script to rename subfolders of several directories
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2023; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2023, 2024; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -15,9 +15,7 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'rename_subfolders_s';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= newline;
-disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Init input parameters for renaming subfolders
