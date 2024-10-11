@@ -91,7 +91,7 @@ switch dataType_MRS
 				ppmmin_fix			= 4.2;
 				ppmmaxarray_fix		= [5.5 5.5 5.2];
 			case 4
-				% Wide range to always inlcude water resonance
+				% Wide range to always include water resonance
 				ppmmin_fix			= 1.6;
 				ppmmaxarray_fix		= [5.5 5.5 5.2];
 			case 5
