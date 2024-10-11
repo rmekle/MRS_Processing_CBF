@@ -19,20 +19,20 @@ sMsg_newLines		= sprintf('\n\n');
 %disp(sMsg_newLines);
 
 
-%% Init input parameters for preparing metabolite quantification
+%% Init input parameters for preprocessing
+%dirString_In			= '';
 %dirString_Out			= '';
-%dirString_Out			= '';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'PCG'; 			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
+dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 2;
+leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
 noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
