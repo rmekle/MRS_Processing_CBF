@@ -2,7 +2,8 @@
 %
 % rename_files_MRS_DICOM_s.m
 %
-%% Script to rename files distributed in several directories
+%% Script to rename MRS DICOM files distributed in several directories
+%	Current version: Assume that only one MRS DICOM file is in each subdirectory
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2023, 2024; 
 %
@@ -23,8 +24,8 @@ sFunctionName		= 'rename_files_MRS_DICOM_s';
 
 %% Init input parameters for renaming subfolders
 parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
-parentDir_AddOn		= 'MRS_Trauma_00_All_DICOM_Files_MRS_HC/';	
-					% 'MRS_Trauma_00_All_DICOM_Files_MRS_PCG/';	% 'MRS_Trauma_00_All_DICOM_Files_MRS_HC/';
+parentDir_AddOn		= 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_HC/';	
+					% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_PCG/';	% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_HC/';
 parentDir			= [parentDir_Base, parentDir_AddOn];
 
 % % Select start and end pattern for substring extraction
@@ -62,6 +63,8 @@ for iFolder = 1:1:numel(list_subfolders_name)
 	list_subfolders_sub_name	= {list_subfolders_sub.name};
 
 	% Assume that only one MRS DICOM file is in each subdirectory
+	% (e.g. if a DICOM MRS sum file should be renamed)
+	% New name for DICOM MRS file is its subfoldername with the extension .IMA
 	newName						= [list_subfolders_name{iFolder}, '.IMA'];
 	[status,msg]	= movefile( fullfile(subDir, list_subfolders_sub_name{1}), fullfile(subDir, newName) );
 	if status ~= 1
