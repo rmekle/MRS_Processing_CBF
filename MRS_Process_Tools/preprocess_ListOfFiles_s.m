@@ -5,7 +5,7 @@
 %% Script to preprocess a list of files of magnetic resonance spectroscopy (MRS) data
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022,
-% 2023; 
+% 2023, 2024; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -19,30 +19,31 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'preprocess_ListOfFiles_s';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= sprintf('\n');
-disp(sMsg_newLines);
+%sMsg_newLines		= sprintf('\n\n');
+%sMsg_newLine		= sprintf('\n');
+%disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Init input parameters for preprocessing
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
 strStudy				= '3T_MMs';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
 strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
-signals_MRS				= 'MMs';		% 'MMs';	% 'Spectra';
+signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
 strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
+leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
 avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
 
 % Parameters for removal of bad averages
 rmbadav_In				= 'y';		% 'y';		'n';
-noSD_In					= 3.0;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
+noSD_In					= 3.2;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
@@ -409,7 +410,8 @@ switch seqType_MRS
 			strOVS_In		= 'wOVS';
 			filename_In		= structFileListing(ind).name;
 			filename_w_In	= structFileListing(ind+1).name;
-			disp(sMsg_newLines);
+			%disp(sMsg_newLines);
+			fprintf('\n\n');
 			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
 			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filename_w_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
 			
@@ -420,7 +422,8 @@ switch seqType_MRS
 			% (spectral data remain the same and only processed differently now)
 			strOVS_In		= 'woutOVS';
 			filename_w_In	= structFileListing(ind+2).name;
-			disp(sMsg_newLines);
+			%disp(sMsg_newLines);
+			fprintf('\n\n');
 			disp([sprintf('ind = %d\t', ind), strOVS_In, sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
 			[out,out_w,out_noproc,out_w_noproc]=run_specialproc_CBF(dirString_In,dirString_Out,filename_In,filename_w_In,noSD_In,strOVS_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In);
 		end
@@ -448,7 +451,8 @@ switch seqType_MRS
 			% Preprocess MR spectrum and water
 			filename_In		= structFileListing(ind).name;
 			filename_w_In	= structFileListing(ind+1).name;
-			disp(sMsg_newLines);
+			%disp(sMsg_newLines);
+			fprintf('\n\n');
 			disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
 			[diffSpecOut,sumSpecOut,subSpec1Out,subSpec2Out,outwOut,outw_subSpec1Out,outw_subSpec2Out,coilcombosOut]=run_megapressproc_CBF(dirString_In,dirString_Out,filename_In,filename_w_In,noSD_In,strMinUserIn_In,aaDomain_In,tmaxin_In,iterin_In,alignSS_In);
 			
@@ -509,7 +513,8 @@ switch seqType_MRS
 					% MRS raw data (.dat)
 					filename_In			= structFileListing(ind).name;
 					filename_w_In		= structFileListing(ind+1).name;
-					disp(sMsg_newLines);
+					%disp(sMsg_newLines);
+					fprintf('\n\n');
 					disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
 					%[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_RawData_s(dirString_In,dirString_Out,filename_In,filename_w_In,seqType_MRS,dataType_MRS,strOVS_In,strOVS_w_In,leftshift_In,noSD_In,aaDomain_In,tmaxin_In,iterin_In,bECC_In,bPhaseCorrFreqShift_In,plotSwitch_In,strMinUserIn_In,reportSwitch_In);
 					[out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(...
@@ -561,7 +566,8 @@ switch seqType_MRS
 					% Display some info
 					dirParts_In_IMA		= strsplit(dirString_In_IMA, filesep);
 					dirParts_w_In_IMA	= strsplit(dirString_w_In_IMA, filesep);
-					disp(sMsg_newLines);
+					%disp(sMsg_newLines);
+					fprintf('\n\n');
 					if ~isempty(dirString_w_In_IMA)
 						disp([sprintf('ind = %d\t', ind), sprintf('\t'), dirParts_In_IMA{end-1}, sprintf('\t'), dirParts_w_In_IMA{end-1}, sprintf('\n\n')]);
 					else
