@@ -1758,7 +1758,10 @@ switch seqType
 			% Save figure of water signal
 			% Create filenames for saving of processed output
 			%strFigName_addW	= '_w_processed_lcm_3_3_5_9ppm';
-			digits = [fix(xLimValues2(1)) fix(abs(xLimValues3(1)-fix(xLimValues3(1)))*10) fix(xLimValues3(2)) fix(abs(xLimValues3(2)-fix(xLimValues3(2)))*10)];
+			% fix(...) returned unwanted results for xLimValues3(1) = 3.3:
+			% fix(abs(xLimValues3(1)-fix(xLimValues3(1)))*10) = 2!!!
+			%digits = [fix(xLimValues3(1)) fix(abs(xLimValues3(1)-fix(xLimValues3(1)))*10) fix(xLimValues3(2)) fix(abs(xLimValues3(2)-fix(xLimValues3(2)))*10)];
+			digits = [fix(xLimValues3(1)) round(abs(xLimValues3(1)-fix(xLimValues3(1)))*10) fix(xLimValues3(2)) round(abs(xLimValues3(2)-fix(xLimValues3(2)))*10)];
 			strFigName_add_w	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
 			figureName_w_fig	= [outFileName_w, strFigName_add_w, '.fig'];
 			figureName_w_png	= [outFileName_w, strFigName_add_w, '.png'];
@@ -1788,7 +1791,10 @@ switch seqType
 			% Save figure of reference signal for ECC
 			% Create filenames for saving of processed output
 			%strFigName_addW	= '_w_processed_lcm_3_3_5_9ppm';
-			digits = [fix(xLimValues2(1)) fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) fix(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
+			% fix(...) returned unwanted results for xLimValues4(1) = 3.3:
+			% fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) = 2!!!
+			%digits = [fix(xLimValues4(1)) fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) fix(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
+			digits = [fix(xLimValues4(1)) round(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) round(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
 			strFigName_add_ref_ECC	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
 			figureName_ref_ECC_fig	= [outFileName_ref_ECC, strFigName_add_ref_ECC, '.fig'];
 			figureName_ref_ECC_png	= [outFileName_ref_ECC, strFigName_add_ref_ECC, '.png'];
@@ -1812,7 +1818,10 @@ switch seqType
 			% Save figure of reference signal for metabolite quantification (Quant)
 			% Create filenames for saving of processed output
 			%strFigName_addW	= '_w_processed_lcm_3_3_5_9ppm';
-			digits = [fix(xLimValues2(1)) fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) fix(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
+			% fix(...) returned unwanted results for xLimValues4(1) = 3.3:
+			% fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) = 2!!!
+			%digits = [fix(xLimValues4(1)) fix(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) fix(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
+			digits = [fix(xLimValues4(1)) round(abs(xLimValues4(1)-fix(xLimValues4(1)))*10) fix(xLimValues4(2)) round(abs(xLimValues4(2)-fix(xLimValues4(2)))*10)];
 			strFigName_add_ref_Quant	= sprintf( '_processed_lcm_%d_%d_%d_%dppm', digits(1), digits(2), digits(3), digits(4) );
 			figureName_ref_Quant_fig	= [outFileName_ref_Quant, strFigName_add_ref_Quant, '.fig'];
 			figureName_ref_Quant_png	= [outFileName_ref_Quant, strFigName_add_ref_Quant, '.png'];
