@@ -31,7 +31,7 @@ fprintf('\n\n');
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
+strStudy				= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
 strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
@@ -167,6 +167,25 @@ switch seqType_MRS
 					case 'IMA'
 						% Select directories specific to MRS DICOM data (.IMA)
 						dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_DICOM_IMA_Files_MRS_%s', strVOI);
+						
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+				end			% End of switch fileExtension
+			case '3T_SBAM'
+				% Data (input) directories
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/'
+				
+				% Output data directory
+				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_SBAM_Analysis/';
+				
+				% Directories depending on MRS data type
+				switch fileExtension
+					case 'dat'
+						% Select directories specific to MRS raw data (.dat)
+						dirString_In_AddOn1		= sprintf('MRS_SBAM_00_All_RawData_dat_Files_MRS_%s', strVOI);
+					case 'IMA'
+						% Select directories specific to MRS DICOM data (.IMA)
+						dirString_In_AddOn1		= sprintf('MRS_SBAM_00_All_DICOM_IMA_Files_MRS_%s', strVOI);
 						
 					otherwise
 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
