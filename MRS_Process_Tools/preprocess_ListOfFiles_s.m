@@ -31,13 +31,13 @@ fprintf('\n\n');
 fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_MMs';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
+strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
 strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
+dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
+strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
 leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
 avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
 
@@ -48,13 +48,13 @@ digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strSpecReg_In			= 'SR8';	% To distinguish settings for spectral registration
+strSpecReg_In			= 'SR1';	% To distinguish settings for spectral registration
 driftCorr_In			= 'y';		% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';		% 'f';		't';
-tmaxin_In				= 0.1;		% 0.2;		0.1;
+tmaxin_In				= 0.2;		% 0.2;		0.1;
 bTmaxset_In				= 1;
-ppmOption				= 6;
+ppmOption				= 1;
 medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
 alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 % Set parameters for drift correction depending on type of data, i.e. whether MRS
