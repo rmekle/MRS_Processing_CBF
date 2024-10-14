@@ -258,7 +258,8 @@ else if isSVSdkdseq
 			%% If # of dummy points is non-zero, indicate this
 			%if num_dummy_points ~= 0
 				% Display info
-				disp(sMsg_newLine);
+				%disp(sMsg_newLine);
+				fprintf('\n');
 				fprintf('%s: Sequence isMinn = %d \t FID_offset = %d \t num_dummy_points = %d \t indFID_first = %d', sFunctionName, isMinn, FID_offset, num_dummy_points, indFID_first);
 				%disp(sMsg_newLines);
 				fprintf('\n\n');
@@ -609,7 +610,8 @@ elseif isMinn || isSVSdkdseq
     leftshift = twix_obj.image.iceParam(5,1);
 	if isSVSdkdseq
 		%disp(sprintf('\n'));
-		disp(sMsg_newLine);
+		%disp(sMsg_newLine);
+		fprintf('\n');
 		% Not clear whether this option holds for svs_slaser_dkd
 		%warning('isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n', isSVSdkdseq, leftshift);
 		fprintf('%s: isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n', sFunctionName, isSVSdkdseq, leftshift);
@@ -707,7 +709,8 @@ end
 % the CMRR in Minnesota, svs_slaser_dkd; these can also set to zero
 if ~isSVSdkdseq || noRefScans == 0
 	% Display info
-	disp(sMsg_newLine);
+	d%isp(sMsg_newLine);
+	fprintf('\n');
 	fprintf('%s: Sequence isSVSdkdseq = %d \t # of MRS reference scans = noRefScans = %d, not extracted!', sFunctionName, isSVSdkdseq, noRefScans);    
 	%disp(sMsg_newLines);
 	fprintf('\n\n');
@@ -717,7 +720,8 @@ if ~isSVSdkdseq || noRefScans == 0
 	out_ref		= struct([]);	% Creates a 0x0 struct yielding isempty(out_ref) = 1
 else
 	% Display info
-	disp(sMsg_newLine);
+	%disp(sMsg_newLine);
+	fprintf('\n');
 	fprintf('%s: Sequence isSVSdkdseq = %d \t # of MRS reference scans = noRefScans = %d', sFunctionName, isSVSdkdseq, noRefScans);    
 	%disp(sMsg_newLines);
 	fprintf('\n\n');
