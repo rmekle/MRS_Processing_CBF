@@ -199,9 +199,9 @@ end
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'preProcess_MRS_s.m';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= sprintf('\n');
-disp(sMsg_newLines);
+%sMsg_newLines		= sprintf('\n\n');
+%sMsg_newLine		= sprintf('\n');
+%disp(sMsg_newLines);
 
 
 %% Process names of directories and input filenames and create directory for html report
@@ -484,7 +484,8 @@ switch seqType
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 		
 end		% End of switch seqType
-disp(sMsg_newLines);
+%disp(sMsg_newLines);
+fprintf('\n\n');
 
 % Read in the 'main' data together with possibly existing reference scans and, 
 % if available, the additional unsuppressed water signal
@@ -545,7 +546,8 @@ else
     %out_w			= struct([]);
     %out_w_noproc	= struct([)];
 end
-disp(sMsg_newLines);
+%disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Preprocess all data according to sequence type and types of data provided
@@ -664,7 +666,8 @@ switch seqType
 			end		% End of if isSVSdkd_seq 
 			
 		end		% End of if with_ref
-		disp(sMsg_newLines);
+		%disp(sMsg_newLines);
+		fprintf('\n\n');
 		
 		
 		%% Create filenames for saving of processed output depending on sequence type
@@ -1316,11 +1319,14 @@ switch seqType
 		% different type of input data is unwantingly interpreted as subspectra by input 
 		% loading routine, then these can be still present at this point
 		if out_av.dims.subSpecs ~= 0
-			disp(sMsg_newLines);
+			%disp(sMsg_newLines);
+			fprintf('\n\n');
 			warning('%s: Subspectra still present in spectrum! # of subsprectra = out_av.sz(out_av.dims.subSpecs) = %d', sFunctionName, out_av.sz(out_av.dims.subSpecs));
-			disp(sMsg_newLine);
+			%disp(sMsg_newLine);
+			fprintf('\n');
 			disp('Averaging subSpecs of spectrum ...');
-			disp(sMsg_newLines);
+			%disp(sMsg_newLines);
+			fprintf('\n\n');
 			out_av_tmp				= out_av;
 			out_av					= op_average_subSpecs_s(out_av_tmp);
 			%out_av		= op_combinesubspecs(out_av_tmp, 'diff');
@@ -1338,11 +1344,14 @@ switch seqType
 		
 		if with_water
 			if out_w_av.dims.subSpecs ~= 0
-				disp(sMsg_newLines);
+				%disp(sMsg_newLines);
+				fprintf('\n\n');
 				warning('%s: Subspectra still present in unsuppressed water signal! # of subsprectra = out_w_av.sz(out_w_av.dims.subSpecs) = %d', sFunctionName, out_w_av.sz(out_w_av.dims.subSpecs));
-				disp(sMsg_newLine);
+				%disp(sMsg_newLine);
+				fprintf('\n');
 				disp('Averaging subSpecs of water signal ...');
-				disp(sMsg_newLines);
+				%disp(sMsg_newLines);
+				fprintf('\n\n');
 				out_w_av_tmp	= out_w_av;
 				out_w_av		= op_average_subSpecs_s(out_w_av_tmp);
 				clear out_w_av_tmp;
@@ -1365,11 +1374,14 @@ switch seqType
 			% scans from Dinesh's CMRR sequence are treated independently to be on the
 			% safe side
 			if out_ref_ECC_av.dims.subSpecs ~= 0
-				disp(sMsg_newLines);
+				%disp(sMsg_newLines);
+				fprintf('\n\n');
 				warning('%s: Subspectra still present in reference (water) scans for ECC! # of subsprectra = out_ref_ECC_av.sz(out_ref_ECC_av.dims.subSpecs) = %d', sFunctionName, out_ref_ECC_av.sz(out_ref_ECC_av.dims.subSpecs));
-				disp(sMsg_newLine);
+				%disp(sMsg_newLine);
+				fprintf('\n');
 				disp('Averaging subSpecs of reference (water) scans for ECC ...');
-				disp(sMsg_newLines);
+				%disp(sMsg_newLines);
+				fprintf('\n\n');
 				out_ref_ECC_av_tmp		= out_ref_ECC_av;
 				out_ref_ECC_av			= op_average_subSpecs_s(out_ref_ECC_av_tmp);
 				clear out_ref_ECC_av_tmp;
@@ -1386,11 +1398,14 @@ switch seqType
 			end		% End of if out_ref_ECC_av.dims.subSpecs ~= 0
 			
 			if out_ref_Quant_av.dims.subSpecs ~= 0
-				disp(sMsg_newLines);
+				%disp(sMsg_newLines);
+				fprintf('\n\n');
 				warning('%s: Subspectra still present in reference (water) scans for Quant! # of subsprectra = out_ref_Quant_av.sz(out_ref_Quant_av.dims.subSpecs) = %d', sFunctionName, out_ref_Quant_av.sz(out_ref_Quant_av.dims.subSpecs));
-				disp(sMsg_newLine);
+				%disp(sMsg_newLine);
+				fprintf('\n');
 				disp('Averaging subSpecs of reference (water) scans for Quant ...');
-				disp(sMsg_newLines);
+				%disp(sMsg_newLines);
+				fprintf('\n\n');
 				out_ref_Quant_av_tmp	= out_ref_Quant_av;
 				out_ref_Quant_av		= op_average_subSpecs_s(out_ref_Quant_av_tmp);
 				clear out_ref_Quant_av_tmp;
@@ -1841,7 +1856,8 @@ switch seqType
 			wrt			= input('Write results to file? ','s');
 		end
 		if wrt=='y' || wrt=='Y'
-			disp(sMsg_newLines);
+			%disp(sMsg_newLines);
+			fprintf('\n\n');
 			fprintf('%s: Writing results to file ...\n\n', sFunctionName);
 			% LCModel output format
 			RF = io_writelcm(out,[outDirString outFileName '_processed_lcm' '.RAW'],out.te);
