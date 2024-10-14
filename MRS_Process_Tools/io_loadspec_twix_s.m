@@ -25,9 +25,10 @@ function [out, out_ref] = io_loadspec_twix_s(filename)
 
 %% CBF: Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'io_loadspec_twix_s.m';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= sprintf('\n');
-disp(sMsg_newLines);
+%sMsg_newLines		= sprintf('\n\n');
+%sMsg_newLine		= sprintf('\n');
+%disp(sMsg_newLines);
+fprintf('\n\n');
 fprintf('%s: Loading Siemens twix data for filename = %s\n\n', sFunctionName, filename);    
 
 
@@ -259,7 +260,8 @@ else if isSVSdkdseq
 				% Display info
 				disp(sMsg_newLine);
 				fprintf('%s: Sequence isMinn = %d \t FID_offset = %d \t num_dummy_points = %d \t indFID_first = %d', sFunctionName, isMinn, FID_offset, num_dummy_points, indFID_first);
-				disp(sMsg_newLines);
+				%disp(sMsg_newLines);
+				fprintf('\n\n');
 			%end
 			
 			% Calculate index of last real/relevant point of FID using the index of the 
@@ -707,7 +709,8 @@ if ~isSVSdkdseq || noRefScans == 0
 	% Display info
 	disp(sMsg_newLine);
 	fprintf('%s: Sequence isSVSdkdseq = %d \t # of MRS reference scans = noRefScans = %d, not extracted!', sFunctionName, isSVSdkdseq, noRefScans);    
-	disp(sMsg_newLines);
+	%disp(sMsg_newLines);
+	fprintf('\n\n');
 	
 	% Create empyt output data structure for reference data
     %out_ref		= '';
@@ -716,7 +719,8 @@ else
 	% Display info
 	disp(sMsg_newLine);
 	fprintf('%s: Sequence isSVSdkdseq = %d \t # of MRS reference scans = noRefScans = %d', sFunctionName, isSVSdkdseq, noRefScans);    
-	disp(sMsg_newLines);
+	%disp(sMsg_newLines);
+	fprintf('\n\n');
 	
 	% Init output data structure for reference scans by copying output data structure for 
 	% regular scans and then replace data and adjust information about data accordingly;
