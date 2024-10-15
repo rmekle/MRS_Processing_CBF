@@ -1,263 +1,52 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% prepare_MetabQuant_s.m
-%
-%% Script to prepare metabolite quantification of magnetic resonance spectroscopy (MRS) data
-%
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2020, 2021, 2022, 2023; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% prep_MetabQuant_s.m
+%
+%% Function to prepare metabolite quantification of magnetic resonance spectroscopy (MRS) data
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% USAGE
+%
+%
+%
 
-%% Clear all variables from workspace and close all figures
-% clear all;
-% close all;
+
+
+function [status, msg] = prep_MetabQuant_s(outDirString,outDirString_LCM,seqType,options)
+
+%% Parse arguments (required and optional)
+arguments
+    outDirString		{mustBeText}
+	outDirString_LCM	{mustBeText}
+    seqType				{mustBeText}
+	options.WriteFilenames			(1,1) {islogical}       = 1
+	options.CopyFiles				(1,1) {islogical}       = 1
+	options.CopyFiles_MRS			(1,1) {islogical}       = 1
+	options.CopyFiles_ref_Quant		(1,1) {islogical}       = 0
+	options.CopyFiles_ref_ECC		(1,1) {islogical}       = 0
+	options.CopyFiles_w				(1,1) {islogical}       = 1
+end
+
+% Convert optional inputs to regular variables
+bWriteFilenames			= options.WriteFilenames;
+bCopyFiles				= options.CopyFiles;
+bCopyFiles_MRS			= options.CopyFiles_MRS;
+bCopyFiles_ref_Quant	= options.CopyFiles_ref_Quant;
+bCopyFiles_ref_ECC		= options.CopyFiles_ref_ECC;
+bCopyFiles_w			= options.CopyFiles_w;
 
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
+% and init output parameters
 sFunctionName		= 'prepare_MetabQuant_s';
-sMsg_newLines		= sprintf('\n\n');
-%disp(sMsg_newLines);
+fprintf('\n\n');
+status		= 1;
+msg			= '';
 
 
-%% Init input parameters for preprocessing
-%dirString_In			= '';
-%dirString_Out			= '';
-fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
-filename_In				= '';
-filename_w_In			= '';
-strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
-seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
-signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
-strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
-noSD_In					= 3.2;			% 3.2;		2.6;		4.0;
-digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-
-% Parameters for spectral registration (aligning of averages/frequency and phase drift
-% correction) performed in either frequency or time domain
-strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
-driftCorr_In			= 'y';		% 'y';		'n';
-iterin_In				= 20;
-aaDomain_In				= 'f';		% 'f';		't';
-tmaxin_In				= 0.2;		% 0.2;		0.1;
-bTmaxset_In				= 1;
-ppmOption				= 1;
-medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
-alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
-% Set parameters for drift correction depending on type of data, i.e. whether MRS
-% data is spectrum or water signal
-% NOTE: Check whether aligning of averages in frequency domain works, if the MR
-% spectrum is water signal itself; if not, simply align averages in time domain
-switch dataType_MRS
-	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
-		% MR spectrum is provided together without or with unsuppressed water
-		% signal and/or with reference scans
-		%ppmmin_fix_In		= 1.6;		% 1.6;		1.8;
-		%ppmmaxarray_fix_In	= [3.5; 4.0; 5.5];
-		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
-		switch ppmOption
-			case 1
-				% For MR spectra
-				ppmmin_fix_In			= 1.6;		% 1.6;		1.8;
-				ppmmaxarray_fix_In		= [2.4,2.85,3.35,4.2,4.4,5.2];
-			case 2
-				% For MR spectra
-				ppmmin_fix_In			= 1.6;
-				ppmmaxarray_fix_In		= [3.5; 4.0; 5.5];
-			case 3
-				% For MR spectra using settings for water signals
-				ppmmin_fix_In			= 4.2;
-				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
-			case 4
-				% Wide range to always inlcude water resonance
-				ppmmin_fix_In			= 1.6;
-				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
-			case 5
-				% For MMs signals
-				ppmmin_fix_In			= 0.2;
-				ppmmaxarray_fix_In		= [3.35,4.2,4.4];
-			case 6
-				% For MMs signals
-				ppmmin_fix_In			= 0.2;
-				ppmmaxarray_fix_In		= [3.35,4.0,4.1];
-
-			otherwise
-				error('%s: Unknown ppmOption = %d!', sFunctionName, ppmOption);
-		end			% End of switch ppmOption
-	case {'water', 'water_ref'}
-		% MR spectrum is water signal itself without or with reference scans
-		ppmmin_fix_In		= 4.2;
-		ppmmaxarray_fix_In	= [5.5 5.5 5.2];
-
-	otherwise
-		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
-end		% End of switch dataType_MRS
-
-% Additional parameter settings
-bECC_In					= 1;
-bPhaseCorrFreqShift_In	= 0;
-strMinUserIn_In			= 'y';
-plotSwitch_In			= 0;
-reportSwitch_In			= 1;
-
-
-%% Additional input parameters specific to this routine
-% 'bCopyFiles' used to turn on/off any copying of files (mostly used for debugging)
-bCopyFiles				= 1;
-%bCopyFiles_MRS			= 1;
-%bCopyFiles_ref_Quant	= 0;
-bCopyFiles_ref_ECC		= 0;
-%bCopyFiles_w			= 1;
-bWriteFilenames			= 1;
-switch dataType_MRS
-	case {'mrs_w_ref', 'mrs_ref'}
-		% MR spectrum was acquired with reference scans that are typically used for
-		% quantification
-		bCopyFiles_MRS			= 1;
-		bCopyFiles_ref_Quant	= 1;
-		bCopyFiles_w			= 0;
-	case {'mrs_w'}
-		% MR spectrum was acquired without reference scans, but with water signals
-		bCopyFiles_MRS			= 1;
-		bCopyFiles_ref_Quant	= 0;
-		bCopyFiles_w			= 1;
-	case {'mrs'}
-		% MR spectrum was acquired without reference scans and without water signals
-		bCopyFiles_MRS			= 1;
-		bCopyFiles_ref_Quant	= 0;
-		bCopyFiles_w			= 0;
-	case {'water', 'water_ref'}
-		% MR spectrum is water signal itself without or with reference scans
-		% (not really used for quantification)
-		bCopyFiles_MRS			= 0;
-		bCopyFiles_ref_Quant	= 0;
-		bCopyFiles_w			= 1;
-
-	otherwise
-		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
-end		% End of switch dataType_MRS
-
-
-%% Set (additional) parameters depending on sequence type
-% 'dirString_Out' inidcates output directories from preprocessing of MR spectra
-% Using 'dirString_Out' instead of 'dirString_In' allows to use same code for generating
-% directory names as in routine preprocess_ListOfFiles_s.m
-% 'outDirString_LCM' then holds information about directory, into which files are copied
-% for use with metabolite quantification software (e.g. LCModel)
-switch seqType_MRS
-	case 'SPECIAL'
-		dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_RawData_dat_Files/';
-		outDirString_LCM		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Z_Pain_Tmp/';
-	case 'MEGA-PRESS'
-		% Select directory for (input) data files depending on # of SDs used for
-		% pre-processing of MR spectra
-		switch(noSD_In)
-			case(2.6)
-				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_2_6/';
-			case(3.2)
-				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2/';
-				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2_II/';
-				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2_III/';
-				%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_3_2_New/';
-			case(4.0)
-				dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Dopa_Analysis/Z_DOPA_FID-A_SD_4_0/';
-			
-			otherwise
-				error('%s: ERROR: No directory/data for noSD_In =  %f!', sFunctionName, noSD_In);
-		end			% End of switch(noSD_In)
-		outDirString_LCM		= [dirString_Out, 'DOPA_LCModel_Analysis_Data/'];
-		%outDirString_LCM_w		= [outDirString_LCM, 'Water_Signals/'];
-		textFileName_diff_MRS	= 'list_filenames_MRS_Diff_Spectra.txt';
-		textFileName_OFF		= 'list_filenames_MRS_editOFF_All.txt';
-		textFileName_OFF_MRS	= 'list_filenames_MRS_editOFF_Spectra.txt';
-		textFileName_OFF_w		= 'list_filenames_MRS_editOFF_Water.txt';
-	case 'sLASER'
-		% Select directory for input data depending on study, on # of SDs, and other 
-		% options used for pre-processing of MR spectra
-		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];	
-		switch strStudy
-			case '3T_Trauma'
-				% Output data directory for preprocessing
-				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
-			case '3T_MMs'								
-				% Output data directory
-				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/ZZZZ_Test/';
-				%dirString_Out_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/CodeResults/';
-				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_MMs_Analysis/';
-			case '7T_KCL'
-				% Output data directory for preprocessing
-				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
-				
-			otherwise
-				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end			% End of switch strStudy
-
-		% Complete output data directory name for preprocessing
-		% Select directory for output data depending on voxel location, data type,
-		% # of SDs, and other options used for pre-processing of MR spectra
-		% Make output directories for acquired macromolecules (MMs) distinguishable from 
-		% those for spectra
-		if strcmp(signals_MRS, 'MMs')
-			dirString_Out_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
-		else
-			dirString_Out_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
-		end		% End of if strcmp(signals_MRS, 'MMs')
-		dirString_Out_AddOn2	= '';
-		if bECC_In
-			% Use reference (water) signals for ECC, if acquired
-			% If not, then use an unsuppressed water signal, if acquired
-			% If no reference and no water signals are acquired, check whether MR spectrum
-			% is water signal itself; and if it is, use it for ECC
-			% Indicate different options for ECC in the corresponding directory name; for
-			% that, search for strings 'ref', 'w', and 'water' in string for MRS data type
-			refInd		= strfind(dataType_MRS, '_ref');
-			wInd		= strfind(dataType_MRS, '_w');
-			waterInd	= strfind(dataType_MRS, 'water');
-			if ~isempty(refInd)
-				dirString_Out_AddOn2	= '_ECCref';
-			else
-				if ~isempty(wInd)
-					dirString_Out_AddOn2	= '_ECCw';
-				else
-					if ~isempty(waterInd)
-						dirString_Out_AddOn2	= '_ECCwater';
-					else
-						% No reference and no water signals and MR spectrum is not water
-						% signal itself => ECC not possible
-						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
-					end		% End of if ~isempty(waterInd)
-				end		% End of if ~isempty(wInd)
-			end		% if ~isempty(refInd)
-			%dirString_Out_AddOn2	= '_ECC_Test';
-		end		% End of if bECC_In
-		if leftshift_In > 0
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
-		end		% End of if leftshift_In > 0
-		% Indicate in output directory name which type of spectral registration was used
-		if driftCorr_In == 'y' || driftCorr_In == 'Y'
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_', strSpecReg];
-		else
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoSR'];
-		end
-		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
-		
-		% Create strings for output directory and list of filenames of MR spectra and 
-		% unsuppressed water signals
-		outDirString_LCM		= [dirString_Out, strVOI, '_LCModel_Data/'];
-		textFileName_MRS 		= 'list_filenames_MRS_Spectra.txt';
-		textFileName_ref_ECC 	= 'list_filenames_MRS_Ref_ECC.txt';
-		textFileName_ref_Quant 	= 'list_filenames_MRS_Ref_Quant.txt';
-		textFileName_w 			= 'list_filenames_MRS_Water.txt';
-		
-	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end		% End of switch seqType_MRS
-
-% If output directories for file copying do not exist, create them
+%% If output directories for LCM quantification/file copying do not exist, create them
 if not(isfolder(outDirString_LCM))
 	sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_LCM);
     disp(sMsg);
@@ -276,32 +65,40 @@ end
 
 
 %% Copy data files depending on sequence type and create list of filenames, if selected
-switch seqType_MRS
+switch seqType
 	case 'SPECIAL'
 		% Nothing yet
-	case 'MEGA-PRESS'		
+		error('%s: ERROR: No implementation for sequence type %s!', sFunctionName, seqType);
+	case 'MEGA-PRESS'
+		% Select names of text files that contain lists of files for each signal category
+		% MEGA-PRESS editing sequence
+		textFileName_diff_MRS	= 'list_filenames_MRS_Diff_Spectra.txt';
+		textFileName_OFF		= 'list_filenames_MRS_editOFF_All.txt';
+		textFileName_OFF_MRS	= 'list_filenames_MRS_editOFF_Spectra.txt';
+		textFileName_OFF_w		= 'list_filenames_MRS_editOFF_Water.txt';
+
 		% Obtain information about the list of different groups of files
 		% (assuming that all data files are included in the same directory)
 		% (On Linux, file list in Matlab also includes the two directories "." and "..", which
 		% means that the actual # of files in the directory is (# of entries in list - 2;
 		% however, if dir is used to list specific files, e.g. using a file extension, these two
 		% directories are not included in the resulting list)
-		%cd(dirString_Out);
+		%cd(outDirString);
 		% MEGA-PRESS difference files (MRS + water)
-		structFileListing_diff		= dir([dirString_Out, '*_diff_*.RAW']);
+		structFileListing_diff		= dir([outDirString, '*_diff_*.RAW']);
 		noEntriesListing_diff		= length( structFileListing_diff );
 		%noDataFiles_diff			= noEntriesListing_diff - 2
 		
 		% MEGA-PRESS edit_OFF files (MRS + water)
-		structFileListing_OFF		= dir([dirString_Out, '*_editOFF_*.RAW']);
+		structFileListing_OFF		= dir([outDirString, '*_editOFF_*.RAW']);
 		noEntriesListing_OFF		= length( structFileListing_OFF );
 		
 		% MEGA-PRESS water difference files (water only)
-		structFileListing_diff_w	= dir([dirString_Out, '*_w_*_diff_*.RAW']);
+		structFileListing_diff_w	= dir([outDirString, '*_w_*_diff_*.RAW']);
 		noEntriesListing_diff_w		= length( structFileListing_diff_w );
 		
 		% MEGA-PRESS water edit_OFF files (water only)
-		structFileListing_OFF_w		= dir([dirString_Out, '*_w_*_editOFF_*.RAW']);
+		structFileListing_OFF_w		= dir([outDirString, '*_w_*_editOFF_*.RAW']);
 		noEntriesListing_OFF_w		= length( structFileListing_OFF_w );
 		
 		% Determine MEGA-PRESS MRS difference files (MRS only)
@@ -321,7 +118,7 @@ switch seqType_MRS
 			% Copy MEGA-PRESS MRS difference files
 			for ind=indexStart : indexStep : noEntriesListing_diff_MRS
 				% Copy MEGA-PRESS difference file
-				[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_diff_MRS(ind).name), outDirString_LCM);
+				[status, msg] = copyfile(fullfile(outDirString, structFileListing_diff_MRS(ind).name), outDirString_LCM);
 				if ~status
 					disp(msg);
 					error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_diff_MRS(ind).name, outDirString_LCM);
@@ -331,7 +128,7 @@ switch seqType_MRS
 			% Copy MEGA-PRESS edit_OFF files (MRS + water)
 			for ind=indexStart : indexStep : noEntriesListing_OFF
 				% Copy MEGA-PRESS edit_OFF file
-				[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_OFF(ind).name), outDirString_LCM);
+				[status, msg] = copyfile(fullfile(outDirString, structFileListing_OFF(ind).name), outDirString_LCM);
 				if ~status
 					disp(msg);
 					error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_OFF(ind).name, outDirString_LCM);
@@ -405,24 +202,31 @@ switch seqType_MRS
 			
 		end		% End of if bWriteFilenames
 	case 'sLASER'
+		% Select names of text files that contain lists of files for each signal category
+		% sLASER sequence with reference water signals for ECC and ECC
+		textFileName_MRS 		= 'list_filenames_MRS_Spectra.txt';
+		textFileName_ref_Quant 	= 'list_filenames_MRS_Ref_Quant.txt';
+		textFileName_ref_ECC 	= 'list_filenames_MRS_Ref_ECC.txt';
+		textFileName_w 			= 'list_filenames_MRS_Water.txt';
+		
 		% Obtain information about the list of different groups of files
 		% (assuming that all data files are included in the same directory)
 		
 		% sLASER all processed .RAW files
-		structFileListing_all		= dir([dirString_Out, '*_processed_*.RAW']);
+		structFileListing_all		= dir([outDirString, '*_processed_*.RAW']);
 		noEntriesListing_all		= length( structFileListing_all );
 		%noDataFiles_all			= noEntriesListing_all - 2
 		
 		% sLASER processed .RAW water reference files for ECC
-		structFileListing_ref_ECC	= dir([dirString_Out, '*_ref_ECC*_processed_*.RAW']);
+		structFileListing_ref_ECC	= dir([outDirString, '*_ref_ECC*_processed_*.RAW']);
 		noEntriesListing_ref_ECC	= length( structFileListing_ref_ECC );
 		
 		% sLASER processed .RAW water reference files for quantification (Quant)
-		structFileListing_ref_Quant	= dir([dirString_Out, '*_ref_Quant*_processed_*.RAW']);
+		structFileListing_ref_Quant	= dir([outDirString, '*_ref_Quant*_processed_*.RAW']);
 		noEntriesListing_ref_Quant	= length( structFileListing_ref_Quant );
 				
 		% sLASER processed .RAW unsuppressed water files
-		structFileListing_w		= dir([dirString_Out, '*_w_*_processed_*.RAW']);
+		structFileListing_w		= dir([outDirString, '*_w_*_processed_*.RAW']);
 		noEntriesListing_w		= length( structFileListing_w );
 		
  		% sLASER processed .RAW MR spectra files 
@@ -442,7 +246,7 @@ switch seqType_MRS
 			if bCopyFiles_MRS
 				for ind=indexStart : indexStep : noEntriesListing_MRS
 					% Copy MR spectra file
-					[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_MRS(ind).name), outDirString_LCM);
+					[status, msg] = copyfile(fullfile(outDirString, structFileListing_MRS(ind).name), outDirString_LCM);
 					if ~status
 						disp(msg);
 						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_MRS(ind).name, outDirString_LCM);
@@ -454,7 +258,7 @@ switch seqType_MRS
 			if bCopyFiles_ref_Quant
 				for ind=indexStart : indexStep : noEntriesListing_ref_Quant
 					% Copy water reference file quantification (Quant)
-					[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_ref_Quant(ind).name), outDirString_LCM);
+					[status, msg] = copyfile(fullfile(outDirString, structFileListing_ref_Quant(ind).name), outDirString_LCM);
 					if ~status
 						disp(msg);
 						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_ref_Quant(ind).name, outDirString_LCM);
@@ -466,7 +270,7 @@ switch seqType_MRS
 			if bCopyFiles_ref_ECC
 				for ind=indexStart : indexStep : noEntriesListing_ref_ECC
 					% Copy water reference file for ECC
-					[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_ref_ECC(ind).name), outDirString_LCM);
+					[status, msg] = copyfile(fullfile(outDirString, structFileListing_ref_ECC(ind).name), outDirString_LCM);
 					if ~status
 						disp(msg);
 						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_ref_ECC(ind).name, outDirString_LCM);
@@ -478,7 +282,7 @@ switch seqType_MRS
 			if bCopyFiles_w
 				for ind=indexStart : indexStep : noEntriesListing_w
 					% Copy unsuppressed water file
-					[status, msg] = copyfile(fullfile(dirString_Out, structFileListing_w(ind).name), outDirString_LCM);
+					[status, msg] = copyfile(fullfile(outDirString, structFileListing_w(ind).name), outDirString_LCM);
 					if ~status
 						disp(msg);
 						error('%s: Could not copy file %s to output directory %s!\n', sFunctionName, structFileListing_w(ind).name, outDirString_LCM);
@@ -561,23 +365,7 @@ switch seqType_MRS
 		end		% End of if bWriteFilenames
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
-end		% End of switch seqType_MRS
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+end		% End of switch seqType
 
-
-%% Save variables of workspace to file
-% Obtain current date and time in specific format
-dt		= datestr(now,'yyyymmdd_HH_MM_SS');
-
-% Save workspace into output directory (optional with user input)
-% (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
-% workspace file with a "." in its filename)
-%strSavedWorkspaceFileName		= 'workspace_run_specialproc_CBF';
-strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dt];
-strSavedWorkspaceFileNameFull	= [outDirString_LCM, strSavedWorkspaceFileName, sprintf('_SD_%.1f.mat', noSD_In)];
-%strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
-strSaveWorkspace	= 'y';
-if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
-	save(strSavedWorkspaceFileNameFull);
-end
 
