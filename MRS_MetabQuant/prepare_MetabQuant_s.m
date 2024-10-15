@@ -15,8 +15,9 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'prepare_MetabQuant_s';
-sMsg_newLines		= sprintf('\n\n');
+%sMsg_newLines		= sprintf('\n\n');
 %disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Init input parameters for preprocessing
