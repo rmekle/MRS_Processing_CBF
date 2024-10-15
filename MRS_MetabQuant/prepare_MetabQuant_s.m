@@ -143,7 +143,7 @@ end		% End of switch dataType_MRS
 
 
 %% Set (additional) parameters depending on sequence type
-% 'dirString_Out' inidcates output directories from preprocessing of MR spectra
+% 'dirString_Out' indicates output directories from preprocessing of MR spectra
 % Using 'dirString_Out' instead of 'dirString_In' allows to use same code for generating
 % directory names as in routine preprocess_ListOfFiles_s.m
 % 'outDirString_LCM' then holds information about directory, into which files are copied
@@ -250,8 +250,8 @@ switch seqType_MRS
 		% unsuppressed water signals
 		outDirString_LCM		= [dirString_Out, strVOI, '_LCModel_Data/'];
 		textFileName_MRS 		= 'list_filenames_MRS_Spectra.txt';
-		textFileName_ref_ECC 	= 'list_filenames_MRS_Ref_ECC.txt';
 		textFileName_ref_Quant 	= 'list_filenames_MRS_Ref_Quant.txt';
+		textFileName_ref_ECC 	= 'list_filenames_MRS_Ref_ECC.txt';		
 		textFileName_w 			= 'list_filenames_MRS_Water.txt';
 		
 	otherwise
