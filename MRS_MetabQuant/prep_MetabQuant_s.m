@@ -20,9 +20,6 @@
 %					metabolite quantification are copied
 % seqType		= String specifying the MRS sequence type used for data acquisition, e.g.
 %					'PRESS', 'STEAM', 'SPECIAL', 'sLASER', 'MEGA-PRESS'
-% bWriteFilenames	= (Optional) ['WriteFilenames'] Boolean to decide whether filenames
-%						for specific groups of processed MRS data files are written into
-%						corresponding text files or not. Default is 1.
 % bCopyFiles		= (Optional) ['CopyFiles'] Boolean to decide whether specific groups
 %						of processed MRS data files are copied into output directory for
 %						metabolite quantification using LCM analysis. Default is 1.
@@ -40,6 +37,9 @@
 % bCopyFiles_w		= (Optional) ['CopyFiles_w'] Boolean to decide whether processed MRS
 %						data files for water signals are copied into output directory for
 %						metabolite quantification using LCM analysis. Default is 1.
+% bWriteFilenames	= (Optional) ['WriteFilenames'] Boolean to decide whether filenames
+%						for specific groups of processed MRS data files are written into
+%						corresponding text files or not. Default is 1.
 %
 % OUTPUTS:
 % status		= Copy status, indicating if the attempt to move the file or folder is
@@ -60,21 +60,21 @@ arguments
 	strOutDir			{mustBeText}
 	strOutDir_LCM		{mustBeText}
 	seqType				{mustBeText}
-	options.WriteFilenames			(1,1) {islogical}       = 1
 	options.CopyFiles				(1,1) {islogical}       = 1
 	options.CopyFiles_MRS			(1,1) {islogical}       = 1
 	options.CopyFiles_ref_Quant		(1,1) {islogical}       = 0
 	options.CopyFiles_ref_ECC		(1,1) {islogical}       = 0
 	options.CopyFiles_w				(1,1) {islogical}       = 1
+	options.WriteFilenames			(1,1) {islogical}       = 1
 end
 
 % Convert optional inputs to regular variables
-bWriteFilenames			= options.WriteFilenames;
 bCopyFiles				= options.CopyFiles;
 bCopyFiles_MRS			= options.CopyFiles_MRS;
 bCopyFiles_ref_Quant	= options.CopyFiles_ref_Quant;
 bCopyFiles_ref_ECC		= options.CopyFiles_ref_ECC;
 bCopyFiles_w			= options.CopyFiles_w;
+bWriteFilenames			= options.WriteFilenames;
 
 
 %% Set string for name of routine and display blank lines for enhanced output visibility
