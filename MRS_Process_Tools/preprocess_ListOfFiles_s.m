@@ -683,8 +683,8 @@ end		% End of switch seqType_MRS
 'CopyFiles', bCopyFiles_In, 'CopyFiles_MRS', bCopyFiles_MRS_In, ...
 'CopyFiles_ref_Quant', bCopyFiles_ref_Quant_In, 'CopyFiles_ref_ECC', bCopyFiles_ref_ECC_In, ...
 'CopyFiles_w', bCopyFiles_w_In, 'WriteFilenames', bWriteFilenames_In);
-if ~status
-	disp(msg);
+if ~status_prep
+	disp(msg_prep);
 	error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy, strVOI, seqType_MRS);
 end
 
