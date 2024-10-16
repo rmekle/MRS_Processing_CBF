@@ -342,7 +342,7 @@ switch seqType_MRS
 		end		% End of if bCopyFiles
 			
 		
-		%% Write filenames for specific groups of data files into corresponding textfiles
+		%% Write filenames for specific groups of data files into corresponding text files
 		% (additional for loops are used to allow for greater flexibility), if selected
 		istart		= 1;
 		istep		= 1;
@@ -490,7 +490,7 @@ switch seqType_MRS
 		end		% End of if bCopyFiles
 		
 		
-		%% Write filenames for specific groups of data files into corresponding textfiles
+		%% Write filenames for specific groups of data files into corresponding text files
 		% (additional for loops are used to allow for greater flexibility), if selected
 		istart		= 1;
 		istep		= 1;
