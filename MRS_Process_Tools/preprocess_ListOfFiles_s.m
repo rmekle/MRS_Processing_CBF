@@ -676,6 +676,19 @@ switch seqType_MRS
 end		% End of switch seqType_MRS
 
 
+%% Prepare metabolite quantification using LCM analysis 
+% by copying specific groups of processed MRS data files into output directory for LCM
+% analysis and write corresponding list of filenames into text files
+[status_prep, msg_prep] = prep_MetabQuant_s(dirString_Out, dirString_Out_LCM, seqType_MRS, ...
+'CopyFiles', bCopyFiles_In, 'CopyFiles_MRS', bCopyFiles_MRS_In, ...
+'CopyFiles_ref_Quant', bCopyFiles_ref_Quant_In, 'CopyFiles_ref_ECC', bCopyFiles_ref_ECC_In, ...
+'CopyFiles_w', bCopyFiles_w_In, 'WriteFilenames', bWriteFilenames_In);
+if ~status
+	disp(msg);
+	error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy, strVOI, seqType_MRS);
+end
+
+
 %% Save variables of workspace to file
 % Obtain current date and time in specific format
 dt		= datestr(now,'yyyymmdd_HH_MM_SS');
