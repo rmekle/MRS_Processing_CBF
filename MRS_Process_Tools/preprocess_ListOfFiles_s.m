@@ -117,7 +117,7 @@ strProcessTool			= 'FID-A';
 
 %% Additional input parameters specific to preparation of metabolite quantification
 % After preprocessing of MRS data files, specific groups of these processed MRS data files
-% are then copied into output directory for	metabolite quantification using LCM analysis
+% are then copied into output directory for metabolite quantification using LCM analysis
 % and corresponding list of filenames are written into text files
 % 'bCopyFiles' used to turn on/off any copying of files (mostly used for debugging)
 bWriteFilenames_In			= 1;
@@ -163,6 +163,8 @@ switch seqType_MRS
 		%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_4_0/';
 		%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_3_2/';
 		%dirString_Out			= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Preprocessed_forLCModel_SD_2_6/';
+		% Output directory for metabolite quantification using LCM analysis
+		dirString_Out_LCM		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/Potsdam_Pain/PotsdamPain_DataAnalysis/Z_Pain_Tmp/';
 	case 'MEGA-PRESS'
 		% Data (input) directories
 		dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopa/MRS_Dopamin_00_All_RawData_dat_Files_MRS/';
@@ -186,6 +188,8 @@ switch seqType_MRS
 			otherwise
 				error('%s: ERROR: No directory/data for noSD_In =  %f!', sFunctionName, noSD_In);
 		end
+		% Output directory for metabolite quantification using LCM analysis
+		dirString_Out_LCM			= [dirString_Out, 'DOPA_LCModel_Analysis_Data/'];
 	case 'sLASER'
 		% Select data input and output directories depending on study, MRS data type, 
 		% i.e. file extension, study, and other parameters
@@ -402,7 +406,9 @@ switch seqType_MRS
 				fprintf('\n%s: Already existing output directory is overwritten! Preprocessing is continued!\n\n\n', sFunctionName)
 			end		% End of if strOverwrite == 'n' || strOverwrite  == 'N'
 		end		% End of iif not(isfolder(dirString_Out))
-		
+		% Output directory for metabolite quantification using LCM analysis
+		dirString_Out_LCM			= [dirString_Out, strVOI, '_LCModel_Data/'];
+
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end		% End of switch seqType_MRS
