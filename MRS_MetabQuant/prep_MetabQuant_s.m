@@ -8,7 +8,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% status, msg] = prep_MetabQuant_s(strOutDir,strOutDir_LCM,seqType,options)
+% [status, msg] = prep_MetabQuant_s(strOutDir,strOutDir_LCM,seqType,options)
 %
 %
 %
