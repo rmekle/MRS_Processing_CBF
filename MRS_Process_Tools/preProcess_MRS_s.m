@@ -124,7 +124,7 @@
 % out_ref_Quant_noproc	= Water reference signal(s) for Quant without preprocessing
 %
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2021, 2022, 2023;
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2021, 2022, 2023, 2024;
 % Ivo Opitz, Charite Universitätsmedizin Berlin, Germany, 2022;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
