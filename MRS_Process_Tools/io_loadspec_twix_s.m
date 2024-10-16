@@ -709,7 +709,7 @@ end
 % the CMRR in Minnesota, svs_slaser_dkd; these can also set to zero
 if ~isSVSdkdseq || noRefScans == 0
 	% Display info
-	d%isp(sMsg_newLine);
+	%disp(sMsg_newLine);
 	fprintf('\n');
 	fprintf('%s: Sequence isSVSdkdseq = %d \t # of MRS reference scans = noRefScans = %d, not extracted!', sFunctionName, isSVSdkdseq, noRefScans);    
 	%disp(sMsg_newLines);
