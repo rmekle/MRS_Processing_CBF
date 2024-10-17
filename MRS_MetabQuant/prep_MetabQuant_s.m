@@ -89,7 +89,7 @@ msg			= '';
 if not(isfolder(strOutDir_LCM))
 	%sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, strOutDir_LCM);
 	%disp(sMsg);
-	fprintf('%s: Creating output directory %s ...\n', sFunctionName, strOutDir_LCM);
+	fprintf('%s: Creating output directory %s ...\n\n', sFunctionName, strOutDir_LCM);
 	if ~mkdir(strOutDir_LCM)
 		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, strOutDir_LCM);
 	end
