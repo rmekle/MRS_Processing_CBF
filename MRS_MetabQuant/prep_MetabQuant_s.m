@@ -79,7 +79,7 @@ bWriteFilenames			= options.WriteFilenames;
 
 %% Set string for name of routine and display blank lines for enhanced output visibility
 % and init output parameters
-sFunctionName		= 'prepare_MetabQuant_s';
+sFunctionName		= 'prep_MetabQuant_s';
 fprintf('\n\n');
 status		= 1;
 msg			= '';
