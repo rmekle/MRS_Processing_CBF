@@ -6,7 +6,7 @@
 %% spectroscopy (MRS) data
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022,
-% 2023;
+% 2023, 2024;
 % Ivo Opitz, Charite Universitätsmedizin Berlin, Germany, 2022;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,20 +21,20 @@ sFunctionName		= 'run_LCModel_ListOfFiles_s';
 fprintf('\n\n');
 
 
-%% Init parameter settings for running LCModel analysis
+%% Init parameter settings from preprocessing of MR spectra for running LCModel analysis
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';
-strVOI					= 'HC';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strStudy				= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
+strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
 strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 1;		% 3;	% 2;	% 0;	% 1;
+strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
+leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
 avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
 
 % Parameters for removal of bad averages
@@ -109,11 +109,12 @@ strMinUserIn_In			= 'y';
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
 strProcessTool			= 'FID-A';
+bPrep_MetabQuant		= 1;
 
 
-%% Additional input parameters specific to this routine
+%% Additional (input) parameters specific to metabolite quantification using LCM analysis
 str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
-strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
