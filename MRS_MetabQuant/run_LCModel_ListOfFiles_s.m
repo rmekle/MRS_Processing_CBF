@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%disp(sMsg_newLines);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % run_LCModel_ListOfFiles_s.m
 %
@@ -18,9 +18,7 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'run_LCModel_ListOfFiles_s';
-sMsg_newLines		= sprintf('\n\n');
-sMsg_newLine		= sprintf('\n');
-disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Init parameter settings for running LCModel analysis
@@ -828,7 +826,7 @@ for Ind=1 : 1 : noFiles_MRS			% noFiles_MRS	% 2		% 0
 	if( Ind ~= noFiles_MRS)
 		delete(fullFileName_LCM_Control_case);
 	end
-	disp(sMsg_newLines);
+	fprintf('\n\n');
 end		% End of for Ind=1 :1 : noFiles_MRS			% noFiles_MRS	% 2		% 0
 
 
@@ -1133,7 +1131,7 @@ if( noFiles_table > 0 )
 			end		% End of if strcmp(strAnalysisData, 'MRS_diff')
 
 			% Display info
-			disp(sMsg_newLines);
+			fprintf('\n\n');
 			fprintf('strAnalysisData \t= %s\t\tbCopyIntoExcel \t= %d\n\n', strAnalysisData, bCopyIntoExcel);
 
 			% Save/copy results from .csv file also into (formatted) Excel file(s), if
@@ -1247,7 +1245,7 @@ if( noFiles_table > 0 )
 			end		% End of if strcmp(strAnalysisData, 'MRS_reg')
 
 			% Display info
-			disp(sMsg_newLines);
+			fprintf('\n\n');
 			fprintf('strAnalysisData \t= %s\t\tbCopyIntoExcel \t= %d\n\n', strAnalysisData, bCopyIntoExcel);
 			
 			% Save/copy results from .csv file also into (formatted) Excel file(s), if
