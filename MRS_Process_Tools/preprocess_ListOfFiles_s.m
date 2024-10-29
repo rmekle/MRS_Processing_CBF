@@ -692,7 +692,7 @@ if bPrep_MetabQuant == 1
 		error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy, strVOI, seqType_MRS);
 	end
 else
-	fprintf('NO preparation of metabolite quantification using LCM analysis ...\n\n');
+	fprintf('NO preparation of metabolite quantification using LCM analysis!\n\n');
 end		% End of if bPrep_MetabQuant == 1
 
 
