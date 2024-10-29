@@ -48,13 +48,13 @@ digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strSpecReg_In			= 'SR1';	% To distinguish settings for spectral registration
+strSpecReg_In			= 'SR2';	% To distinguish settings for spectral registration
 driftCorr_In			= 'y';		% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';		% 'f';		't';
 tmaxin_In				= 0.2;		% 0.2;		0.1;
 bTmaxset_In				= 1;
-ppmOption				= 1;
+ppmOption				= 2;
 medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
 alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 % Set parameters for drift correction depending on type of data, i.e. whether MRS
@@ -113,6 +113,7 @@ strMinUserIn_In			= 'y';
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
 strProcessTool			= 'FID-A';
+bPrep_MetabQuant		= 1;
 
 
 %% Additional input parameters specific to preparation of metabolite quantification
@@ -676,17 +677,23 @@ switch seqType_MRS
 end		% End of switch seqType_MRS
 
 
-%% Prepare metabolite quantification using LCM analysis 
+%% Prepare metabolite quantification using LCM analysis, if selected 
 % by copying specific groups of processed MRS data files into output directory for LCM
 % analysis and write corresponding list of filenames into text files
-[status_prep, msg_prep] = prep_MetabQuant_s(dirString_Out, dirString_Out_LCM, seqType_MRS, ...
-'CopyFiles', bCopyFiles_In, 'CopyFiles_MRS', bCopyFiles_MRS_In, ...
-'CopyFiles_ref_Quant', bCopyFiles_ref_Quant_In, 'CopyFiles_ref_ECC', bCopyFiles_ref_ECC_In, ...
-'CopyFiles_w', bCopyFiles_w_In, 'WriteFilenames', bWriteFilenames_In);
-if ~status_prep
-	disp(msg_prep);
-	error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy, strVOI, seqType_MRS);
-end
+fprintf('\n\n');
+if bPrep_MetabQuant == 1
+	fprintf('Preparing metabolite quantification for LCM analysis ...\n\n');
+	[status_prep, msg_prep] = prep_MetabQuant_s(dirString_Out, dirString_Out_LCM, seqType_MRS, ...
+		'CopyFiles', bCopyFiles_In, 'CopyFiles_MRS', bCopyFiles_MRS_In, ...
+		'CopyFiles_ref_Quant', bCopyFiles_ref_Quant_In, 'CopyFiles_ref_ECC', bCopyFiles_ref_ECC_In, ...
+		'CopyFiles_w', bCopyFiles_w_In, 'WriteFilenames', bWriteFilenames_In);
+	if ~status_prep
+		disp(msg_prep);
+		error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy, strVOI, seqType_MRS);
+	end
+else
+	fprintf('NO preparation of metabolite quantification for LCM analysis ...\n\n');
+end		% End of if bPrep_MetabQuant == 1
 
 
 %% Save variables of workspace to file
