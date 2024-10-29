@@ -682,7 +682,7 @@ end		% End of switch seqType_MRS
 % analysis and write corresponding list of filenames into text files
 fprintf('\n\n');
 if bPrep_MetabQuant == 1
-	fprintf('Preparing metabolite quantification for LCM analysis ...\n\n');
+	fprintf('Preparing metabolite quantification using LCM analysis ...\n\n');
 	[status_prep, msg_prep] = prep_MetabQuant_s(dirString_Out, dirString_Out_LCM, seqType_MRS, ...
 		'CopyFiles', bCopyFiles_In, 'CopyFiles_MRS', bCopyFiles_MRS_In, ...
 		'CopyFiles_ref_Quant', bCopyFiles_ref_Quant_In, 'CopyFiles_ref_ECC', bCopyFiles_ref_ECC_In, ...
@@ -692,7 +692,7 @@ if bPrep_MetabQuant == 1
 		error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy, strVOI, seqType_MRS);
 	end
 else
-	fprintf('NO preparation of metabolite quantification for LCM analysis ...\n\n');
+	fprintf('NO preparation of metabolite quantification using LCM analysis ...\n\n');
 end		% End of if bPrep_MetabQuant == 1
 
 
