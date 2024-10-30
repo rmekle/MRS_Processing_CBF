@@ -340,7 +340,7 @@ switch seqType_MRS
 		% Always include info about removal of bad averages independent of whether it was
 		% performed or not
 		if strcmpi(rmbadav_In, 'y')	% Case-insensitive strcmp
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_%d_%d', digits(1), digits(2))];
+			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_SD%d_%d', digits(1), digits(2))];
 		else
 			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoRM'];
 		end		% End of if strcmpi(rmbadav_In, 'y')
