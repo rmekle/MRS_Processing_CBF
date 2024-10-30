@@ -28,11 +28,11 @@ fprintf('\n\n');
 %% Init input parameters for preprocessing
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExt_MRS				= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
-strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strStudy_MRS			= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
+strVOI_MRS				= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
@@ -112,7 +112,7 @@ bPhaseCorrFreqShift_In	= 0;
 strMinUserIn_In			= 'y';
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
-strProcessTool			= 'FID-A';
+strProcessTool_In		= 'FID-A';
 bPrep_MetabQuant		= 1;
 
 
@@ -195,46 +195,46 @@ switch seqType_MRS
 		% Select data input and output directories depending on study, MRS data type, 
 		% i.e. file extension, study, and other parameters
 		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
-		switch strStudy
+		switch strStudy_MRS
 			case '3T_Trauma'
 				% Data (input) directories
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
-				%dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
+				%dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI_MRS);
 				
 				% Output data directory
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
 				
 				% Directories depending on MRS data type
-				switch fileExtension
+				switch fileExt_MRS
 					case 'dat'
 						% Select directories specific to MRS raw data (.dat)
-						dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI);
+						dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_RawData_dat_Files_MRS_%s', strVOI_MRS);
 					case 'IMA'
 						% Select directories specific to MRS DICOM data (.IMA)
-						dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_DICOM_IMA_Files_MRS_%s', strVOI);
+						dirString_In_AddOn1		= sprintf('MRS_Trauma_00_All_DICOM_IMA_Files_MRS_%s', strVOI_MRS);
 						
 					otherwise
-						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-				end			% End of switch fileExtension
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+				end			% End of switch fileExt_MRS
 			case '3T_SBAM'
 				% Data (input) directories
-				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/'
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/';
 				
 				% Output data directory
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_SBAM_Analysis/';
 				
 				% Directories depending on MRS data type
-				switch fileExtension
+				switch fileExt_MRS
 					case 'dat'
 						% Select directories specific to MRS raw data (.dat)
-						dirString_In_AddOn1		= sprintf('MRS_SBAM_00_All_RawData_dat_Files_MRS_%s', strVOI);
+						dirString_In_AddOn1		= sprintf('MRS_SBAM_00_All_RawData_dat_Files_MRS_%s', strVOI_MRS);
 					case 'IMA'
 						% Select directories specific to MRS DICOM data (.IMA)
-						dirString_In_AddOn1		= sprintf('MRS_SBAM_00_All_DICOM_IMA_Files_MRS_%s', strVOI);
+						dirString_In_AddOn1		= sprintf('MRS_SBAM_00_All_DICOM_IMA_Files_MRS_%s', strVOI_MRS);
 						
 					otherwise
-						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-				end			% End of switch fileExtension
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+				end			% End of switch fileExt_MRS
 			case '3T_MMs'
 				% Data (input) directories
 				%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
@@ -250,7 +250,7 @@ switch seqType_MRS
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_MMs_Analysis/';
 
 				% Directories depending on MRS data type
-				switch fileExtension
+				switch fileExt_MRS
 					case 'dat'
 						% Select directories specific to MRS raw data (.dat)
 						% either for acquired macromolecules (MMs) or for spectra
@@ -269,123 +269,50 @@ switch seqType_MRS
 						end		% End of if strcmp(signals_MRS, 'MMs')
 						
 					otherwise
-						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-				end			% End of switch fileExtension
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+				end			% End of switch fileExt_MRS
 			case '7T_KCL'
 				% Data (input) directories
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/7T_KCL/';
-				%dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_RawData_dat_Files_MRS_eja_%s', strVOI);
+				%dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_RawData_dat_Files_MRS_eja_%s', strVOI_MRS);
 				
 				% Output data directory
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
 				
 				% Directories depending on MRS data type
-				switch fileExtension
+				switch fileExt_MRS
 					case 'dat'
 						% Select directories specific to MRS raw data (.dat)
-						dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_RawData_dat_Files_MRS_eja_%s', strVOI);
+						dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_RawData_dat_Files_MRS_eja_%s', strVOI_MRS);
 					case 'IMA'
 						% Select directories specific to MRS DICOM data (.IMA)
-						dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_DICOM_IMA_Files_MRS_eja_%s', strVOI);
+						dirString_In_AddOn1		= sprintf('7T_KCL_00_ALL_DICOM_IMA_Files_MRS_eja_%s', strVOI_MRS);
 						
 					otherwise
-						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-				end			% End of switch fileExtension
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+				end			% End of switch fileExt_MRS
 				
 			otherwise
-				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end				% End of switch strStudy
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy_MRS);
+		end				% End of switch strStudy_MRS
 		
 		% Complete names of data (input) directories
 		%dirString_In_AddOn1		= [dirString_In_AddOn1, '_Test'];
 		dirString_In			= [dirString_In_Base, dirString_In_AddOn1, filesep];
 			
 		% Select directory for output data depending on voxel location, data type,
-		% # of SDs, and other options used for pre-processing of MR spectra
+		% # of SDs, and other options used for pre-processing of MR spectra or acquired
+		% macromolecules (MMs)
 		% Use variable 'dirSting_out_AddOn1' to include information about the type of
 		% signals (spectra or MMs), selected voxel location, data type (.dat or .IMA),
 		% and processing software (e.g. FID-A)
-		% Use variable 'dirSting_out_AddOn2' to cinclude information about most important
+		% Use variable 'dirSting_out_AddOn2' to include information about most important
 		% processing options, preferrably in the order of application
 		
-		% Make output directories for acquired macromolecules (MMs) distinguishable from 
-		% those for spectra
-		%if strcmp(signals_MRS, 'MMs')
-		%	dirString_Out_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
-		%else
-		%	dirString_Out_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
-		%end		% End of if strcmp(signals_MRS, 'MMs')
-		if strcmp(signals_MRS, 'MMs')
-			dirString_Out_AddOn1	= sprintf('%s_%s_%s_%s', signals_MRS, strVOI, fileExtension, strProcessTool);
-		else
-			dirString_Out_AddOn1	= sprintf('%s_%s_%s', strVOI, fileExtension, strProcessTool);
-		end		% End of if strcmp(signals_MRS, 'MMs')
-		
-		% Init information about processing of MRS data
-		dirString_Out_AddOn2	= '';
-		% Leftshifting of data (to cut off points before true first point of FID)
-		% Include info about Leftshifting of data, only if applied
-		if leftshift_In > 0
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_ls%d', leftshift_In)];
-		end		% End of if leftshift_In > 0
-		
-		% Block averaging prior to processing to improve SNR
-		% Indicate in output directory name which size of block averaging (Bavg) was used,
-		% only if averaging of blocks was indeed performed
-		if avgBlockSize_In > 0
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_Bavg%d', avgBlockSize_In)];
-		end
-
-		% Removal of bad averages
-		% Always include info about removal of bad averages independent of whether it was
-		% performed or not
-		if strcmpi(rmbadav_In, 'y')	% Case-insensitive strcmp
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, sprintf('_SD%d_%d', digits(1), digits(2))];
-		else
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoRM'];
-		end		% End of if strcmpi(rmbadav_In, 'y')
-
-		% Spectral registreation / drift correction
-		% Always include info about spectral registration independent of whether it was
-		% performed or not
-		if strcmpi(driftCorr_In, 'y')	% Case-insensitive strcmp
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_', strSpecReg_In];
-		else
-			dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_NoSR'];
-		end		% if strcmpi(driftCorr_In, 'y')
-
-		% Eddy current correction (ECC)
-		% Include info about ECC, only if applied
-		if bECC_In
-			% Use reference (water) signals for ECC, if acquired
-			% If not, then use an unsuppressed water signal, if acquired
-			% If no reference and no water signals are acquired, check whether MR spectrum
-			% is water signal itself; and if it is, use it for ECC
-			% Indicate different options for ECC in the corresponding directory name; for
-			% that, search for strings 'ref', 'w', and 'water' in string for MRS data type
-			refInd		= strfind(dataType_MRS, '_ref');
-			wInd		= strfind(dataType_MRS, '_w');
-			waterInd	= strfind(dataType_MRS, 'water');
-			if ~isempty(refInd)
-				dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_ECCref'];
-			else
-				if ~isempty(wInd)
-					dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_ECCw'];
-				else
-					if ~isempty(waterInd)
-						dirString_Out_AddOn2	= [dirString_Out_AddOn2, '_ECCwater'];
-					else
-						% No reference and no water signals and MR spectrum is not water
-						% signal itself => ECC not possible
-						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
-					end		% End of if ~isempty(waterInd)
-				end		% End of if ~isempty(wInd)
-			end		% End of if ~isempty(refInd)
-		end		% End of if bECC_In
-		
 		% Complete output directory name
-		dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
+		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
+		dirString_Out			= completeDirName_MRS_processed_s(fileExt_MRS, strVOI_MRS, signals_MRS, leftshift_In, avgBlockSize_In, bECC_In, strProcessTool_In);
 
 		% If directory for results from preprocessing does not exist, create it
 		% else, if it exists, check whether it can be overwritten
@@ -408,7 +335,7 @@ switch seqType_MRS
 			end		% End of if strOverwrite == 'n' || strOverwrite  == 'N'
 		end		% End of iif not(isfolder(dirString_Out))
 		% Output directory for metabolite quantification using LCM analysis
-		dirString_Out_LCM			= [dirString_Out, strVOI, '_LCModel_Data/'];
+		dirString_Out_LCM			= [dirString_Out, strVOI_MRS, '_LCModel_Data/'];
 
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
@@ -426,7 +353,7 @@ end		% End of switch seqType_MRS
 
 % FLAG: CHANGE
 % Added an option for loading a set of directories containing scans
-switch fileExtension
+switch fileExt_MRS
     case 'dat'
         structFileListing		= dir([dirString_In, '*.dat']);
         noEntriesListing		= length( structFileListing );
@@ -439,7 +366,7 @@ switch fileExtension
         structFileListing		= structFileListing(~ismember({structFileListing(:).name},{'.','..'}));
         noEntriesListing		= length(structFileListing);
     otherwise
-        error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExtension);
+        error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExt_MRS);
 end
 
 
@@ -453,10 +380,10 @@ switch seqType_MRS
 	case 'SPECIAL'
 		% Pre-processing of .IMA files is not implemented for run_specialproc_CBF, only
         % for the sLASER sequence using preProcess_MRS_s
-        if strcmp(fileExtension, 'IMA')
-            error('%s: ERROR: File extension IMA incompatible with sequence type %s!', sFunctionName, seqType_MRS);
+		if strcmp(fileExt_MRS, 'IMA')
+			error('%s: ERROR: File extension %s incompatible with sequence type %s!', sFunctionName, fileExt_MRS, seqType_MRS);
 		end
-		
+
 		% Here preprocessing of SPECIAL MR spectra together with the corresponding water 
 		% files is performed
 		% Assumptions:
@@ -496,8 +423,8 @@ switch seqType_MRS
 	case 'MEGA-PRESS'
 		% Pre-processing of .IMA files is not implemented for run_megapressproc_CBF, only
         % for the sLASER sequence using preProcess_MRS_s
-        if strcmp(fileExtension, 'IMA')
-            error('%s: ERROR: File extension IMA incompatible with sequence type %s!', sFunctionName, seqType_MRS);
+		if strcmp(fileExt_MRS, 'IMA')
+			error('%s: ERROR: File extension IMA incompatible with sequence type %s!', sFunctionName, seqType_MRS);
 		end
 		
 		% Here preprocessing of MEGA-PRESS MR spectraFSN-FZ-CSB-08 together with the corresponding 
@@ -574,7 +501,7 @@ switch seqType_MRS
 			% FLAG: CHANGE
 			% Preprocess MR spectrum and water
             % with parameters set accoprding to data type (file extension)
-			switch fileExtension
+			switch fileExt_MRS
 				case 'dat'
 					% MRS raw data (.dat)
 					filename_In			= structFileListing(ind).name;
@@ -666,7 +593,7 @@ switch seqType_MRS
 						'MinimizeUserInput', strMinUserIn_In,...
 						'ShowPlots', plotSwitch_In,...						
 						'GenerateReport', reportSwitch_In);
-			end			% End of switch fileExtension
+			end			% End of switch fileExt_MRS
 			
 			% Close all figures
 			%close all;
@@ -689,7 +616,7 @@ if bPrep_MetabQuant == 1
 		'CopyFiles_w', bCopyFiles_w_In, 'WriteFilenames', bWriteFilenames_In);
 	if ~status_prep
 		disp(msg_prep);
-		error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy, strVOI, seqType_MRS);
+		error('%s: Preparing metabolite quantification using LCM analysis for study %s, VOI %s, and sequence type %s failed!\n', sFunctionName, strStudy_MRS, strVOI_MRS, seqType_MRS);
 	end
 else
 	fprintf('NO preparation of metabolite quantification using LCM analysis!\n\n');
