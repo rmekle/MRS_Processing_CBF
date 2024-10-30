@@ -398,7 +398,139 @@ switch seqType_MRS
 
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
-				end				% End of switch strTissue			
+				end				% End of switch strTissue	
+			case '3T_SBAM'
+				% svs_dkd_slaser with TE = 23 ms
+				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_DineshKD/';
+				LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
+				dirControl_Add1					= 'LCM_Control_sLASER_dkd_TE23/';
+				switch strTissue
+					case 'GM'
+						LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
+					case 'HC'
+						switch fileExtension
+							case 'dat'
+								switch leftshift_In
+									case 2
+										% RAW4094 for leftshit = 2
+										%LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_nratio0_noECC_40592';
+										LCM_Control						= '3T_RAW4094_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0';
+										LCM_ControlAdd					= '_Con5';
+									case 3
+										% RAW4093 for leftshit = 3
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_nratio0_noECC_43772';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
+										%LCM_ControlAdd					= '_Con1';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0';
+										%LCM_ControlAdd					= '_Con5';
+
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v2';
+										%LCM_ControlAdd					= '_Con7';
+										LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v3';
+										LCM_ControlAdd					= '_Con8';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v4';
+										%LCM_ControlAdd					= '_Con9';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v5';
+										%LCM_ControlAdd					= '_Con10';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v6';
+										LCM_ControlAdd					= '_Con11';
+
+									otherwise
+										error('%s: ERROR: No LCM control file option for fileExtension = %s and leftshift_In = %d!', sFunctionName, fileExtension, leftshift_In);
+								end		% End of switch leftshift_In
+							case 'IMA'
+								% IMA2047 for leftshit = 1
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722_mac_nratio0';
+								%LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722_mac';
+								%LCM_ControlAdd					= '_Con2';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722_nratio0';
+								%LCM_ControlAdd					= '_Con3';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_43722';
+								%LCM_ControlAdd					= '_Con4';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
+
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v2';
+								%LCM_ControlAdd					= '_Con7';
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v4';
+								%LCM_ControlAdd					= '_Con9';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v5';
+								%LCM_ControlAdd					= '_Con10';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v6';
+								%LCM_ControlAdd					= '_Con11';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v7';
+								%LCM_ControlAdd					= '_Con12';
+
+							otherwise
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+						end			% End of switch fileExtension
+					case 'PCG'
+						switch fileExtension
+							case 'dat'
+								switch leftshift_In
+									case 2
+										% RAW4094 for leftshit = 2
+										%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
+										LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+										LCM_ControlAdd					= '_Con6';
+									case 3
+										% RAW4093 for leftshit = 3
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+										%LCM_ControlAdd					= '_Con1';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+										%LCM_ControlAdd					= '_Con5';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+										%LCM_ControlAdd					= '_Con6';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v2';
+										%LCM_ControlAdd					= '_Con7';
+										LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v3';
+										LCM_ControlAdd					= '_Con8';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v4';
+										%LCM_ControlAdd					= '_Con9';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v5';
+										%LCM_ControlAdd					= '_Con10';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v6';
+										%LCM_ControlAdd					= '_Con11';
+
+									otherwise
+										error('%s: ERROR: No LCM control file option for fileExtension = %s and leftshift_In = %d!', sFunctionName, fileExtension, leftshift_In);
+								end		% End of switch leftshift_In
+							case 'IMA'
+								% IMA2047 for leftshit = 1
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+								%LCM_ControlAdd					= '_Con1';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422_mac';
+								%LCM_ControlAdd					= '_Con2';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422_nratio0';
+								%LCM_ControlAdd					= '_Con3';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422';
+								%LCM_ControlAdd					= '_Con4';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+								%LCM_ControlAdd					= '_Con5';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+								%LCM_ControlAdd					= '_Con6';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v2';
+								%LCM_ControlAdd					= '_Con7';
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v4';
+								%LCM_ControlAdd					= '_Con9';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v5';
+								%LCM_ControlAdd					= '_Con10';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v6';
+								%LCM_ControlAdd					= '_Con11';
+
+							otherwise
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+						end			% End of switch fileExtension
+
+					otherwise
+						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+				end				% End of switch strTissue
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_Gosia/';
@@ -517,10 +649,13 @@ switch seqType_MRS
 		switch strStudy
 			case '3T_Trauma'
 				% svs_dkd_slaser with TE = 23 ms
-				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_SBAM_Analysis/';
 				dirData_Base		= dirDataAnalysis;
 				%dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
-				%dirData_AddOn2		= '';
+			case '3T_SBAM'
+				% svs_dkd_slaser with TE = 23 ms
+				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+				dirData_Base		= dirDataAnalysis;
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
@@ -1193,6 +1328,17 @@ if( noFiles_table > 0 )
 							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_HC.xltx"];
 						case 'PCG'
 							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_PCG.xltx"];
+
+						otherwise
+							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI);
+					end			% End of switch strVOI
+				case '3T_SBAM'
+					% Select template according to selected VOI
+					switch strVOI
+						case 'HC'
+							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_HC.xltx"];
+						case 'PCG'
+							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_PCG.xltx"];
 
 						otherwise
 							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI);
