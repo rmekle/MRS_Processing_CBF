@@ -13,7 +13,7 @@
 % DESCRIPTION:
 % Function to complete directory name for processed magnetic resonance spectroscopy (MRS)
 % data depending on voxel location, data type, # of SDs, and other options used for 
-% pre-processing of MR spectra or acquired macromolecules (MMs)
+% pre-processing of MR spectra or acquired macromolecules (MMs).
 % 
 % INPUTS:
 % strDir_Out_Base    = String variable for the name of the base directory containing all
