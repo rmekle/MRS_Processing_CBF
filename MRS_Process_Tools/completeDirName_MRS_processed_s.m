@@ -83,7 +83,7 @@ if bECC
 			else
 				% No reference and no water signals and MR spectrum is not water
 				% signal itself => ECC not possible
-				error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
+				error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType = %s) => ECC not possible!', sFunctionName, dataType);
 			end		% End of if ~isempty(waterInd)
 		end		% End of if ~isempty(wInd)
 	end		% End of if ~isempty(refInd)
