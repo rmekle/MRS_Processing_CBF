@@ -312,7 +312,7 @@ switch seqType_MRS
 		% Complete output directory name
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
-		dirString_Out			= completeDirName_MRS_processed_s(fileExt_MRS, strVOI_MRS, signals_MRS, leftshift_In, avgBlockSize_In, noSD_In, bECC_In, strProcessTool_In);
+		dirString_Out			= completeDirName_MRS_processed_s(dirString_Out_Base, fileExt_MRS, strVOI_MRS, signals_MRS, leftshift_In, avgBlockSize_In, noSD_In, bECC_In, strProcessTool_In);
 
 		% If directory for results from preprocessing does not exist, create it
 		% else, if it exists, check whether it can be overwritten
