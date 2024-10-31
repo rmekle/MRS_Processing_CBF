@@ -44,7 +44,7 @@ avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
 % Parameters for removal of bad averages
 rmbadav_In				= 'y';		% 'y';		'n';
 noSD_In					= 3.2;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
-digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+%digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
@@ -194,7 +194,7 @@ switch seqType_MRS
 	case 'sLASER'
 		% Select data input and output directories depending on study, MRS data type, 
 		% i.e. file extension, study, and other parameters
-		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+		%digits_noSD_In		= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		switch strStudy_MRS
 			case '3T_Trauma'
 				% Data (input) directories
@@ -312,7 +312,7 @@ switch seqType_MRS
 		% Complete output directory name
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
-		dirString_Out			= completeDirName_MRS_processed_s(fileExt_MRS, strVOI_MRS, signals_MRS, leftshift_In, avgBlockSize_In, bECC_In, strProcessTool_In);
+		dirString_Out			= completeDirName_MRS_processed_s(fileExt_MRS, strVOI_MRS, signals_MRS, leftshift_In, avgBlockSize_In, noSD_In, bECC_In, strProcessTool_In);
 
 		% If directory for results from preprocessing does not exist, create it
 		% else, if it exists, check whether it can be overwritten
