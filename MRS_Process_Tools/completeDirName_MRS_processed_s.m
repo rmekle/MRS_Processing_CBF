@@ -1,4 +1,4 @@
-function [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, signals, leftshift, avgBlockSize, noSD, bECC, strProcessTool)
+function [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, signals, leftshift, avgBlockSize, rmbadav, noSD, strSpecReg, driftCorr, bECC, strProcessTool)
 %UNTITLED2 Summary of this function goes here
 
 % Select directory for output data depending on voxel location, data type,
@@ -42,20 +42,20 @@ end
 % Always include info about removal of bad averages independent of whether it was
 % performed or not
 digits_noSD			= [fix(noSD) round(abs(noSD-fix(noSD))*10)];
-if strcmpi(rmbadav_In, 'y')	% Case-insensitive strcmp
+if strcmpi(rmbadav, 'y')	% Case-insensitive strcmp
 	strDir_Out_AddOn2	= [strDir_Out_AddOn2, sprintf('_SD%d_%d', digits_noSD(1), digits_noSD(2))];
 else
 	strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_NoRM'];
-end		% End of if strcmpi(rmbadav_In, 'y')
+end		% End of if strcmpi(rmbadav, 'y')
 
 % Spectral registreation / drift correction
 % Always include info about spectral registration independent of whether it was
 % performed or not
-if strcmpi(driftCorr_In, 'y')	% Case-insensitive strcmp
-	strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_', strSpecReg_In];
+if strcmpi(driftCorr, 'y')	% Case-insensitive strcmp
+	strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_', strSpecReg];
 else
 	strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_NoSR'];
-end		% if strcmpi(driftCorr_In, 'y')
+end		% if strcmpi(driftCorr, 'y')
 
 % Eddy current correction (ECC)
 % Include info about ECC, only if applied
