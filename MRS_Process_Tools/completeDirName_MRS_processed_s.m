@@ -1,4 +1,4 @@
-function [strDir_Out] = completeDirName_MRS_processed_s(fileExt, strVOI, signals, leftshift, avgBlockSize, bECC, strProcessTool)
+function [strDir_Out] = completeDirName_MRS_processed_s(fileExt, strVOI, signals, leftshift, avgBlockSize, noSD, bECC, strProcessTool)
 %UNTITLED2 Summary of this function goes here
 
 % Select directory for output data depending on voxel location, data type,
@@ -41,8 +41,9 @@ end
 % Removal of bad averages
 % Always include info about removal of bad averages independent of whether it was
 % performed or not
+digits_noSD			= [fix(noSD) round(abs(noSD-fix(noSD))*10)];
 if strcmpi(rmbadav_In, 'y')	% Case-insensitive strcmp
-	strDir_OutAddOn2	= [strDir_OutAddOn2, sprintf('_SD%d_%d', digits(1), digits(2))];
+	strDir_OutAddOn2	= [strDir_OutAddOn2, sprintf('_SD%d_%d', digits_noSD(1), digits_noSD(2))];
 else
 	strDir_OutAddOn2	= [strDir_OutAddOn2, '_NoRM'];
 end		% End of if strcmpi(rmbadav_In, 'y')
