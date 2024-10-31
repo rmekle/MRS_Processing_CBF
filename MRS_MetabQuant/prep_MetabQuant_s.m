@@ -55,7 +55,7 @@
 
 function [status, msg] = prep_MetabQuant_s(strOutDir,strOutDir_LCM,seqType,options)
 
-%% Parse arguments (required and optional)
+% Parse arguments (required and optional)
 arguments
 	strOutDir			{mustBeText}
 	strOutDir_LCM		{mustBeText}
