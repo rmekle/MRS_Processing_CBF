@@ -1,4 +1,4 @@
-function [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, signals, leftshift, avgBlockSize, rmbadav, noSD, strSpecReg, driftCorr, bECC, strProcessTool)
+function [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, dataType, signals, leftshift, avgBlockSize, rmbadav, noSD, strSpecReg, driftCorr, bECC, strProcessTool)
 %UNTITLED2 Summary of this function goes here
 
 % Select directory for output data depending on voxel location, data type,
@@ -66,16 +66,19 @@ if bECC
 	% is water signal itself; and if it is, use it for ECC
 	% Indicate different options for ECC in the corresponding directory name; for
 	% that, search for strings 'ref', 'w', and 'water' in string for MRS data type
-	refInd		= strfind(dataType_MRS, '_ref');
-	wInd		= strfind(dataType_MRS, '_w');
-	waterInd	= strfind(dataType_MRS, 'water');
-	if ~isempty(refInd)
+	%refInd		= strfind(dataType, '_ref');
+	%wInd		= strfind(dataType, '_w');
+	%waterInd	= strfind(dataType, 'water');
+	%if ~isempty(refInd)
+	if contains(dataType, '_ref')
 		strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_ECCref'];
 	else
-		if ~isempty(wInd)
+		%if ~isempty(wInd)
+		if contains(dataType, '_w')
 			strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_ECCw'];
 		else
-			if ~isempty(waterInd)
+			%if ~isempty(waterInd)
+			if contains(dataType, 'water')
 				strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_ECCwater'];
 			else
 				% No reference and no water signals and MR spectrum is not water
