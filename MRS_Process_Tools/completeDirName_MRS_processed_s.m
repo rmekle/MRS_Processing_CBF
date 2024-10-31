@@ -84,9 +84,9 @@ if bECC
 				% No reference and no water signals and MR spectrum is not water
 				% signal itself => ECC not possible
 				error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType = %s) => ECC not possible!', sFunctionName, dataType);
-			end		% End of if ~isempty(waterInd)
-		end		% End of if ~isempty(wInd)
-	end		% End of if ~isempty(refInd)
+			end		% End of if contains(dataType, 'water')	%if ~isempty(waterInd)
+		end		% End of if contains(dataType, '_w')	%if ~isempty(wInd)
+	end		% End of if contains(dataType, '_ref')	%if ~isempty(refInd)
 end		% End of if bECC
 
 % Complete output directory name for processed MRS data
