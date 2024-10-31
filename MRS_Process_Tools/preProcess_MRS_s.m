@@ -131,7 +131,7 @@
 
 function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,options)
 
-%% Parse arguments
+% Parse arguments
 % FLAG: Modified
 arguments
     dirString       {mustBeText}
