@@ -1,4 +1,4 @@
-function [strDir_Out] = completeDirName_MRS_processed_s(fileExt, strVOI, signals, leftshift, avgBlockSize, noSD, bECC, strProcessTool)
+function [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, signals, leftshift, avgBlockSize, noSD, bECC, strProcessTool)
 %UNTITLED2 Summary of this function goes here
 
 % Select directory for output data depending on voxel location, data type,
@@ -13,29 +13,29 @@ function [strDir_Out] = completeDirName_MRS_processed_s(fileExt, strVOI, signals
 % Make output directories for acquired macromolecules (MMs) distinguishable from
 % those for spectra
 %if strcmp(signals, 'MMs')
-%	strDir_OutAddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals, strVOI, fileExt, digits(1), digits(2));
+%	strDir_Out_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals, strVOI, fileExt, digits(1), digits(2));
 %else
-%	strDir_OutAddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExt, digits(1), digits(2));
+%	strDir_Out_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExt, digits(1), digits(2));
 %end		% End of if strcmp(signals, 'MMs')
 if strcmp(signals, 'MMs')
-	strDir_OutAddOn1	= sprintf('%s_%s_%s_%s', signals, strVOI, fileExt, strProcessTool);
+	strDir_Out_AddOn1	= sprintf('%s_%s_%s_%s', signals, strVOI, fileExt, strProcessTool);
 else
-	strDir_OutAddOn1	= sprintf('%s_%s_%s', strVOI, fileExt, strProcessTool);
+	strDir_Out_AddOn1	= sprintf('%s_%s_%s', strVOI, fileExt, strProcessTool);
 end		% End of if strcmp(signals, 'MMs')
 
 % Init information about processing of MRS data
-strDir_OutAddOn2	= '';
+strDir_Out_AddOn2	= '';
 % Leftshifting of data (to cut off points before true first point of FID)
 % Include info about Leftshifting of data, only if applied
 if leftshift > 0
-	strDir_OutAddOn2	= [strDir_OutAddOn2, sprintf('_ls%d', leftshift)];
+	strDir_Out_AddOn2	= [strDir_Out_AddOn2, sprintf('_ls%d', leftshift)];
 end		% End of if leftshift > 0
 
 % Block averaging prior to processing to improve SNR
 % Indicate in output directory name which size of block averaging (Bavg) was used,
 % only if averaging of blocks was indeed performed
 if avgBlockSize > 0
-	strDir_OutAddOn2	= [strDir_OutAddOn2, sprintf('_Bavg%d', avgBlockSize)];
+	strDir_Out_AddOn2	= [strDir_Out_AddOn2, sprintf('_Bavg%d', avgBlockSize)];
 end
 
 % Removal of bad averages
@@ -43,18 +43,18 @@ end
 % performed or not
 digits_noSD			= [fix(noSD) round(abs(noSD-fix(noSD))*10)];
 if strcmpi(rmbadav_In, 'y')	% Case-insensitive strcmp
-	strDir_OutAddOn2	= [strDir_OutAddOn2, sprintf('_SD%d_%d', digits_noSD(1), digits_noSD(2))];
+	strDir_Out_AddOn2	= [strDir_Out_AddOn2, sprintf('_SD%d_%d', digits_noSD(1), digits_noSD(2))];
 else
-	strDir_OutAddOn2	= [strDir_OutAddOn2, '_NoRM'];
+	strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_NoRM'];
 end		% End of if strcmpi(rmbadav_In, 'y')
 
 % Spectral registreation / drift correction
 % Always include info about spectral registration independent of whether it was
 % performed or not
 if strcmpi(driftCorr_In, 'y')	% Case-insensitive strcmp
-	strDir_OutAddOn2	= [strDir_OutAddOn2, '_', strSpecReg_In];
+	strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_', strSpecReg_In];
 else
-	strDir_OutAddOn2	= [strDir_OutAddOn2, '_NoSR'];
+	strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_NoSR'];
 end		% if strcmpi(driftCorr_In, 'y')
 
 % Eddy current correction (ECC)
@@ -70,13 +70,13 @@ if bECC
 	wInd		= strfind(dataType_MRS, '_w');
 	waterInd	= strfind(dataType_MRS, 'water');
 	if ~isempty(refInd)
-		strDir_OutAddOn2	= [strDir_OutAddOn2, '_ECCref'];
+		strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_ECCref'];
 	else
 		if ~isempty(wInd)
-			strDir_OutAddOn2	= [strDir_OutAddOn2, '_ECCw'];
+			strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_ECCw'];
 		else
 			if ~isempty(waterInd)
-				strDir_OutAddOn2	= [strDir_OutAddOn2, '_ECCwater'];
+				strDir_Out_AddOn2	= [strDir_Out_AddOn2, '_ECCwater'];
 			else
 				% No reference and no water signals and MR spectrum is not water
 				% signal itself => ECC not possible
@@ -87,6 +87,6 @@ if bECC
 end		% End of if bECC
 
 % Complete output directory name for processed MRS data
-strDir_Out			= [strDir_OutBase, strDir_OutAddOn1, strDir_OutAddOn2, filesep];
+strDir_Out			= [strDir_Out_Base, strDir_Out_AddOn1, strDir_Out_AddOn2, filesep];
 
 end		% End of function
