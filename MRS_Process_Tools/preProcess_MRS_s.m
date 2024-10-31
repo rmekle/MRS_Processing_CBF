@@ -67,7 +67,7 @@
 % rmbadav	   = (Optional) ['RemoveBadAverages'] Character array that specifies whether 
 %					removal of bad averages should be performed or not. 
 %					Default is 'y'.
-% nSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average removal. Default
+% noSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average removal. Default
 %					value is 3.2.
 % strSpecReg   = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
 %					i.e. name, of spectral registration (drift correction) that might be 
@@ -180,7 +180,7 @@ end
 	end
 	avgBlockSize			= options.avgBlockSize;
 	rmbadav					= options.RemoveBadAverages;
-    nSD						= options.noStandardDeviation;
+    noSD						= options.noStandardDeviation;
 	strSpecReg				= options.SpectralRegistrationID;
 	driftCorr				= options.DriftCorrection;
 	iterin					= options.Iterations;
@@ -325,10 +325,10 @@ end
 % if( strcmp(seqType, 'MEGA-PRESS') )
 % 	% Assuming that MEGA-PRESS editing is usually performed without OVS
 % 	% Assuming that no bad average removal is applied for any of the water signals
-% 	outFileName				= [nameSpec, sprintf('_%.1f', nSD)];
-% 	outFileName_w			= [name_w, '_w', sprintf('_%.1f', nSD)];
-% 	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
-% 	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
+% 	outFileName				= [nameSpec, sprintf('_%.1f', noSD)];
+% 	outFileName_w			= [name_w, '_w', sprintf('_%.1f', noSD)];
+% 	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', noSD)];
+% 	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', noSD)];
 % else
 % 	% Water signals and/or MR spectra were acquired with or without OVS
 % 	% Assuming that water reference signals for ECC are always acquired in same way as 
@@ -337,13 +337,13 @@ end
 % 	% Assuming that water reference signals for quantification are always acquired without
 % 	% OVS ('woutOVS') to avoid MT effects
 % 	% Assuming that no bad average removal is applied for any of the water signals
-% 	outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
+% 	outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', noSD)];
 % 	outFileName_w			= [name_w, '_w', '_', strOVS];
 % 	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', 8), '_', strOVS];
 % 	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('%d', 8), '_', 'woutOVS'];
-% 	%outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
-% 	%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', nSD)];
-% 	%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', nSD)];
+% 	%outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', noSD)];
+% 	%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', noSD)];
+% 	%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', noSD)];
 % end
 
 
@@ -682,9 +682,9 @@ switch seqType
 		% Assuming that no bad average removal is applied for any of the water signals
 		% Include information about # of standard deviations for removal of bad averages
 		% and about spectral registration
-		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD)];
-		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', nSD), '_', strSpecReg];
-		digits_SD				= [fix(nSD) round(abs(nSD-fix(nSD))*10)];
+		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', noSD)];
+		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', noSD), '_', strSpecReg];
+		digits_SD				= [fix(noSD) round(abs(noSD-fix(noSD))*10)];
 		if strcmpi(rmbadav, 'y')	% Case-insensitive strcmp
 			strAdd_1		= sprintf('%d_%d', digits_SD(1), digits_SD(2));
 		else
@@ -700,9 +700,9 @@ switch seqType
 		%outFileName_w			= [name_w, '_w', sprintf('%d', noAvg_w), '_', strOVS_w];
 		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', noAvg_ref_ECC), '_', strOVS];
 		outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('%d', noAvg_ref_Quant), '_', 'woutOVS'];
-		%outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', nSD)];
-		%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', nSD)];
-		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', nSD)];
+		%outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', noSD)];
+		%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', noSD)];
+		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', noSD)];
 
 		
 		%% Combine signals from different coil elements
@@ -943,17 +943,17 @@ switch seqType
 		%if rmbadav=='n' || rmbadav=='N'
 		if rmbadav=='n' || rmbadav=='N' || out_cc.dims.averages == 0
 			out_rm		= out_cc;
-			%nSD			= 'N/A';
+			%noSD			= 'N/A';
 		else
 			sat		='n';
 			while sat=='n' || sat=='N'
-				%nSD=4; % Setting the number of standard deviations;
+				%noSD=4; % Setting the number of standard deviations;
 				iter			= 1;
 				nbadAverages	= 1;
 				nBadAvgTotal	= 0;
 				out_cc2			= out_cc;
 				while nbadAverages>0
-					[out_rm,metric{iter},badAverages]	= op_rmbadaverages(out_cc2,nSD,'t');
+					[out_rm,metric{iter},badAverages]	= op_rmbadaverages(out_cc2,noSD,'t');
 					badAverages;
 					nbadAverages	= length(badAverages);
 					nBadAvgTotal	= nBadAvgTotal+nbadAverages;
@@ -1995,7 +1995,7 @@ switch seqType
 				end
 				fprintf(fid2,'\n<p>Number of bad Averages removed:  \t%5.6f </p>',nBadAvgTotal);
 				fprintf(fid2,'\n<p>Number of remaining averages in processed dataset:  \t%5.6f </p>',out_rm.sz(out_rm.dims.averages));
-				fprintf(fid2,'\n<p>Bad Averages Removal Threshold was:  \t%2.2f </p>', nSD);
+				fprintf(fid2,'\n<p>Bad Averages Removal Threshold was:  \t%2.2f </p>', noSD);
 				%fprintf(fid2,'\n<img src= " %s%srmBadAvg_prePostFig.jpg " width="800" height="600"><img src= " %s%srmBadAvg_scatterFig.jpg " width="800" height="400">', outDirString, reportFigDirStr, outDirString, reportFigDirStr);
 				fprintf(fid2,'\n<img src= " %s " width="800" height="600"><img src= " %s " width="800" height="400">', fullfile('./figs/','rmBadAvg_prePostFig.jpg'), fullfile('./figs/','rmBadAvg_scatterFig.jpg'));
 			else
@@ -2044,13 +2044,13 @@ switch seqType
 		
 		% Create filenames for saving of processed output depending on sequence type
 		% Assuming that no bad average removal is applied for any of the water signals
-		outFileName				= [nameSpec, sprintf('_%.1f', nSD)];
+		outFileName				= [nameSpec, sprintf('_%.1f', noSD)];
 		outFileName_w			= [name_w, '_w'];
-		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
-		outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
-		%outFileName_w			= [name_w, '_w', sprintf('_%.1f', nSD)];
-		%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', nSD)];
-		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', nSD)];
+		outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', noSD)];
+		outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', noSD)];
+		%outFileName_w			= [name_w, '_w', sprintf('_%.1f', noSD)];
+		%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', noSD)];
+		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', noSD)];
 		
 		% Figure display and saving
 		% Can be realized by calling a separate routine?
