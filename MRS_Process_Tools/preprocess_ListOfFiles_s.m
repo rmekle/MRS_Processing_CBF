@@ -625,7 +625,11 @@ end		% End of if bPrep_MetabQuant == 1
 
 %% Save variables of workspace to file
 % Obtain current date and time in specific format
-dt		= datestr(now,'yyyymmdd_HH_MM_SS');
+% Since use of datestr was no longer recommended, code was changed to use datetime instead
+%dt		= datestr(now,'yyyymmdd_HH_MM_SS');
+%tTmp	= datetime('now', 'Format', 'yyyyMMdd_HH_mm_ss');
+%dt		= char(tTmp);
+dt		= char(datetime('now', 'Format', 'yyyyMMdd_HH_mm_ss'));
 
 % Save workspace into output directory (optional with user input)
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
