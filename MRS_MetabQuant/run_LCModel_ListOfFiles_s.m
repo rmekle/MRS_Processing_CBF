@@ -24,11 +24,11 @@ fprintf('\n\n');
 %% Init parameter settings from preprocessing of MR spectra for running LCModel analysis
 %dirString_In			= '';
 %dirString_Out			= '';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExt_MRS				= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 filename_In				= '';
 filename_w_In			= '';
-strStudy				= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
-strVOI					= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+strStudy_MRS			= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
+strVOI_MRS				= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
 signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
@@ -40,11 +40,11 @@ avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
 % Parameters for removal of bad averages
 rmbadav_In				= 'y';		% 'y';		'n';
 noSD_In					= 3.2;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
-digits					= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+%digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
+strSpecReg_In			= 'SR1';	% To distinguish settings for spectral registration
 driftCorr_In			= 'y';		% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';		% 'f';		't';
@@ -66,11 +66,11 @@ switch dataType_MRS
 		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
 		switch ppmOption
 			case 1
-				% For MR spectra as in example script run_specialproc_auto.m
+				% For MR spectra
 				ppmmin_fix_In			= 1.6;		% 1.6;		1.8;
 				ppmmaxarray_fix_In		= [2.4,2.85,3.35,4.2,4.4,5.2];
 			case 2
-				% For MR spectra as in example script run_pressProc_auto.m
+				% For MR spectra
 				ppmmin_fix_In			= 1.6;
 				ppmmaxarray_fix_In		= [3.5; 4.0; 5.5];
 			case 3
@@ -108,12 +108,12 @@ bPhaseCorrFreqShift_In	= 0;
 strMinUserIn_In			= 'y';
 plotSwitch_In			= 0;
 reportSwitch_In			= 1;
-strProcessTool			= 'FID-A';
+strProcessTool_In		= 'FID-A';
 bPrep_MetabQuant		= 1;
 
 
 %% Additional (input) parameters specific to metabolite quantification using LCM analysis
-str_noSD_In				= sprintf('%d_%d', digits(1), digits(2));
+str_noSD_In				= sprintf('%d_%d', digits_noSD_In(1), digits_noSD_In(2));
 strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
@@ -242,7 +242,7 @@ switch seqType_MRS
 	case 'sLASER'
 		% Select basis and control files depending on study, tissue type, and other 
 		% options 
-		switch strStudy
+		switch strStudy_MRS
 			case '3T_Trauma'
 				% svs_dkd_slaser with TE = 23 ms
 				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_DineshKD/';
@@ -252,7 +252,7 @@ switch seqType_MRS
 					case 'GM'
 						LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
 					case 'HC'
-						switch fileExtension
+						switch fileExt_MRS
 							case 'dat'
 								switch leftshift_In
 									case 2
@@ -290,7 +290,7 @@ switch seqType_MRS
 										LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExtension = %s and leftshift_In = %d!', sFunctionName, fileExtension, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -319,10 +319,10 @@ switch seqType_MRS
 								LCM_ControlAdd					= '_Con12';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-						end			% End of switch fileExtension
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+						end			% End of switch fileExt_MRS
 					case 'PCG'
-						switch fileExtension
+						switch fileExt_MRS
 							case 'dat'
 								switch leftshift_In
 									case 2
@@ -365,7 +365,7 @@ switch seqType_MRS
 										LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExtension = %s and leftshift_In = %d!', sFunctionName, fileExtension, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -393,8 +393,8 @@ switch seqType_MRS
 								LCM_ControlAdd					= '_Con11';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-						end			% End of switch fileExtension
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+						end			% End of switch fileExt_MRS
 
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
@@ -408,7 +408,7 @@ switch seqType_MRS
 					case 'GM'
 						LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
 					case 'HC'
-						switch fileExtension
+						switch fileExt_MRS
 							case 'dat'
 								switch leftshift_In
 									case 2
@@ -436,7 +436,7 @@ switch seqType_MRS
 										LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExtension = %s and leftshift_In = %d!', sFunctionName, fileExtension, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -465,10 +465,10 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con12';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-						end			% End of switch fileExtension
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+						end			% End of switch fileExt_MRS
 					case 'PCG'
-						switch fileExtension
+						switch fileExt_MRS
 							case 'dat'
 								switch leftshift_In
 									case 2
@@ -497,7 +497,7 @@ switch seqType_MRS
 										%LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExtension = %s and leftshift_In = %d!', sFunctionName, fileExtension, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -525,8 +525,8 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con11';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-						end			% End of switch fileExtension
+								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+						end			% End of switch fileExt_MRS
 
 					otherwise
 						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
@@ -583,8 +583,8 @@ switch seqType_MRS
 				end				% End of switch strTissue
 				
 			otherwise
-				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end			% End of switch strStudy
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy_MRS);
+		end			% End of switch strStudy_MRS
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
@@ -644,14 +644,14 @@ switch seqType_MRS
 		% Select directories for (input) data files and for output data depending on
 		% study, # of SDs and other options used for pre-processing of MR spectra and 
 		% on settings for LCModel analysis
-		%digits = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+		%digits_noSD_In = [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 		%dirData_AddOn2		= '';
-		switch strStudy
+		switch strStudy_MRS
 			case '3T_Trauma'
 				% svs_dkd_slaser with TE = 23 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
 				dirData_Base		= dirDataAnalysis;
-				%dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+				%dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI_MRS, digits_noSD_In(1), digits_noSD_In(2));
 			case '3T_SBAM'
 				% svs_dkd_slaser with TE = 23 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_SBAM_Analysis/';
@@ -660,64 +660,31 @@ switch seqType_MRS
 				% eja_svs_slaser with TE = 40 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
 				dirData_Base		= dirDataAnalysis;
-				dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI, digits(1), digits(2));
+				dirData_AddOn1		= sprintf('%s_FID-A_SD_%d_%d', strVOI_MRS, digits_noSD_In(1), digits_noSD_In(2));
 				%dirData_AddOn2		= '';
 				
 			otherwise
-				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end			% End of switch strStudy
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy_MRS);
+		end			% End of switch strStudy_MRS
 		
-		% Complete output data directory name for preprocessing
+				
 		% Select directory for output data depending on voxel location, data type,
-		% # of SDs, and other options used for pre-processing of MR spectra
-		% Make output directories for acquired macromolecules (MMs) distinguishable from 
-		% those for spectra
-		if strcmp(signals_MRS, 'MMs')
-			dirData_AddOn1	= sprintf('%s_%s_%s_FID-A_SD_%d_%d', signals_MRS, strVOI, fileExtension, digits(1), digits(2));
-		else
-			dirData_AddOn1	= sprintf('%s_%s_FID-A_SD_%d_%d', strVOI, fileExtension, digits(1), digits(2));
-		end		% End of if strcmp(signals_MRS, 'MMs')
-		dirData_AddOn2	= '';
-		if bECC_In
-			% Use reference (water) signals for ECC, if acquired
-			% If not, then use an unsuppressed water signal, if acquired
-			% If no reference and no water signals are acquired, check whether MR spectrum
-			% is water signal itself; and if it is, use it for ECC
-			% Indicate different options for ECC in the corresponding directory name; for
-			% that, search for strings 'ref', 'w', and 'water' in string for MRS data type
-			refInd		= strfind(dataType_MRS, '_ref');
-			wInd		= strfind(dataType_MRS, '_w');
-			waterInd	= strfind(dataType_MRS, 'water');
-			if ~isempty(refInd)
-				dirData_AddOn2	= '_ECCref';
-			else
-				if ~isempty(wInd)
-					dirData_AddOn2	= '_ECCw';
-				else
-					if ~isempty(waterInd)
-						dirData_AddOn2	= '_ECCwater';
-					else
-						% No reference and no water signals and MR spectrum is not water
-						% signal itself => ECC not possible
-						error('%s: No reference and no water signals and MR spectrum is not water signal itself (dataType_MRS = %s) => ECC not possible!', sFunctionName, dataType_MRS);
-					end		% End of if ~isempty(waterInd)
-				end		% End of if ~isempty(wInd)
-			end		% if ~isempty(refInd)
-			%dirData_AddOn2	= '_ECC_Test';
-		end		% End of if bECC_In
-		if leftshift_In > 0
-			dirData_AddOn2	= [dirData_AddOn2, sprintf('_ls%d', leftshift_In)];
-		end		% End of if leftshift_In > 0
-		% Indicate in output directory name which type of spectral registration was used
-		if driftCorr_In == 'y' || driftCorr_In == 'Y'
-			dirData_AddOn2	= [dirData_AddOn2, '_', strSpecReg];
-		else
-			dirData_AddOn2	= [dirData_AddOn2, '_NoSR'];
-		end
+		% # of SDs, and other options used for pre-processing of MR spectra or acquired
+		% macromolecules (MMs)
+		% Use variable 'dirSting_out_AddOn1' to include information about the type of
+		% signals (spectra or MMs), selected voxel location, data type (.dat or .IMA),
+		% and processing software (e.g. FID-A)
+		% Use variable 'dirSting_out_AddOn2' to include information about most important
+		% processing options, preferrably in the order of application
+
+		% Complete output data directory name for preprocessed MRS data
 		dirData_Processed	= [dirData_Base, dirData_AddOn1, dirData_AddOn2, filesep];
+		dirData_Processed	= completeDirName_MRS_processed_s(dirString_Out_Base, fileExt_MRS, strVOI_MRS, dataType_MRS, signals_MRS, leftshift_In, avgBlockSize_In, ...
+			rmbadav_In, noSD_In, strSpecReg_In, driftCorr_In, bECC_In, strProcessTool_In);
+
 		% Add elements for voxel location and quantification analysis to input directory
 		% name
-		dirData				= [dirData_Processed, strVOI, '_LCModel_Data/'];
+		dirData				= [dirData_Processed, strVOI_MRS, '_LCModel_Data/'];
 		
 		% Lists of filenames for MRS spectra and (unsuppresed) water signals depending on 
 		% type of data (spectra) used for analysis
@@ -732,7 +699,7 @@ switch seqType_MRS
 		
 		% Select output directory based on type of data and type of analysis being used
 		% and add control filename to directory
-		outDir		= [dirData_Processed, strVOI, '_LCM_Out_', strTissue, strWaterQuant];
+		outDir		= [dirData_Processed, strVOI_MRS, '_LCM_Out_', strTissue, strWaterQuant];
 		%if b0nratio
 		%	outDir		= [outDir, '_0nratio'];
 		%end
@@ -1320,39 +1287,39 @@ if( noFiles_table > 0 )
 			
 			% List available Excel template files 
 			bUseTemplateFile		= 1;
-			switch strStudy
+			switch strStudy_MRS
 				case '3T_Trauma'
 					% Select template according to selected VOI
-					switch strVOI
+					switch strVOI_MRS
 						case 'HC'
 							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_HC.xltx"];
 						case 'PCG'
 							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI);
-					end			% End of switch strVOI
+							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI_MRS);
+					end			% End of switch strVOI_MRS
 				case '3T_SBAM'
 					% Select template according to selected VOI
-					switch strVOI
+					switch strVOI_MRS
 						case 'HC'
 							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_HC.xltx"];
 						case 'PCG'
 							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI);
-					end			% End of switch strVOI
+							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI_MRS);
+					end			% End of switch strVOI_MRS
 				case '3T_MMs'
-					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy);
+					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy_MRS);
 					bCopyIntoExcel			= 0;		
 				case '7T_KCL'
-					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy);
+					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy_MRS);
 					bCopyIntoExcel			= 0;	
 
 				otherwise
-					error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-			end			% End of switch strStudy
+					error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy_MRS);
+			end			% End of switch strStudy_MRS
 			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
 
 			% Init # of template files used, template filename and list substrings and 
@@ -1365,7 +1332,7 @@ if( noFiles_table > 0 )
 			% depending on type of spectra being analyzed
 			if strcmp(strAnalysisData, 'MRS_reg')
 				% Regular MR spectra
-				strSheetSel				= ['MRS_', strVOI, '_All'];	
+				strSheetSel				= ['MRS_', strVOI_MRS, '_All'];	
 				if bDeleteColumns
 					% Select range in Excel for only deleting columns in table
 					strRangeSel				= 'D5';		% 'D5';
@@ -1388,7 +1355,7 @@ if( noFiles_table > 0 )
 				% created from multiple Excel templates and display info
 				astrExelFileAdds	= [""];
 			else
-				error('%s: ERROR: Study %s not with %s data!', sFunctionName, strStudy, strAnalysisData);
+				error('%s: ERROR: Study %s not with %s data!', sFunctionName, strStudy_MRS, strAnalysisData);
 			end		% End of if strcmp(strAnalysisData, 'MRS_reg')
 
 			% Display info
