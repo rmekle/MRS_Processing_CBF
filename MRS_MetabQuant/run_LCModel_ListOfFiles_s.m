@@ -113,6 +113,7 @@ bPrep_MetabQuant		= 1;
 
 
 %% Additional (input) parameters specific to metabolite quantification using LCM analysis
+digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 str_noSD_In				= sprintf('%d_%d', digits_noSD_In(1), digits_noSD_In(2));
 strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
@@ -678,8 +679,8 @@ switch seqType_MRS
 		% processing options, preferrably in the order of application
 
 		% Complete output data directory name for preprocessed MRS data
-		dirData_Processed	= [dirData_Base, dirData_AddOn1, dirData_AddOn2, filesep];
-		dirData_Processed	= completeDirName_MRS_processed_s(dirString_Out_Base, fileExt_MRS, strVOI_MRS, dataType_MRS, signals_MRS, leftshift_In, avgBlockSize_In, ...
+		%dirData_Processed	= [dirData_Base, dirData_AddOn1, dirData_AddOn2, filesep];
+		dirData_Processed	= completeDirName_MRS_processed_s(dirData_Base, fileExt_MRS, strVOI_MRS, dataType_MRS, signals_MRS, leftshift_In, avgBlockSize_In, ...
 			rmbadav_In, noSD_In, strSpecReg_In, driftCorr_In, bECC_In, strProcessTool_In);
 
 		% Add elements for voxel location and quantification analysis to input directory
