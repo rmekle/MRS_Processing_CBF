@@ -48,13 +48,13 @@ noSD_In					= 3.2;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strSpecReg_In			= 'SR2';	% To distinguish settings for spectral registration
+strSpecReg_In			= 'SR1';	% To distinguish settings for spectral registration
 driftCorr_In			= 'y';		% 'y';		'n';
 iterin_In				= 20;
 aaDomain_In				= 'f';		% 'f';		't';
 tmaxin_In				= 0.2;		% 0.2;		0.1;
 bTmaxset_In				= 1;
-ppmOption				= 2;
+ppmOption				= 1;
 medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
 alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 % Set parameters for drift correction depending on type of data, i.e. whether MRS
