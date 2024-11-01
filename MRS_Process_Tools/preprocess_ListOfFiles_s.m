@@ -309,7 +309,7 @@ switch seqType_MRS
 		% Use variable 'dirSting_out_AddOn2' to include information about most important
 		% processing options, preferrably in the order of application
 		
-		% Complete output directory name
+		% Complete output data directory name for preprocessed MRS data
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, filesep];
 		%dirString_Out			= [dirString_Out_Base, dirString_Out_AddOn1, dirString_Out_AddOn2, '_Test', filesep];
 		dirString_Out			= completeDirName_MRS_processed_s(dirString_Out_Base, fileExt_MRS, strVOI_MRS, dataType_MRS, signals_MRS, leftshift_In, avgBlockSize_In, ...
