@@ -115,7 +115,8 @@ bPrep_MetabQuant		= 1;
 %% Additional (input) parameters specific to metabolite quantification using LCM analysis
 digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 str_noSD_In				= sprintf('%d_%d', digits_noSD_In(1), digits_noSD_In(2));
-strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+%strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strTissue				= strVOI_MRS;
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
@@ -126,11 +127,15 @@ strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 bCopyIntoExcel			= 1;
 bTestOutput				= 0;
 
-% Check(s) on oarameter settings
+% Check(s) on parameter settings
 % % For (MEGA-PRESS) difference spectra, usually water scaling cannot be used
 % if strcmp(strAnalysisData, 'MRS_diff') && strcmp(charWaterScaling, 'Yes')
-% 	error('%s: ERROR: DIfference spectra set to be analyzed with water scaling: strAnalysisData = %s\t charwaterScaling = %s!', sFunctionName, strAnalysisData, charWaterScaling);
+% 	error('%s: ERROR: Difference spectra set to be analyzed with water scaling: strAnalysisData = %s\t charwaterScaling = %s!\n', sFunctionName, strAnalysisData, charWaterScaling);
 % end
+% Usually variable strVOI_MRS should be equal to variable strTissue
+if ~strcmp(strVOI_MRS, strTissue)
+	error('%s: ERROR: strVOI_MRS = %s different from strTissue = %s!\n', sFunctionName, strVOI_MRS, strTissue);
+end
 
 
 %% Select basis set and control file for LCModel analysis depending on sequence type
