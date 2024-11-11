@@ -115,7 +115,7 @@ bPrep_MetabQuant		= 1;
 %% Additional (input) parameters specific to metabolite quantification using LCM analysis
 digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 str_noSD_In				= sprintf('%d_%d', digits_noSD_In(1), digits_noSD_In(2));
-strTissue				= 'PCG';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
+strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
@@ -434,7 +434,7 @@ switch seqType_MRS
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v5';
 										%LCM_ControlAdd					= '_Con10';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v6';
-										LCM_ControlAdd					= '_Con11';
+										%LCM_ControlAdd					= '_Con11';
 
 									otherwise
 										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
