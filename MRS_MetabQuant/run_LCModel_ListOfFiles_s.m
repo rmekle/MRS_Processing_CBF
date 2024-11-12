@@ -153,7 +153,7 @@ switch strStudy_MRS
 
 	otherwise
 		fprintf('%s: Settings for OVS not adjusted for strStudy_MRS = %s and strVOI_MRS = %s!\n\n', sFunctionName, strStudy_MRS, strVOI_MRS);
-end				% End of switch strTissue
+end				% End of switch strVOI_MRS
 fprintf('%s: strStudy_MRS = %s\t strVOI_MRS = %s\n\n\tSettings for OVS are strOVS_In = %s\t and\t strOVS_w_In = %s\n\n', sFunctionName, strStudy_MRS, strVOI_MRS, strOVS_In, strOVS_w_In);
 
 
@@ -856,11 +856,13 @@ if strcmp(charWaterScaling, 'Yes')
 	fileID_2						= fopen(fullFilename_listOfFiles_MRS_water);
 	cell_listOfFiles_MRS_Water		= textscan(fileID_2, '%s');
 	status_2						= fclose(fileID_2);
-	sMsg = sprintf('%s: Water scaling is used ...\n', sFunctionName);
+	%sMsg = sprintf('%s: Water scaling is used ...\n', sFunctionName);
+	fprintf('%s: Water scaling is used ...\n', sFunctionName);
 else
-	sMsg = sprintf('%s: No water scaling is used ...\n', sFunctionName);
+	%sMsg = sprintf('%s: No water scaling is used ...\n', sFunctionName);
+	fprintf('%s: No water scaling is used ...\n', sFunctionName);
 end
-disp(sMsg);
+%disp(sMsg);
 
 
 %% Perform LCModel analysis for all MR spectra specified in the list of files
