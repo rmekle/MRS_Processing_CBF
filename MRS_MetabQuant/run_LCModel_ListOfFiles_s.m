@@ -498,27 +498,25 @@ switch seqType_MRS
 								switch leftshift_In
 									case 2
 										% RAW4094 for leftshit = 2
-										%LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_nratio0_noECC_42708';
-										LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+										LCM_Control						= '3T_RAW4094_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0';
 										LCM_ControlAdd					= '_Con6';
 									case 3
 										% RAW4093 for leftshit = 3
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_nratio0_noECC_45322';
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_45422_mac_nratio0';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_45784_mac_nratio0';
 										%LCM_ControlAdd					= '_Con1';
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_mac_nratio0';
 										%LCM_ControlAdd					= '_Con5';
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0';
 										%LCM_ControlAdd					= '_Con6';
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v2';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v2';
 										%LCM_ControlAdd					= '_Con7';
-										LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v3';
+										LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v3';
 										LCM_ControlAdd					= '_Con8';
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v4';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v4';
 										%LCM_ControlAdd					= '_Con9';
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v5';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v5';
 										%LCM_ControlAdd					= '_Con10';
-										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v6';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v6';
 										%LCM_ControlAdd					= '_Con11';
 
 									otherwise
@@ -534,19 +532,19 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con3';
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_45422';
 								%LCM_ControlAdd					= '_Con4';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_mac_nratio0';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBAM_44755_mac_nratio0';
 								%LCM_ControlAdd					= '_Con5';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0';
 								%LCM_ControlAdd					= '_Con6';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v2';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v2';
 								%LCM_ControlAdd					= '_Con7';
-								LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v3';
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v3';
 								LCM_ControlAdd					= '_Con8';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v4';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v4';
 								%LCM_ControlAdd					= '_Con9';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v5';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v5';
 								%LCM_ControlAdd					= '_Con10';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBA_44377_93T2_mac_nratio0_v6';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v6';
 								%LCM_ControlAdd					= '_Con11';
 
 							otherwise
