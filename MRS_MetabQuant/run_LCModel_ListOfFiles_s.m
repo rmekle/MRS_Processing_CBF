@@ -91,7 +91,7 @@ switch dataType_MRS
 				ppmmaxarray_fix_In		= [3.35,4.0,4.1];
 
 			otherwise
-				error('%s: Unknown ppmOption = %d!', sFunctionName, ppmOption);
+				error('%s: Unknown ppmOption = %d!\n', sFunctionName, ppmOption);
 		end			% End of switch ppmOption
 	case {'water', 'water_ref'}
 		% MR spectrum is water signal itself without or with reference scans
@@ -99,7 +99,7 @@ switch dataType_MRS
 		ppmmaxarray_fix_In	= [5.5 5.5 5.2];
 
 	otherwise
-		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+		error('%s: Unknown MRS dataType_MRS = %s!\n', sFunctionName, dataType_MRS);
 end		% End of switch dataType_MRS
 
 % Additional parameter settings
@@ -136,6 +136,14 @@ bTestOutput				= 0;
 if ~strcmp(strVOI_MRS, strTissue)
 	error('%s: ERROR: strVOI_MRS = %s different from strTissue = %s!\n', sFunctionName, strVOI_MRS, strTissue);
 end
+% For studies '3T_Trauma' and ''3T_SBAM', water signals for the HC and the PCG have been
+% acquired with different OVS settings, so adjust for this automatically
+switch strStudy_MRS
+	case {'3T_Trauma', '3T_SBAM'}
+
+	otherwise
+		error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
+end				% End of switch strTissue
 
 
 %% Select basis set and control file for LCModel analysis depending on sequence type
@@ -296,7 +304,7 @@ switch seqType_MRS
 										LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!\n', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -325,7 +333,7 @@ switch seqType_MRS
 								LCM_ControlAdd					= '_Con12';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
 						end			% End of switch fileExt_MRS
 					case 'PCG'
 						switch fileExt_MRS
@@ -371,7 +379,7 @@ switch seqType_MRS
 										LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!\n', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -399,11 +407,11 @@ switch seqType_MRS
 								LCM_ControlAdd					= '_Con11';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
 						end			% End of switch fileExt_MRS
 
 					otherwise
-						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+						error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
 				end				% End of switch strTissue	
 			case '3T_SBAM'
 				% svs_dkd_slaser with TE = 23 ms
@@ -442,7 +450,7 @@ switch seqType_MRS
 										%LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!\n', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -471,7 +479,7 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con12';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
 						end			% End of switch fileExt_MRS
 					case 'PCG'
 						switch fileExt_MRS
@@ -503,7 +511,7 @@ switch seqType_MRS
 										%LCM_ControlAdd					= '_Con11';
 
 									otherwise
-										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!', sFunctionName, fileExt_MRS, leftshift_In);
+										error('%s: ERROR: No LCM control file option for fileExt_MRS = %s and leftshift_In = %d!\n', sFunctionName, fileExt_MRS, leftshift_In);
 								end		% End of switch leftshift_In
 							case 'IMA'
 								% IMA2047 for leftshit = 1
@@ -531,11 +539,11 @@ switch seqType_MRS
 								%LCM_ControlAdd					= '_Con11';
 
 							otherwise
-								error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
 						end			% End of switch fileExt_MRS
 
 					otherwise
-						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+						error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
 				end				% End of switch strTissue
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
@@ -585,15 +593,15 @@ switch seqType_MRS
 						end		% End of if bECC_In == 1
 						
 					otherwise
-						error('%s: ERROR: No LCM control file found for strTissue = %s!', sFunctionName, strTissue);
+						error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
 				end				% End of switch strTissue
 				
 			otherwise
-				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy_MRS);
+				error('%s: ERROR: Unknown study %s!\n', sFunctionName, strStudy_MRS);
 		end			% End of switch strStudy_MRS
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
+		error('%s: ERROR: Unknown sequence type %s!\n', sFunctionName, seqType_MRS);
 end		% End of switch seqType_MRS
 
 % Sequence independent settings
@@ -629,7 +637,7 @@ switch seqType_MRS
 		dirData							= [dirDataAnalysis 'Z_DOPA_FID-A_SD_', str_noSD_In, filesep, 'DOPA_LCModel_Analysis_Data/'];
 		outDir_Base						= [dirDataAnalysis 'Z_DOPA_FID-A_SD_', str_noSD_In, filesep];
 		if isempty(outDir_AddControl)
-			error('%s: ERROR: Addition to output directory name outDir_AddControl =  %s is empty!', sFunctionName, outDir_AddControl);
+			error('%s: ERROR: Addition to output directory name outDir_AddControl =  %s is empty!\n', sFunctionName, outDir_AddControl);
 		end
 		outDir							= [outDir_Base, outDir_AddControl, filesep];
 
@@ -670,7 +678,7 @@ switch seqType_MRS
 				%dirData_AddOn2		= '';
 				
 			otherwise
-				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy_MRS);
+				error('%s: ERROR: Unknown study %s!\n', sFunctionName, strStudy_MRS);
 		end			% End of switch strStudy_MRS
 		
 				
@@ -714,7 +722,7 @@ switch seqType_MRS
 		outDir		= [outDir, LCM_ControlAdd, filesep];
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
+		error('%s: ERROR: Unknown sequence type %s!\n', sFunctionName, seqType_MRS);
 end		% End of switch seqType_MRS
 
 % Check whether directories for data or results exist
@@ -766,7 +774,7 @@ if strcmp(charWaterScaling, 'Yes')
 			fullFilename_listOfFiles_MRS_water = fullFilename_listOfFiles_w;
 			
 		otherwise
-			error('%s: ERROR: water quantification option strWaterQuant = %s!', sFunctionName, strWaterQuant);
+			error('%s: ERROR: water quantification option strWaterQuant = %s!\n', sFunctionName, strWaterQuant);
 	end		% End of switch strWaterQuant
 end		% End of if strcmp(charWaterScaling, 'Yes')
 
@@ -779,8 +787,9 @@ cmd					= 'uname -n';
 cmd					= '';
 if contains(cmdout,'s-csb-mrs01')
 	%cmd = strcat( '$HOME/.lcmodel/bin/lcmodel < ', controlname );
-    sMsg = sprintf('%s: LCModel installed on system %s\n', sFunctionName, cmdout);
-    disp(sMsg);
+    %sMsg = sprintf('%s: LCModel installed on system %s\n', sFunctionName, cmdout);
+    %disp(sMsg);
+	fprintf('%s: LCModel installed on system %s\n', sFunctionName, cmdout);
 else
 	%cmd = strcat( 'ssh s-csb-mrs01 $HOME/.lcmodel/bin/lcmodel < ', controlname );
 	%sMsg = sprintf('%s: No calculation of CEST data for ROIs!\n', sFunctionName);
@@ -1259,7 +1268,7 @@ if( noFiles_table > 0 )
 						templateFileExcel		= char(astrTemplatesSelected(j));
 						% Check for empty template filename, if template to be used
 						if bUseTemplateFile && isempty(templateFileExcel)
-							error('%s: ERROR: bUseTemplateFile = %d, but empty templateFileExcel = %s!', sFunctionName, bUseTemplateFile, templateFileExcel);
+							error('%s: ERROR: bUseTemplateFile = %d, but empty templateFileExcel = %s!\n', sFunctionName, bUseTemplateFile, templateFileExcel);
 						end				
 						fprintf('No. of template = %d\t\ttemplateFileExcel \t= %s\n', j, templateFileExcel);
 						fullPath_TemplateFile	= [dirDataAnalysis templateFileExcel];
@@ -1303,7 +1312,7 @@ if( noFiles_table > 0 )
 							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI_MRS);
+							error('%s: ERROR: Unknown VOI %s!\n', sFunctionName, strVOI_MRS);
 					end			% End of switch strVOI_MRS
 				case '3T_SBAM'
 					% Select template according to selected VOI
@@ -1314,7 +1323,7 @@ if( noFiles_table > 0 )
 							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s!', sFunctionName, strVOI_MRS);
+							error('%s: ERROR: Unknown VOI %s!\n', sFunctionName, strVOI_MRS);
 					end			% End of switch strVOI_MRS
 				case '3T_MMs'
 					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy_MRS);
@@ -1324,7 +1333,7 @@ if( noFiles_table > 0 )
 					bCopyIntoExcel			= 0;	
 
 				otherwise
-					error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy_MRS);
+					error('%s: ERROR: Unknown study %s!\n', sFunctionName, strStudy_MRS);
 			end			% End of switch strStudy_MRS
 			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
 
@@ -1361,7 +1370,7 @@ if( noFiles_table > 0 )
 				% created from multiple Excel templates and display info
 				astrExelFileAdds	= [""];
 			else
-				error('%s: ERROR: Study %s not with %s data!', sFunctionName, strStudy_MRS, strAnalysisData);
+				error('%s: ERROR: Study %s not with %s data!\n', sFunctionName, strStudy_MRS, strAnalysisData);
 			end		% End of if strcmp(strAnalysisData, 'MRS_reg')
 
 			% Display info
@@ -1384,7 +1393,7 @@ if( noFiles_table > 0 )
 						templateFileExcel		= char(astrTemplatesSelected(j));
 						% Check for empty template filename, if template to be used
 						if bUseTemplateFile && isempty(templateFileExcel)
-							error('%s: ERROR: bUseTemplateFile = %d, but empty templateFileExcel = %s!', sFunctionName, bUseTemplateFile, templateFileExcel);
+							error('%s: ERROR: bUseTemplateFile = %d, but empty templateFileExcel = %s!\n', sFunctionName, bUseTemplateFile, templateFileExcel);
 						end				
 						fprintf('No. of template = %d\t\ttemplateFileExcel \t= %s\n', j, templateFileExcel);
 						fullPath_TemplateFile	= [dirDataAnalysis templateFileExcel];
@@ -1394,7 +1403,7 @@ if( noFiles_table > 0 )
 				end		% End of if bCopyIntoExcel
 
 		otherwise
-			error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
+			error('%s: ERROR: Unknown sequence type %s!\n', sFunctionName, seqType_MRS);
 	end			% End of switch seqType_MRS
 
 % 	% Save/copy results from .csv file also into (formatted) Excel file, if selected
@@ -1499,5 +1508,5 @@ end
 % 				end
 % 				
 % 			otherwise
-% 				error('%s: ERROR: No directory/data for noSD_In =  %f!', sFunctionName, noSD_In);
+% 				error('%s: ERROR: No directory/data for noSD_In =  %f!\n', sFunctionName, noSD_In);
 % 		end
