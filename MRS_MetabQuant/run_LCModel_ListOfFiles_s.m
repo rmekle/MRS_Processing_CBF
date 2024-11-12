@@ -137,13 +137,24 @@ if ~strcmp(strVOI_MRS, strTissue)
 	error('%s: ERROR: strVOI_MRS = %s different from strTissue = %s!\n', sFunctionName, strVOI_MRS, strTissue);
 end
 % For studies '3T_Trauma' and ''3T_SBAM', water signals for the HC and the PCG have been
-% acquired with different OVS settings, so adjust for this automatically
+% acquired with different OVS settings (by accident), so adjust for this automatically
+%fprintf('\n\n');
 switch strStudy_MRS
 	case {'3T_Trauma', '3T_SBAM'}
+		switch strVOI_MRS
+			case 'HC'
+				strOVS_w_In		= 'wOVS';
+			case 'PCG'
+				strOVS_w_In		= 'woutOVS';
+
+			otherwise
+				error('%s: ERROR: Unknown VOI %s for study %s!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
+		end			% End of switch strVOI_MRS
 
 	otherwise
-		error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
+		fprintf('%s: Settings for OVS not adjusted for strStudy_MRS = %s and strVOI_MRS = %s!\n\n', sFunctionName, strStudy_MRS, strVOI_MRS);
 end				% End of switch strTissue
+fprintf('%s: strStudy_MRS = %s\t strVOI_MRS = %s\n\n\tSettings for OVS are strOVS_In = %s\t and\t strOVS_w_In = %s\n\n', sFunctionName, strStudy_MRS, strVOI_MRS, strOVS_In, strOVS_w_In);
 
 
 %% Select basis set and control file for LCModel analysis depending on sequence type
@@ -1312,7 +1323,7 @@ if( noFiles_table > 0 )
 							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s!\n', sFunctionName, strVOI_MRS);
+							error('%s: ERROR: Unknown VOI %s for study %s!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
 					end			% End of switch strVOI_MRS
 				case '3T_SBAM'
 					% Select template according to selected VOI
@@ -1323,7 +1334,7 @@ if( noFiles_table > 0 )
 							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s!\n', sFunctionName, strVOI_MRS);
+							error('%s: ERROR: Unknown VOI %s for study %s!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
 					end			% End of switch strVOI_MRS
 				case '3T_MMs'
 					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy_MRS);
