@@ -88,6 +88,8 @@ isSiemens=(~isempty(strfind(sequence,'svs_se')) ||... %Is this the Siemens PRESS
 % and init # of reference scans
 % Adapt code for naming conventions for dkd SVS sequence(s) in XA60
 %isSVSdkdseq = contains(sequence,'svs_slaser_dkd');
+% In VE11: sequence contains 'svs_slaser_dkd'
+% In XA60: sequence contains 'dkd_svs_sLASER'
 isSVSdkdseq = contains(sequence, 'svs_slaser_dkd') || contains(sequence, 'dkd_svs_sLASER');
 noRefScans	= 0;
 % For svs_eja sequences, init variable to indicate extraction of real/relevant data
