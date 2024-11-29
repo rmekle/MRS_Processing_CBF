@@ -155,8 +155,15 @@ else if isSVSdkdseq
 		% dimensions are stored in array of sizes of dimensions
 		indSet	=  contains(sqzDims,'Set');
 		% Obtain true # of averages and compute # of reference scans
-		noAverages	= twix_obj.hdr.Meas.Averages;
-		noRefScans	= sqzSize(indSet) - twix_obj.hdr.Meas.Averages;
+		% In VE11: # of averages can be found in twix_obj.hdr.Meas.Averages
+		% In VE11: twix_obj.hdr.Protocol does NOT exist
+		% In XA60: # of averages can be found in twix_obj.hdr.Protocol.Averages
+		% In XA60: twix_obj.hdr.Meas.Averages is empty []
+		% In VE11 & XA60, # of averages can be found in twix_obj_hdr.MeasYaps.lAverages
+		%noAverages	= twix_obj.hdr.Meas.Averages;
+		%noRefScans	= sqzSize(indSet) - twix_obj.hdr.Meas.Averages;
+		noAverages	= twix_obj.hdr.MeasYaps.lAverages;
+		noRefScans	= sqzSize(indSet) - noAverages;
 		
 		% Squeeze data in twix object for easier processing
 		squeezedData	= squeeze(dOut.data);
@@ -341,7 +348,13 @@ seq=sequence;
 Bo=twix_obj.hdr.Dicom.flMagneticFieldStrength;
 
 %Find the number of averages:
-Naverages=twix_obj.hdr.Meas.Averages;
+% In VE11: # of averages can be found in twix_obj.hdr.Meas.Averages
+% In VE11: twix_obj.hdr.Protocol does NOT exist
+% In XA60: # of averages can be found in twix_obj.hdr.Protocol.Averages
+% In XA60: twix_obj.hdr.Meas.Averages is empty []
+% In VE11 & XA60, # of averages can be found in twix_obj_hdr.MeasYaps.lAverages
+%Naverages=twix_obj.hdr.Meas.Averages;
+Naverages=twix_obj.hdr.MeasYaps.lAverages;
 
 %Find out if multiple coil elements were used:
 Ncoils=twix_obj.hdr.Meas.iMaxNoOfRxChannels;  
