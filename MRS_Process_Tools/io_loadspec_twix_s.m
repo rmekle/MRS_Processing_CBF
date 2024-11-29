@@ -86,7 +86,7 @@ isSiemens=(~isempty(strfind(sequence,'svs_se')) ||... %Is this the Siemens PRESS
 %% CBF: Adjust routine for data acquired using 'svs_slaser_dkd' and 'svs_eja_slaser' sequences from CMRR
 % CBF: Is this Dinesh K. Deelchand's single voxel (sLaser) sequence from CMRR, U Minnesota
 % and init # of reference scans
-% Adapt code for naming conventions for dkd SVS sequence(s) in XA60
+% Adapt code for naming conventions for dkd SVS sequence(s) in VE11 and in XA60
 %isSVSdkdseq = contains(sequence,'svs_slaser_dkd');
 % In VE11: sequence contains 'svs_slaser_dkd'
 % In XA60: sequence contains 'dkd_svs_sLASER'
