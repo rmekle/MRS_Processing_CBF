@@ -561,7 +561,11 @@ fprintf('%s: Start of preprocessing of MRS data ... \n\n\n', sFunctionName);
 switch seqType
 	case {'PRESS', 'STEAM', 'sLASER'}
 		%% Is this Dinesh K. Deelchand's single voxel (sLaser) sequence from CMRR, U Minnesota
-		isSVSdkd_seq = contains(out_raw.seq,'svs_slaser_dkd');
+		% Adapt code for naming conventions for dkd SVS sequence(s) in VE11 and in XA60
+		%isSVSdkdseq = contains(sequence,'svs_slaser_dkd');
+		% In VE11: sequence contains 'svs_slaser_dkd'
+		% In XA60: sequence contains 'dkd_svs_sLASER'
+		isSVSdkdseq = contains(sequence, 'svs_slaser_dkd') || contains(sequence, 'dkd_svs_sLASER');
 		
 		% NOTE:
 		% If it is Dinesh's sequence , leftshift all FIDs, i.e. remove specifc # of 
