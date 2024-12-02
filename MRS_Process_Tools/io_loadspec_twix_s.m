@@ -1,6 +1,6 @@
 %io_loadspec_twix_s.m
 %Jamie Near, McGill University 2014.
-%Edits from Franck Lamberton, 2017, Ralf Mekle (RM), Charite, 2021.
+%Edits from Franck Lamberton, 2017, Ralf Mekle (RM), Charite, 2021, 2023, 2024.
 %
 % USAGE:
 % [out, out_ref] = io_loadspec_twix_s(filename);
@@ -19,7 +19,8 @@
 %
 % OUTPUTS:
 % out        = Input dataset in FID-A structure format.
-% out_ref    = Data from MRS refrence scans in FID-A structure format.
+% out_ref    = Data from MRS refrence scans in FID-A structure format (if available;
+%				otherwise this will be an empty struct).
 
 function [out, out_ref] = io_loadspec_twix_s(filename)
 
@@ -85,13 +86,15 @@ isSiemens=(~isempty(strfind(sequence,'svs_se')) ||... %Is this the Siemens PRESS
 		
 %% CBF: Adjust routine for data acquired using 'svs_slaser_dkd' and 'svs_eja_slaser' sequences from CMRR
 % CBF: Is this Dinesh K. Deelchand's single voxel (sLaser) sequence from CMRR, U Minnesota
-% and init # of reference scans
+% and init total # of reference scans & # of reference scans in protocol (on sequence UI)
 % Adapt code for naming conventions for dkd SVS sequence(s) in VE11 and in XA60
 %isSVSdkdseq = contains(sequence,'svs_slaser_dkd');
 % In VE11: sequence contains 'svs_slaser_dkd'
 % In XA60: sequence contains 'dkd_svs_sLASER'
 isSVSdkdseq = contains(sequence, 'svs_slaser_dkd') || contains(sequence, 'dkd_svs_sLASER');
-noRefScans	= 0;
+noRefScans		= 0;
+nAutoRefScanNo	= 0;
+
 % For svs_eja sequences, init variable to indicate extraction of real/relevant data
 % points, which includes any leftshift
 bLeftshifted	= 0;
@@ -164,8 +167,9 @@ else if isSVSdkdseq
 		% In VE11 & XA60, # of averages can be found in twix_obj_hdr.MeasYaps.lAverages
 		%noAverages	= twix_obj.hdr.Meas.Averages;
 		%noRefScans	= sqzSize(indSet) - twix_obj.hdr.Meas.Averages;
-		noAverages	= twix_obj.hdr.MeasYaps.lAverages;
-		noRefScans	= sqzSize(indSet) - noAverages;
+		noAverages		= twix_obj.hdr.MeasYaps.lAverages;
+		nAutoRefScanNo	= twix_obj.hdr.MeasYaps.sSpecPara.lAutoRefScanNo;
+		noRefScans		= sqzSize(indSet) - noAverages;
 		
 		% Squeeze data in twix object for easier processing
 		squeezedData	= squeeze(dOut.data);
