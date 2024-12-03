@@ -182,13 +182,38 @@ else if isSVSdkdseq
 		% Check whether acquisition was completed, i.e. that all reference scans and
 		% averages from the sequence protocol were actually acquired
 		% # of shots acquired (in data object)
-		noShotsAcq		= sqzSize(indSet);		
+		noShots			= noRefScans + noAverages;
+		noShotsAcq		= sqzSize(indSet);
+		noRefScansAcq	= noRefScans;
+		noAveragesAcq	= noAverages;
 		if noShotsAcq ~= (noRefScans + noAverages)
-			error('%s: Data from MRS acquisition incomplete!\nnoShotsAcq = %d ~= (noRefScans + noAverages = %d + %d)\n\n', ...
-				sFunctionName, noShotsAcq, noRefScans, noAverages);
-		end		% End of if noShotsAcq ~= (noRefScans + noAverages)
-
-		
+			% Issue warning about incomplete data acquisition
+			fprintf('\n');
+			warning('%s: Data from MRS acquisition incomplete!\nnoShotsAcq = %d ~= (noRefScans + noAverages = %d + %d = %d)\n\n', ...
+				sFunctionName, noShotsAcq, noRefScans, noAverages, noShots);
+			% Compute the actually acquired # of reference scans and # of averages
+			if noShotsAcq >= noRefScans/2
+				if noShotsAcq <= (noRefScans/2+noAverages)
+					% First half of reference scans and some or all averages were acquired
+					noRefScansAcq	= noRefScans/2;
+					noAveragesAcq	= noShotsAcq - noRefScans/2;
+				else	% (noRefScans/2+noAverages) < noShotsAcq < (noRefScans+noAverages)
+					% First half of reference scans, all averages, and some (but not all!)
+					% shots of the second half of reference scans were acquired
+					noRefScansAcq	= noRefScans/2 + (noShotsAcq - noRefScans/2 - noAverages);
+					noAveragesAcq	= noAverages;
+				end			% End of if noShotsAcq <= (noRefScans/2+noAverages)
+			else
+				% noShotsAcq < noRefScans/2 -> No averages were acquired
+				noRefScansAcq	= noShotsAcq;
+				noAveragesAcq	= 0;
+			end		% End of if noShotsAcq >= noRefScans/2
+			% Issue error message, since processing of an incomplete dataset would require
+			% rewriting quite some code including assigning indices for reference scans
+			% and averages and subsequent preprocessing of MR spectra in other routines
+			error('\n%s: Incomplete MRS dataset: \nnoShots = %d\t\tnoShotsAcq = %d\nnoRefScans = %d\t\tnoRefScansAcq = %d\nnoAverages = %d\tnoAveragesAcq = %d\n\n', ...
+					sFunctionName, noShots, noShotsAcq, noRefScans, noRefScansAcq, noAverages, noAveragesAcq);
+		end		% End of if noShotsAcq ~= (noRefScans + noAverages)		
 		
 		% Squeeze data in twix object for easier processing
 		squeezedData	= squeeze(dOut.data);
