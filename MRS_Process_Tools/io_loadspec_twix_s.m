@@ -159,7 +159,7 @@ else if isSVSdkdseq
 		% into array of sizes of dimensions assuming that only sizes of non-singleton
 		% dimensions are stored in array of sizes of dimensions
 		indSet	=  contains(sqzDims,'Set');
-		% Obtain true # of averages and compute # of reference scans
+		% Obtain # of averages and  # of reference scans from the protocol/sequence UI
 		% In VE11: # of averages can be found in twix_obj.hdr.Meas.Averages
 		% In VE11: twix_obj.hdr.Protocol does NOT exist
 		% In XA60: # of averages can be found in twix_obj.hdr.Protocol.Averages
@@ -169,7 +169,26 @@ else if isSVSdkdseq
 		%noRefScans	= sqzSize(indSet) - twix_obj.hdr.Meas.Averages;
 		noAverages		= twix_obj.hdr.MeasYaps.lAverages;
 		nAutoRefScanNo	= twix_obj.hdr.MeasYaps.sSpecPara.lAutoRefScanNo;
-		noRefScans		= sqzSize(indSet) - noAverages;
+
+		% Determine true # of averages and total # of reference scans actually acquired
+		% In Dinesh's dkd SVS sLASER sequence, # of reference scans selected on UI has to
+		% be applied by 4 to obtain total # of reference scans, since they are acquired
+		% like this
+		% nAutoRefScanNo_ECC nAutoRefScanNo_Quant MRS nAutoRefScanNo_ECC nAutoRefScanNo_Quant
+		%noRefScans		= sqzSize(indSet) - noAverages;
+		factorRefScans	= 4;
+		noRefScans		= factorRefScans * nAutoRefScanNo;
+		
+		% Check whether acquisition was completed, i.e. that all reference scans and
+		% averages from the sequence protocol were actually acquired
+		% # of shots acquired (in data object)
+		noShotsAcq		= sqzSize(indSet);		
+		if noShotsAcq ~= (noRefScans + noAverages)
+			error('%s: Data from MRS acquisition incomplete!\nnoShotsAcq = %d ~= (noRefScans + noAverages = %d + %d)\n\n', ...
+				sFunctionName, noShotsAcq, noRefScans, noAverages);
+		end		% End of if noShotsAcq ~= (noRefScans + noAverages)
+
+		
 		
 		% Squeeze data in twix object for easier processing
 		squeezedData	= squeeze(dOut.data);
@@ -634,8 +653,8 @@ elseif isMinn || isSVSdkdseq
 		%disp(sMsg_newLine);
 		fprintf('\n');
 		% Not clear whether this option holds for svs_slaser_dkd
-		%warning('isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n', isSVSdkdseq, leftshift);
-		fprintf('%s: isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n', sFunctionName, isSVSdkdseq, leftshift);
+		%warning('isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n\n', isSVSdkdseq, leftshift);
+		fprintf('%s: isSVSdkdseq = %d, check on parameter leftshift = twix_obj.image.iceParam(5,1) = %d\n\n', sFunctionName, isSVSdkdseq, leftshift);
 	end
 else
     leftshift = twix_obj.image.freeParam(1);
