@@ -390,11 +390,13 @@ noAvg_ref_ECC	= 0;
 noAvg_ref_Quant	= 0;
 
 % Display info
-fprintf('%s:\n', sFunctionName);
+%fprintf('%s:\n', sFunctionName);
+fprintf('\n');
 switch dataType 
 	case 'mrs'
 		% Only MR spectrum
-		disp('Data is MR spectrum only ...');
+		%disp('Data is MR spectrum only ...');
+		fprintf('%s:\tData is MR spectrum only ...\n\n', sFunctionName);
 		with_water				= false;
 		with_ref				= false;
 		out_w					= struct([]);
@@ -416,7 +418,8 @@ switch dataType
                 error('%s: Error: Filename for unsuppressed water signal %s is empty!\n\n', sFunctionName, filename_w);
             end
         end
-		disp('Data is MR spectrum with additional unsuppressed water signal ...');
+		%disp('Data is MR spectrum with additional unsuppressed water signal ...');
+		fprintf('%s:\tData is MR spectrum with additional unsuppressed water signal ...\n\n', sFunctionName);
 		with_water				= true;
 		with_ref				= false;
 		out_ref_ECC				= struct([]);
@@ -436,20 +439,23 @@ switch dataType
             if isempty(filename_w)
                 error('%s: Error: Filename for unsuppressed water signal %s is empty!\n\n', sFunctionName, filename_w);
             end
-        end
-		disp('Data is MR spectrum with additional unsuppressed water signal and with reference scans ...');
+		end
+		%disp('Data is MR spectrum with additional unsuppressed water signal and with reference scans ...');
+		fprintf('%s:\tData is MR spectrum with additional unsuppressed water signal and with reference scans ...\n\n', sFunctionName);
 		with_water				= true;
 		with_ref				= true;
 	case 'mrs_ref'
 		% MR spectrum is provided together with reference scans	
-		disp('Data is MR spectrum with reference scans ...');
+		%disp('Data is MR spectrum with reference scans ...');
+		fprintf('%s:\tData is MR spectrum with reference scans ...\n\n', sFunctionName);
 		with_water				= false;
 		with_ref				= true;
 		out_w					= struct([]);
 		out_w_noproc			= struct([]);
 	case 'water'
 		% MR spectrum is unsuppressed water signal ('water') itself
-		disp('MR spectrum is unsuppressed water signal itself ...');
+		%disp('MR spectrum is unsuppressed water signal itself ...');
+		fprintf('%s:\tMR spectrum is unsuppressed water signal itself ...\n\n', sFunctionName);
 		with_water				= false;
 		with_ref				= false;
 		out_w					= struct([]);
@@ -460,14 +466,15 @@ switch dataType
 		out_ref_Quant_noproc	= struct([]);
 	case 'water_ref'
 		% MR spectrum is unsuppressed water signal ('water') itself with reference scans
-		disp('MR spectrum is unsuppressed water signal itself with reference scans...');
+		%disp('MR spectrum is unsuppressed water signal itself with reference scans ...');
+		fprintf('%s:\tMR spectrum is unsuppressed water signal itself with reference scans ...\n\n', sFunctionName);
 		with_water				= false;
 		with_ref				= true;
 		out_w					= struct([]);
 		out_w_noproc			= struct([]);		
 		
 	otherwise
-		error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
+		error('%s: Unknown MRS dataType = %s!\n\n', sFunctionName, dataType);
 end		% End of switch dataType 
 				
 % Select parameters specifc to the respective MRS sequence 
@@ -486,7 +493,7 @@ switch seqType
 		NoSubSpectra	= 3;
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
+		error('%s: ERROR: Unknown sequence type %s!\n\n', sFunctionName, seqType);
 		
 end		% End of switch seqType
 %disp(sMsg_newLines);
