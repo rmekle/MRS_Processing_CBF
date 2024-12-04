@@ -359,8 +359,8 @@ else if isSVSdkdseq
 			% Update information about data objects
 			% (correct, if indCol has NOT changed in squeezed data object)
 			% (here it could also be set to (Vector Size * OversamplingFactor))
-			new_data_size		= size(data);
-			sqzSize(indCol)		= new_data_size(indCol);
+			data_size			= size(data);
+			sqzSize(indCol)		= data_size(indCol);
 			
 			% Indicate that data (FIDs) have already been left shifted
 			bLeftshifted	= 1;
