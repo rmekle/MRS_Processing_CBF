@@ -215,9 +215,11 @@ else if isSVSdkdseq
 					sFunctionName, noShots, noShotsAcq, noRefScans, noRefScansAcq, noAverages, noAveragesAcq);
 		end		% End of if noShotsAcq ~= (noRefScans + noAverages)		
 		
-		% Squeeze data in twix object for easier processing
+		% Extract and squeeze data from twix object for easier processing
+		% (required, so that 'sqzSize' and 'indSet' that refer to information about 
+		% the dimensions and size of the squeezed twix data can be used)
 		squeezedData	= squeeze(dOut.data);
-		%sqz_ndims		= ndims(squeezeData);
+		%sqz_ndims		= ndims(squeezedData);
 		if noRefScans > 0
 			% Data includes reference scans and averages
 			% Extract reference scans and averages into separate data objects and update
@@ -260,7 +262,8 @@ else if isSVSdkdseq
 			% 			end		% End of if indSet == sqz_ndims
 			
 			% Update information about data objects
-			% (correct, if indSet has NOT changed in squeezed data object)
+			% (should be correct here, since 'sqzSize' and 'indSet' already refer to
+			% information about the dimensions and size of the squeezed twix data)
 			sqzSize(indSet)		= sqzSize(indSet) - noRefScans;
 		else
 			% No reference scans, data only includes averages
@@ -277,9 +280,11 @@ else if isSVSdkdseq
 			% non-singleton dimensions are stored in array of sizes of dimensions
 			indCol	=  contains(sqzDims,'Col');
 			
-			% Squeeze data in twix object for easier processing
+			% Extract data from twix object for easier processing
+			% (required, so that 'sqzSize' and 'indSet' that refer to information about 
+			% the dimensions and size of the squeezed twix data can be used)
 			squeezedData	= squeeze(dOut.data);
-			%sqz_ndims		= ndims(squeezeData);
+			%sqz_ndims		= ndims(squeezedData);
 			
 			% According to Eddie Auerbach, the author of eja_svs sequences,
 			% "MDH header parameters, but the one you need to look for is 
@@ -357,7 +362,8 @@ else if isSVSdkdseq
 			data			= subsref(squeezedData, S);
 			
 			% Update information about data objects
-			% (correct, if indCol has NOT changed in squeezed data object)
+			% (should be correct here, since 'sqzSize' and 'indCol' already refer to
+			% information about the dimensions and size of the squeezed twix data)
 			% (here it could also be set to (Vector Size * OversamplingFactor))
 			data_size			= size(data);
 			sqzSize(indCol)		= data_size(indCol);
@@ -365,7 +371,7 @@ else if isSVSdkdseq
 			% Indicate that data (FIDs) have already been left shifted
 			bLeftshifted	= 1;
 		else
-			data=dOut.data;
+			data	= dOut.data;
 		end		% End of else if isMinn
 	end		% End of else if isSVSdkdseq
 end		% End of if isSpecial ||... %Catches Ralf Mekle's and CIBM version of the SPECIAL sequence
