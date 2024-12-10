@@ -22,7 +22,7 @@
 % Jamie Near, McGill University 2014
 % Modified by Ivo Opitz, Charite Universitätsmedizin Berlin, 2022 to add
 % option to load a whole directory of .IMA files into one structure.
-% Modified by Ralf Mekle, Charite Universitätsmedizin Berlin, 2022
+% Modified by Ralf Mekle, Charite Universitätsmedizin Berlin, 2022, 2024
 
 function [out, out_ref] = io_loadspec_IMA_s(dirString, NsubSpectra)
 
