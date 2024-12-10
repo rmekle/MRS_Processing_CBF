@@ -28,9 +28,10 @@ function [out, out_ref] = io_loadspec_IMA_s(dirString, NsubSpectra)
 
 % %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'io_loadspec_IMA_s.m';
-sMsg_newLines		= sprintf('\n\n');
+%sMsg_newLines		= sprintf('\n\n');
 % sMsg_newLine		= sprintf('\n');
 % disp(sMsg_newLines);
+fprintf('\n\n');
 
 
 %% Modified for reading a whole directory of IMA files
@@ -42,8 +43,13 @@ dirData		= dir([dirString, '*.IMA']);
 files		= char({dirData.name});
 Nfiles		= size(files, 1);
 
-% Indicate progress of loading all DICOM files
-h		= waitbar (0, 'Loading DICOM Files...', 'Name', 'Loading DICOM Files');
+% Check whether directory with MRS DICOM files is empty
+if Nfiles == 0
+	error('%s: Directory of MRS DICOM files is empty! Nfiles = %d\ndirString = %s\n\n', sFunctionName, Nfiles, dirString);
+end
+
+% Indicate progress of loading all MRS DICOM files
+h		= waitbar (0, 'Loading MRS DICOM Files...', 'Name', 'Loading MRS DICOM Files');
 
 % Load Dicom Info using Chris Rogers' "SiemensCsaParse.m" function:
 fullFileName	= fullfile(dirString, files(1, :));
