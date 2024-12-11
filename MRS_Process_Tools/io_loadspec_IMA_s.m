@@ -36,6 +36,13 @@ fprintf('\n\n');
 
 %% Modified for reading a whole directory of MRS DICOM files
 
+% % Load all DICOM files without changing working directory
+% %oldFolder	= cd(dirString);
+% %dirData		= dir('*.IMA');
+% dirData		= dir([dirString, '*.IMA']);
+% files		= char({dirData.name});
+% Nfiles		= size(files, 1);
+
 % Check whether .IMA (e.g. VE11) or .dcm (e.g. XA60) MRS DICOM files are in selected
 % directory
 % .IMA files
@@ -48,7 +55,6 @@ dirData_dcm		= dir([dirString, '*.dcm']);
 files_dcm		= char({dirData_dcm.name});
 Nfiles_dcm		= size(files_dcm, 1);
 
-
 % Check whether directory with MRS DICOM files is empty
 if Nfiles_IMA == 0 && Nfiles_dcm == 0
 	error('%s: Directory of MRS DICOM files is empty! \tNfiles_IMA = %d \tNfiles_dcm = %d\ndirString = %s\n\n', ...
@@ -57,23 +63,29 @@ end		% End of if Nfiles_IMA == 0 && Nfiles_dcm == 0
 
 % Check whether .IMA and .dcm files are in the same directory
 % If yes, issue error message, since MRS DICOM files should not be mixed
+% If not select information about and extension of MRS DICOM files to be loaded
+extDICOM	= '';
 if Nfiles_IMA ~= 0 && Nfiles_dcm ~= 0
 	error('%s: Directory of MRS DICOM files contains mixed files: Nfiles_IMA = %d \tNfiles_dcm = %d\ndirString = %s\n\n', ...
 		sFunctionName, Nfiles_IMA, Nfiles_dcm, dirString);
+elseif Nfiles_IMA ~= 0 && Nfiles_dcm == 0
+	% Directory only contains .IMA MRS DICOM files
+	dirData		= dirData_IMA;
+	files		= files_IMA;
+	Nfiles		= Nfiles_IMA;
+	extDICOM	= '.IMA';
+elseif Nfiles_IMA == 0 && Nfiles_dcm ~= 0
+	% Directory only contains .dcm MRS DICOM files
+	dirData		= dirData_dcm;
+	files		= files_dcm;
+	Nfiles		= Nfiles_dcm;
+	extDICOM	= '.dcm';
 end		% End of if Nfiles_IMA ~= 0 && Nfiles_dcm ~= 0
 
 
-
-% Load all DICOM files without changing working directory
-%oldFolder	= cd(dirString);
-%dirData		= dir('*.IMA');
-dirData		= dir([dirString, '*.IMA']);
-files		= char({dirData.name});
-Nfiles		= size(files, 1);
-
-
+%% Load all MRS DICOM with specific file extension that are in selected directory
 % Indicate progress of loading all MRS DICOM files
-h		= waitbar (0, 'Loading MRS DICOM Files...', 'Name', 'Loading MRS DICOM Files');
+h	= waitbar (0, sprintf('Loading MRS DICOM Files with extension %s ...', extDICOM), 'Name', 'Loading MRS DICOM Files');
 
 % Load Dicom Info using Chris Rogers' "SiemensCsaParse.m" function:
 fullFileName	= fullfile(dirString, files(1, :));
