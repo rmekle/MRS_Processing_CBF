@@ -166,7 +166,8 @@ end
 % data were anonymized or pseudonomized
 if(isfield(info, 'ProtocolName'))
 	sequence		= info.ProtocolName;
-else if(isfield(info.csa, 'SequenceName'))
+else 
+	if(isfield(info.csa, 'SequenceName'))
 		sequence		= info.csa.SequenceName;
 	else
 		sequence		= '';
@@ -174,7 +175,10 @@ else if(isfield(info.csa, 'SequenceName'))
 end
 
 % In particular, determine if Dinesh's sLASER sequence was used
-isSVSdkdseq		= contains(sequence,'svs_slaser_dkd');
+%isSVSdkdseq		= contains(sequence,'svs_slaser_dkd');
+% In VE11: sequence contains 'svs_slaser_dkd'
+% In XA60: sequence contains 'dkd_svs_sLASER'
+isSVSdkdseq = contains(sequence, 'svs_slaser_dkd') || contains(sequence, 'dkd_svs_sLASER');
 
 
 %% Load remaining MRS DICOM files (shots/averages)
