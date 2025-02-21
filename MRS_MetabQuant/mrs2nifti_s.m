@@ -15,9 +15,6 @@
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'mrs2nifti_s';
-% sMsg_newLines		= sprintf('\n\n');
-% sMsg_newLine		= sprintf('\n');
-% disp(sMsg_newLines);
 fprintf('\n\n');
 
 
@@ -28,9 +25,9 @@ status					= 0;
 bProcessNewFiles		= 0;
 bConvert_mrs2nii		= 1;			% 1;		% 0;
 strStudy_MRS			= 'ENIGMA_3T_SBA';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';
-fileExt_MRS				= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExt_MRS				= 'dat';		% Currently: 'dat' (raw data) or 'IMA' & '.dcm' (DICOM)
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
+dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 
 % Set (additional) parameters depending on sequence type
 switch seqType_MRS
@@ -55,11 +52,34 @@ switch seqType_MRS
 				% SBAM
 				dirData_MRS				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_DICOM/';
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI/';
+			case 'ENIGMA_3T_SBA'
+				% ENIGMA dataset selected from 3T BCAN MRS SBA study 
+				dirData_MRS_base			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/ENIGMA_MRS/ENIGMA_3T_SBA/ENIGMA_3T_SBA_00_All_MRS_Files';
+			case 'ENIGMA_3T_SBAM'
+				% ENIGMA dataset selected from 3T BCAN MRS SBAM study
+				dirData_MRS_base			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/ENIGMA_MRS/ENIGMA_3T_SBAM/ENIGMA_3T_SBAM_00_All_MRS_Files';				
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy_MRS
-		
+		% Complete directory names based on extension/format of MRS data files
+		switch fileExt_MRS
+			case 'dat'
+				% MRS raw data .dat files
+				dirData_MRS			= [dirData_MRS_base, '_RawData_dat/'];
+				outputDir_NIfTI		= [dirData_MRS_base, '_RawData_NIfTI/'];
+			case 'IMA'
+				% MRS DICOM .IMA or files
+				dirData_MRS			= [dirData_MRS_base, '_DICOM_IMA/'];
+				outputDir_NIfTI		= [dirData_MRS_base, '_DICOM_NIfTI/'];
+			case 'dcm'
+				% MRS enhanced DICOM .dcm files
+				error('%s: ERROR: MRS DICOM to NIfTI conversion for file extension %s NOT yet implemented!', sFunctionName, fileExt_MRS);
+
+			otherwise
+				error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExt_MRS);
+		end		% End of switch fileExt_MRS
+
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end		% End of switch seqType_MRS
@@ -104,6 +124,7 @@ switch fileExt_MRS
         % Remove the two directories '.' and '..'
         structFileListing_MRS		= structFileListing_MRS(~ismember({structFileListing_MRS(:).name},{'.','..'}));
         noEntriesListing_MRS		= length(structFileListing_MRS);
+
     otherwise
         error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExt_MRS);
 end		% End of switch fileExt_MRS
