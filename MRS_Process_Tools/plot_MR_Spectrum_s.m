@@ -2,6 +2,9 @@ function [status] = plot_MR_Spectrum_s(mrs, dataType, outDirString, outFileName,
 %
 % DESCRIPTION:
 %  Function to plot an magnetic resonance (MR) spectrum stored in a data structure of the
+
+
+
 %  FID-A toolkit for two different plotting ranges
 %  Returns status indicating successful execution
 %
@@ -49,7 +52,7 @@ yf1		= 1.0*min(get(gca, 'ylim'));
 set(get(gca,'XLabel'),'Position', [xf1, yf1], 'VerticalAlignment', 'Top');
 
 % Save figure of spectrum
-% Create name for figure files
+% Create name for figure filesv
 % Extracting the digits before and after decimal point assumes that there is only
 % one digit after the decimal point
 % fix, i.e. rounding towards zero, is used to correctly handle negative numbers
