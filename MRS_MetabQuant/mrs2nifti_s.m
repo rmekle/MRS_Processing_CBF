@@ -155,8 +155,8 @@ if bConvert_mrs2nii
 		dataMRS_In			= structFileListing_MRS(ind).name;
 		dataMRS_InPath		= fullfile(dirData_MRS, dataMRS_In, filesep);
 		fprintf('\n\n');
-		disp([sprintf('ind = %d\t', ind), sprintf('\t'), dataMRS_In, sprintf('\n\n')]);
-		disp([sprintf('ind = %d\t', ind), sprintf('\t'), dataMRS_In, sprintf('\n\n')]);
+		fprintf('ind = %d\t .%s\t dataMRS_In = %s\n\n', ind, fileExt_MRS, dataMRS_In);
+		%disp([sprintf('ind = %d\t', ind), sprintf('\t'), dataMRS_In, sprintf('\n\n')]);
 		
 		% Create command for conversion to NIfTI for each set of MRS data files 
 		% depending on data format and type
