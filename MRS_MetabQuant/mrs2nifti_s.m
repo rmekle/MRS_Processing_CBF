@@ -25,7 +25,7 @@ status					= 0;
 bProcessNewFiles		= 0;
 bConvert_mrs2nii		= 1;			% 1;		% 0;
 strStudy_MRS			= 'ENIGMA_3T_SBA';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';
-fileExt_MRS				= 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM) or '.dcm' (enhanced DICOM)
+fileExt_MRS				= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM) or 'dcm' (enhanced DICOM)
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 
@@ -119,7 +119,7 @@ switch fileExt_MRS
         noEntriesListing_MRS		= length( structFileListing_MRS );
         %noDataFiles				= noEntriesListing_MRS - 2
     case 'IMA'
-		% MRS DICOM .IMA or files
+		% MRS DICOM .IMA files
         structFileListingAll		= dir(dirData_MRS);
         subDir_MRS					= [structFileListingAll(:).isdir];
         structFileListing_MRS		= structFileListingAll(subDir_MRS);
@@ -170,7 +170,7 @@ if bConvert_mrs2nii
 				%command				= sprintf('spec2nii twix -m 2 -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
 				command				= sprintf('spec2nii twix -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
 			case 'IMA'
-				% MRS DICOM .IMA or files
+				% MRS DICOM .IMA files
 				command				= sprintf('spec2nii dicom -j -f %s -o %s %s', dataMRS_In, outputDir_NIfTI, dataMRS_InPath);
 			case 'dcm'
 				% MRS enhanced DICOM .dcm files
