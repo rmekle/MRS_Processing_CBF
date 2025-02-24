@@ -25,7 +25,7 @@ status					= 0;
 bProcessNewFiles		= 0;
 bConvert_mrs2nii		= 1;			% 1;		% 0;
 strStudy_MRS			= 'ENIGMA_3T_SBA';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';
-fileExt_MRS				= 'dat';		% Currently: 'dat' (raw data) or 'IMA' & '.dcm' (DICOM)
+fileExt_MRS				= 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM) or '.dcm' (enhanced DICOM)
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 dataType_MRS			= 'mrs_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 
@@ -114,10 +114,12 @@ end		% End of if bConvert_mrs2nii
 % directories are not included in the resulting list)
 switch fileExt_MRS
     case 'dat'
+		% MRS raw data .dat files
         structFileListing_MRS		= dir([dirData_MRS, '*.dat']);
         noEntriesListing_MRS		= length( structFileListing_MRS );
         %noDataFiles				= noEntriesListing_MRS - 2
     case 'IMA'
+		% MRS DICOM .IMA or files
         structFileListingAll		= dir(dirData_MRS);
         subDir_MRS					= [structFileListingAll(:).isdir];
         structFileListing_MRS		= structFileListingAll(subDir_MRS);
@@ -154,15 +156,31 @@ if bConvert_mrs2nii
 		dataMRS_InPath		= fullfile(dirData_MRS, dataMRS_In, filesep);
 		fprintf('\n\n');
 		disp([sprintf('ind = %d\t', ind), sprintf('\t'), dataMRS_In, sprintf('\n\n')]);
+		disp([sprintf('ind = %d\t', ind), sprintf('\t'), dataMRS_In, sprintf('\n\n')]);
 		
-		% Create command for conversion to NIfTI for each set of MRS data files and
-		% invoke system call for NIfTI conversion
-		% (-m can be used to specify which multi-raid file to convert if used on VE data;
-		%  -m 2 refers then to the second RAID file within the .dat file that usually 
-		%  contains the MRS data; RAID file 1 seems to correspond to noise scans; 
-		%  option -m 2 does not seem to be required for the conversion command)
-		%command				= sprintf('spec2nii twix -m 2 -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
-		command				= sprintf('spec2nii twix -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
+		% Create command for conversion to NIfTI for each set of MRS data files 
+		% depending on data format and type
+		switch fileExt_MRS
+			case 'dat'
+				% MRS raw data .dat files
+				% (-m can be used to specify which multi-raid file to convert if used on VE data;
+				%  -m 2 refers then to the second RAID file within the .dat file that usually
+				%  contains the MRS data; RAID file 1 seems to correspond to noise scans;
+				%  option -m 2 does not seem to be required for the conversion command)
+				%command				= sprintf('spec2nii twix -m 2 -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
+				command				= sprintf('spec2nii twix -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
+			case 'IMA'
+				% MRS DICOM .IMA or files
+				command				= sprintf('spec2nii dicom -j -f %s -o %s %s', dataMRS_In, outputDir_NIfTI, dataMRS_InPath);
+			case 'dcm'
+				% MRS enhanced DICOM .dcm files
+				error('%s: ERROR: MRS enhanced DICOM to NIfTI conversion for file extension %s NOT yet implemented!', sFunctionName, fileExt_MRS);
+
+			otherwise
+				error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExt_MRS);
+		end		% End of switch fileExt_MRS
+
+		% Invoke system call for NIfTI conversion 
 		[status,cmdout]		= system(command);
 		if status ~= 0
 			error('%s: Error in conversion of MRS data into NIfTI format for data in %s!\n\n%s', sFunctionName, dataMRS_In, cmdout);
