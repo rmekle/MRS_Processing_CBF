@@ -62,7 +62,7 @@ switch seqType_MRS
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy_MRS
-		% Complete directory names based on extension/format of MRS data files
+		% Complete directory names based on extension/format of MRS data files 
 		switch fileExt_MRS
 			case 'dat'
 				% MRS raw data .dat files
@@ -74,7 +74,7 @@ switch seqType_MRS
 				outputDir_NIfTI		= [dirData_MRS_base, '_DICOM_NIfTI/'];
 			case 'dcm'
 				% MRS enhanced DICOM .dcm files
-				error('%s: ERROR: MRS DICOM to NIfTI conversion for file extension %s NOT yet implemented!', sFunctionName, fileExt_MRS);
+				error('%s: ERROR: MRS enhanced DICOM to NIfTI conversion for file extension %s NOT yet implemented!', sFunctionName, fileExt_MRS);
 
 			otherwise
 				error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExt_MRS);
@@ -124,6 +124,9 @@ switch fileExt_MRS
         % Remove the two directories '.' and '..'
         structFileListing_MRS		= structFileListing_MRS(~ismember({structFileListing_MRS(:).name},{'.','..'}));
         noEntriesListing_MRS		= length(structFileListing_MRS);
+	case 'dcm'
+		% MRS enhanced DICOM .dcm files
+		error('%s: ERROR: Case for MRS enhanced DICOM with file extension %s NOT yet implemented!', sFunctionName, fileExt_MRS);
 
     otherwise
         error('%s: ERROR: Unknown file extension %s!', sFunctionName, fileExt_MRS);
@@ -147,20 +150,24 @@ fprintf('\n\n');
 if bConvert_mrs2nii 
 	fprintf('%s: Conversion of MRS data files into NIfTI format ...\n', sFunctionName);
 	for ind=indexStart : indexStep : noEntriesListing_MRS		% noEntriesListing_MRS	% 3		% 4
-		subdirData_MRS	= structFileListing_MRS(ind).name;
-		inputDir			= fullfile(dirData_MRS, subdirData_MRS, filesep);
-		disp(sMsg_newLines);
-		disp([sprintf('ind = %d\t', ind), sprintf('\t'), subdirData_MRS, sprintf('\n\n')]);
+		dataMRS_In			= structFileListing_MRS(ind).name;
+		dataMRS_InPath		= fullfile(dirData_MRS, dataMRS_In, filesep);
+		fprintf('\n\n');
+		disp([sprintf('ind = %d\t', ind), sprintf('\t'), dataMRS_In, sprintf('\n\n')]);
 		
-		% Create command for conversion to NIfTI for each set of DICOM input images and
+		% Create command for conversion to NIfTI for each set of MRS data files and
 		% invoke system call for NIfTI conversion
-		% (last argument on command line for dcm2niix is the input directory)
-		command				= sprintf('dcm2niix -z n -f %s -v 1 -o %s %s', subdirData_MRS, outputDir_NIfTI, inputDir);
+		% (-m can be used to specify which multi-raid file to convert if used on VE data;
+		%  -m 2 refers then to the second RAID file within the .dat file that usually 
+		%  contains the MRS data; RAID file 1 seems to correspond to noise scans; 
+		%  option -m 2 does not seem to be required for the conversion command)
+		%command				= sprintf('spec2nii twix -m 2 -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
+		command				= sprintf('spec2nii twix -e image -j %s -o %s', dataMRS_InPath, outputDir_NIfTI);
 		[status,cmdout]		= system(command);
 		if status ~= 0
-			error('%s: Error in conversion of MRS data into NIfTI format for data in %s!\n\n%s', sFunctionName, subdirData_MRS, cmdout);
+			error('%s: Error in conversion of MRS data into NIfTI format for data in %s!\n\n%s', sFunctionName, dataMRS_In, cmdout);
 		end
-	end		% End of for ind=indexStart : indexStep : noDataEntries_MRS
+	end		% End of for ind=indexStart : indexStep : noEntriesListing_MRS
 else
 	fprintf('%s: No conversion of MRS data into NIfTI format!\n', sFunctionName);
 end		% End of if bConvert_mrs2nii 
