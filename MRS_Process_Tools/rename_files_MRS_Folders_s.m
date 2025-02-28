@@ -32,7 +32,7 @@ parentDir			= [parentDir_Base, parentDir_AddOn];
 startPat		= 'MRS_';
 endPat			= '_LOBI';		% '';	'_LOBI';	'_G';	'_R';	'_DICOM';
 strAddStart		= '';		% 3T_';		'';
-strAddEnd		= '_';
+strAddEnd		= '_DICOM_';		% '_';		'_DICOM_';	
 lenStartPat		= length(startPat);
 
 % Select whether all files and folders in each subfolder are renamed using the same
