@@ -5,7 +5,7 @@
 %% Script to rename MRS DICOM files distributed in several directories
 %	Current version: Assume that only one MRS DICOM file is in each subdirectory
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2023, 2024; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2023, 2024, 2025; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,6 +26,8 @@ sFunctionName		= 'rename_files_MRS_DICOM_s';
 parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
 parentDir_AddOn		= 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_HC/';	
 					% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_PCG/';	% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_HC/';
+%parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/';
+%parentDir_AddOn		= 'TGA_Test/';		% TGA_Test/';
 parentDir			= [parentDir_Base, parentDir_AddOn];
 
 % % Select start and end pattern for substring extraction
