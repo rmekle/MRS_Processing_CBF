@@ -4,7 +4,7 @@
 %
 %% Script to rename files distributed in several directories following a specific pattern
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024, 2025; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -19,17 +19,19 @@ sFunctionName		= 'rename_files_MRS_Folders_s';
 
 
 %% Init input parameters for renaming subfolders
-parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
-parentDir_AddOn		= 'SBAM_Test/';	
-					% 'SBAM/';		% SBAM_Test/';
+%parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
+%parentDir_AddOn		= 'SBAM_Test/';		% 'SBAM/';		% SBAM_Test/';
+parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/';
+parentDir_AddOn		= 'TGA_Test/';		% TGA_Test/';
 parentDir			= [parentDir_Base, parentDir_AddOn];
 
 % Select start and end pattern for substring extraction, if required
 % End pattern can be empty, if substring to be extracted is at end of name of subdirectory
 % Select string additions that have to be added at start and/or end of new filenames
-startPat		= 'MRS_Trauma_';
-endPat			= '';		% '_DICOM';
-strAddStart		= '3T_';
+%startPat		= 'MRS_Trauma_';
+startPat		= 'MRS_';
+endPat			= '_LOBI';		% '';	'_LOBI';	'_G';	'_R';	'_DICOM';
+strAddStart		= '';		% 3T_';		'';
 strAddEnd		= '_';
 lenStartPat		= length(startPat);
 
