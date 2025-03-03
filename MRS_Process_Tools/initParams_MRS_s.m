@@ -19,7 +19,7 @@
 %						
 %
 % OUTPUTS:
-% paramsMRS_struct	= Struct of parameters for processing of MRS data
+% paramsMRS_struct	= Struct of parameter settings for processing of MRS data
 %
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2025;
