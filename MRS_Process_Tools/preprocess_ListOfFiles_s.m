@@ -5,7 +5,7 @@
 %% Script to preprocess a list of files of magnetic resonance spectroscopy (MRS) data
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022,
-% 2023, 2024; 
+% 2023, 2024, 2025; 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -14,14 +14,9 @@
 % close all;
 
 
-
-
-
 %% Set string for name of routine and display blank lines for enhanced output visibility 
 sFunctionName		= 'preprocess_ListOfFiles_s';
-%sMsg_newLines		= sprintf('\n\n');
-%sMsg_newLine		= sprintf('\n');
-%disp(sMsg_newLines);
+%sMsg_newLines		= sprintf('\n\n');	%disp(sMsg_newLines);
 fprintf('\n\n');
 
 
