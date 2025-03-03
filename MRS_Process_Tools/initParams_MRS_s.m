@@ -34,19 +34,19 @@ function [paramsMRS_struct] = initParams_MRS_s()
 paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 paramsMRS_struct.filename_In			= '';
 paramsMRS_struct.filename_w_In			= '';
-paramsMRS_struct.strStudy_MRS			= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
-paramsMRS_struct.strVOI_MRS				= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+paramsMRS_struct.strStudy_MRS			= '3T_SBAM';	% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
+paramsMRS_struct.strVOI_MRS				= 'PCG';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-paramsMRS_struct.dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
-paramsMRS_struct.signals_MRS			= 'Spectra';		% 'MMs';	% 'Spectra';
+paramsMRS_struct.dataType_MRS			= 'mrs_w_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
+paramsMRS_struct.signals_MRS			= 'Spectra';	% 'MMs';	% 'Spectra';
 paramsMRS_struct.strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-paramsMRS_struct.strOVS_w_In			= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-paramsMRS_struct.leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
-paramsMRS_struct.avgBlockSize_In		= 0;		% 0;	2;		4;		8;		16;
+paramsMRS_struct.strOVS_w_In			= 'woutOVS';	% 'wOVS';	% 'woutOVS';
+paramsMRS_struct.leftshift_In			= 3;			% 3;	% 2;	% 0;	% 1;
+paramsMRS_struct.avgBlockSize_In		= 0;			% 0;	2;		4;		8;		16;
 
 % Parameters for removal of bad averages
-paramsMRS_struct.rmbadav_In				= 'y';		% 'y';		'n';
-paramsMRS_struct.noSD_In				= 3.2;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
+paramsMRS_struct.rmbadav_In				= 'y';			% 'y';		'n';
+paramsMRS_struct.noSD_In				= 3.2;			% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 %paramsMRS_struct.digits_noSD_In		= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
