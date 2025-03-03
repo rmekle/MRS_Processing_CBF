@@ -8,19 +8,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, dataType, signals, leftshift, avgBlockSize, rmbadav, noSD, strSpecReg, driftCorr, bECC, strProcessTool)
+% [paramsMRS_struct] = initParams_MRS_s()
 %
 % DESCRIPTION:
-% Function to complete directory name for processed magnetic resonance spectroscopy (MRS)
-% data depending on voxel location, data type, # of SDs, and other options used for
-% pre-processing of MR spectra or acquired macromolecules (MMs).
+% Function to initialize parameter values for processing of magnetic resonance 
+% spectroscopy (MRS) including preprocessing and metabolite quantification.
 %
 % INPUTS:
-% strDir_Out_Base    = String variable for the name of the base directory containing all
-%						processed MR spectra for a specific study
+% 	= 
+%						
 %
 % OUTPUTS:
-% paramsMRS_struct	= Struct  processed MRS data
+% paramsMRS_struct	= Struct of parameters for processing of MRS data
 %
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2025;
@@ -30,8 +29,8 @@
 function [paramsMRS_struct] = initParams_MRS_s()
 
 %% Init input parameters for preprocessing of magnetic resonance spectroscopy (MRS) data
-%dirString_In			= '';
-%dirString_Out			= '';
+%paramsMRS_struct.dirString_In			= '';
+%paramsMRS_struct.dirString_Out			= '';
 paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 paramsMRS_struct.filename_In			= '';
 paramsMRS_struct.filename_w_In			= '';
