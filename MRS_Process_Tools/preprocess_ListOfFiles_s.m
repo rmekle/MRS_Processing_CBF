@@ -26,49 +26,49 @@ fprintf('\n\n');
 
 % Extract parameter settings from parameter struct
 fileExt_MRS				= sParamsMRS_struct.fileExt_MRS;
-filename_In				= sParamsMRS_struct.filename_In;
-filename_w_In			= sParamsMRS_struct.filename_w_In;
+filename_In				= sParamsMRS_struct.filename;
+filename_w_In			= sParamsMRS_struct.filename_w;
 strStudy_MRS			= sParamsMRS_struct.strStudy_MRS;
 strVOI_MRS				= sParamsMRS_struct.strVOI_MRS;
 seqType_MRS				= sParamsMRS_struct.seqType_MRS;
 dataType_MRS			= sParamsMRS_struct.dataType_MRS;
 signals_MRS				= sParamsMRS_struct.signals_MRS;
-strOVS_In				= sParamsMRS_struct.strOVS_In;
-strOVS_w_In				= sParamsMRS_struct.strOVS_w_In;
-leftshift_In			= sParamsMRS_struct.leftshift_In;
-avgBlockSize_In			= sParamsMRS_struct.avgBlockSize_In;
+strOVS_In				= sParamsMRS_struct.strOVS;
+strOVS_w_In				= sParamsMRS_struct.strOVS_w;
+leftshift_In			= sParamsMRS_struct.leftshift;
+avgBlockSize_In			= sParamsMRS_struct.avgBlockSize;
 
 % Parameters for removal of bad averages
-rmbadav_In				= sParamsMRS_struct.rmbadav_In;
-noSD_In					= sParamsMRS_struct.noSD_In;
+rmbadav_In				= sParamsMRS_struct.rmbadav;
+noSD_In					= sParamsMRS_struct.noSD;
 %digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strSpecReg_In			= sParamsMRS_struct.strSpecReg_In;	% To distinguish settings for spectral registration
-driftCorr_In			= sParamsMRS_struct.driftCorr_In;
-iterin_In				= sParamsMRS_struct.iterin_In;
-aaDomain_In				= sParamsMRS_struct.aaDomain_In;
-tmaxin_In				= sParamsMRS_struct.tmaxin_In;
-bTmaxset_In				= sParamsMRS_struct.bTmaxset_In;
+strSpecReg_In			= sParamsMRS_struct.strSpecReg;	% To distinguish settings for spectral registration
+driftCorr_In			= sParamsMRS_struct.driftCorr;
+iterin_In				= sParamsMRS_struct.iterin;
+aaDomain_In				= sParamsMRS_struct.aaDomain;
+tmaxin_In				= sParamsMRS_struct.tmaxin;
+bTmaxset_In				= sParamsMRS_struct.bTmaxset;
 ppmOption				= sParamsMRS_struct.ppmOption;
-medin_In				= sParamsMRS_struct.medin_In;
-alignSS_In				= sParamsMRS_struct.alignSS_In;	% For aligning subspectra (e.g. in SPECIAL)
+medin_In				= sParamsMRS_struct.medin;
+alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
 % Obtain parameters for drift correction depending on type of data, i.e. whether MRS
 % data is spectrum or water signal
 % NOTE: Check whether aligning of averages in frequency domain works, if the MR
 % spectrum is water signal itself; if not, simply align averages in time domain
-ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix_In;
-ppmmaxarray_fix_In		= sParamsMRS_struct.ppmarray_fix_In;
+ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix;
+ppmmaxarray_fix_In		= sParamsMRS_struct.ppmarray_fix;
 
 
 % Additional parameter settings
-bECC_In					= sParamsMRS_struct.bECC_In;
-bPhaseCorrFreqShift_In	= sParamsMRS_struct.bPhaseCorrFreqShift_In;
-strMinUserIn_In			= sParamsMRS_struct.strMinUserIn_In;
-plotSwitch_In			= sParamsMRS_struct.plotSwitch_In;
-reportSwitch_In			= sParamsMRS_struct.reportSwitch_In;
-strProcessTool_In		= sParamsMRS_struct.strProcessTool_In;
+bECC_In					= sParamsMRS_struct.bECC;
+bPhaseCorrFreqShift_In	= sParamsMRS_struct.bPhaseCorrFreqShift;
+strMinUserIn_In			= sParamsMRS_struct.strMinUserIn;
+plotSwitch_In			= sParamsMRS_struct.plotSwitch;
+reportSwitch_In			= sParamsMRS_struct.reportSwitch;
+strProcessTool_In		= sParamsMRS_struct.strProcessTool;
 bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 
 
