@@ -59,7 +59,7 @@ alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SP
 % NOTE: Check whether aligning of averages in frequency domain works, if the MR
 % spectrum is water signal itself; if not, simply align averages in time domain
 ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix;
-ppmmaxarray_fix_In		= sParamsMRS_struct.ppmarray_fix;
+ppmmaxarray_fix_In		= sParamsMRS_struct.ppmmaxarray_fix;
 
 
 % Additional parameter settings
