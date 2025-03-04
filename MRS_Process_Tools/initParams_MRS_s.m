@@ -34,19 +34,19 @@ function [paramsMRS_struct] = initParams_MRS_s()
 paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 paramsMRS_struct.filename				= '';
 paramsMRS_struct.filename_w				= '';
-paramsMRS_struct.strStudy_MRS			= '3T_SBAM';	% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
-paramsMRS_struct.strVOI_MRS				= 'PCG';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+paramsMRS_struct.strStudy_MRS			= '3T_TGA';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
+paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-paramsMRS_struct.dataType_MRS			= 'mrs_w_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
+paramsMRS_struct.dataType_MRS			= 'mrs_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 paramsMRS_struct.signals_MRS			= 'Spectra';	% 'MMs';	% 'Spectra';
 paramsMRS_struct.strOVS					= 'wOVS';		% 'wOVS';	% 'woutOVS';
-paramsMRS_struct.strOVS_w				= 'woutOVS';	% 'wOVS';	% 'woutOVS';
+paramsMRS_struct.strOVS_w				= 'wOVS';	% 'wOVS';	% 'woutOVS';
 paramsMRS_struct.leftshift				= 3;			% 3;	% 2;	% 0;	% 1;
 paramsMRS_struct.avgBlockSize			= 0;			% 0;	2;		4;		8;		16;
 
 % Parameters for removal of bad averages
 paramsMRS_struct.rmbadav				= 'y';			% 'y';		'n';
-paramsMRS_struct.noSD					= 3.2;			% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
+paramsMRS_struct.noSD					= 3.0;			% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 %paramsMRS_struct.digits_noSD_In		= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
@@ -102,7 +102,7 @@ switch paramsMRS_struct.dataType_MRS
 		end			% End of switch paramsMRS_struct.ppmOption
 	case {'water', 'water_ref'}
 		% MR spectrum is water signal itself without or with reference scans
-		paramsMRS_struct.ppmmin_fix		= 4.2;
+		paramsMRS_struct.ppmmin_fix			= 4.2;
 		paramsMRS_struct.ppmmaxarray_fix	= [5.5 5.5 5.2];
 
 	otherwise
@@ -117,5 +117,6 @@ paramsMRS_struct.plotSwitch					= 0;
 paramsMRS_struct.reportSwitch				= 1;
 paramsMRS_struct.strProcessTool				= 'FID-A';
 paramsMRS_struct.bPrep_MetabQuant			= 1;
+
 
 end		% End of function
