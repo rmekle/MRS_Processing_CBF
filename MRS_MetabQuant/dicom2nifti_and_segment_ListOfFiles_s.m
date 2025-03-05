@@ -168,7 +168,8 @@ if(strcmp(bConvert_dcm2nii, 'Yes'))
 	for ind=indexStart : indexStep : noEntriesListing_DICOM		% noEntriesListing_DICOM	% 3		% 4
 		subDirData_DICOM	= structFileListing_DICOM(ind).name;
 		inputDir			= fullfile(dirData_DICOM, subDirData_DICOM, filesep);
-		disp(sMsg_newLines);
+		%disp(sMsg_newLines);
+		fprintf('\n\n');
 		disp([sprintf('ind = %d\t', ind), sprintf('\t'), subDirData_DICOM, sprintf('\n\n')]);
 		
 		% Create command for conversion to NIfTI for each set of DICOM input images and
