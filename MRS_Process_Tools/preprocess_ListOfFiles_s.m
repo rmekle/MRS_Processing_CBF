@@ -481,7 +481,20 @@ switch seqType_MRS
 				case 'dat'
 					% MRS raw data (.dat)
 					filename_In			= structFileListing(ind).name;
-					filename_w_In		= structFileListing(ind+1).name;
+					% Select file for raw data water signals (.dat) depending on data 
+					% type, i.e. how many different signals  (spectra and/or water 
+					% signals) are included
+					switch dataType_MRS
+						case {'mrs_w', 'mrs_w_ref'}
+							% Spectra and water signals in list of files/directories
+							filename_w_In		= structFileListing(ind+1).name;
+						case {'mrs', 'mrs_ref', 'water', 'water_ref'}
+							% Only spectra or only water signals in list of files/directories
+							filename_w_In		= '';
+
+						otherwise
+							error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+					end		% End of switch dataType_MRS
 					%disp(sMsg_newLines);
 					fprintf('\n\n');
 					disp([sprintf('ind = %d\t', ind), sprintf('\t'), filename_In, sprintf('\t'), filename_w_In, sprintf('\n\n')]);
