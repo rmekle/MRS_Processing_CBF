@@ -4,7 +4,8 @@
 %
 %% Script to convert a list of DICOM files of into NIfTI format and segment them
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2021, 2022, 2024; 
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2021, 2022, 2024, 
+% 2025;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,10 +27,10 @@ inputDir				= '';
 command					= '';
 status					= 0;
 bProcessNewFiles		= 0;
-bConvert_dcm2nii		= 'No';			% 'Yes';		% 'No';
+bConvert_dcm2nii		= 'Yes';			% 'Yes';		% 'No';
 bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-strStudy				= '3T_SBAM';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';
+strStudy				= '3T_TGA';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';	'3T_TGA';
 
 % Init parameters for brain extraction and segmentation
 % (parameters can be adjusted for each sequence type depending on specific voxel location)
@@ -79,6 +80,11 @@ switch seqType_MRS
 				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_DICOM';
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI';
 				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented';
+			case '3T_TGA'
+				% 3T MRS TGA study
+				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_DICOM';
+				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI';
+				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented';
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
