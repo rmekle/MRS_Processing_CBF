@@ -60,9 +60,11 @@ switch seqType
 				inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI/';
 				inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented/3T_SBAM_bet_BrainCenter_87_115_180_fractThresh_0_3/';
 			case '3T_TGA'
-				% 3T MRS TGA study
-				inputDirImages 		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI/';
-				inputDirOverlays	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_87_115_180_fractThrash_0_3/';
+				%inputDirBase		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/';
+				inputDirBase		= '/data01/Data/3T_MRS_TGA/';
+				inputDirImages 		= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI/'];
+				%inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_87_115_180_fractThrash_0_3/'];
+				inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_96_115_170_fractThrash_0_3/'];
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
@@ -109,7 +111,7 @@ structFileListing_Overlays	= structFileListing_Overlays(sortInd);
 % Display overlays (from brain extraction) onto (NIfTI) source images, if desired 
 % using a system call that invokes the fsl utility "fsleyes"
 indexStart		= 1;	
-indexStep		= 3;	% Optionally adjustable step size
+indexStep		= 1;	% Optionally adjustable step size
 %disp(sMsg_newLines);
 fprintf('\n\n');
 if(strcmp(bShowOverlays, 'Yes'))
