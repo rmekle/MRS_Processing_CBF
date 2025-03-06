@@ -46,22 +46,22 @@ fractIntensThresh		= 0.3;			% 0.5;		0.4;	0.3;	0.25;	0.2;
 switch seqType_MRS
 	case 'SPECIAL'
 		% % 3T CBF Potsdam_Pain study
-		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_DICOM_Files/';
-		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_NIfTI_Files/';
+		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_DICOM_Files';
+		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_NIfTI_Files';
 		dirData_NIfTI			= outputDir_NIfTI;
-		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented/';
+		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented';
 		% Set parameters for brain extraction and segmentation depending on voxel location
 		coordCenterOfBrain		= [87 115 180];	
 		fractIntensThresh		= 0.3;
 	case 'MEGA-PRESS'
 		% 3T BCAN MRS_and_Dopamin study
-		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files/';
-		%dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files_New/';
-		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files/';
-		%outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_New/';
+		dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files';
+		%dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_DICOM_Files_New';
+		outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files';
+		%outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_New';
 		dirData_NIfTI			= outputDir_NIfTI;
-		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/';
-		%outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented_New/';
+		outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented';
+		%outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented_New';
 		% Set parameters for brain extraction and segmentation depending on voxel location
 		coordCenterOfBrain		= [87 115 180];	
 		fractIntensThresh		= 0.3;
@@ -168,7 +168,7 @@ if(strcmp(bConvert_dcm2nii, 'Yes'))
 	for ind=indexStart : indexStep : noEntriesListing_DICOM		% noEntriesListing_DICOM	% 3		% 4
 		subDirData_DICOM	= structFileListing_DICOM(ind).name;
 		inputDir			= fullfile(dirData_DICOM, subDirData_DICOM, filesep);
-		%disp(sMsg_newLines);
+		%87
 		fprintf('\n\n');
 		disp([sprintf('ind = %d\t', ind), sprintf('\t'), subDirData_DICOM, sprintf('\n\n')]);
 		
