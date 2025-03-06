@@ -74,25 +74,32 @@ switch seqType_MRS
 				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_DICOM';
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI';
 				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented';
+				% Set parameters for brain extraction and segmentation depending on voxel location
+				coordCenterOfBrain		= [87 115 180];		% [87 115 180];	[87 115 170];	[87 115 150];
+				fractIntensThresh		= 0.3;
 			case '3T_SBAM'
 				% 3T BCAN MRS Trauma study
 				% SBAM
 				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_DICOM';
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI';
 				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented';
+				% Set parameters for brain extraction and segmentation depending on voxel location
+				coordCenterOfBrain		= [87 115 180];		% [87 115 180];	[87 115 170];	[87 115 150];
+				fractIntensThresh		= 0.3;
 			case '3T_TGA'
 				% 3T MRS TGA study
 				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_DICOM';
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI';
 				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented';
+				% Set parameters for brain extraction and segmentation depending on voxel location
+				% T1w images in 3T_TGA study have different resolution compared to 3T_SBA 
+				% and 3T_SBAM studies
+				coordCenterOfBrain		= [96 115 170];		% [96 115 170];	[96 120 170];	[90 115 150];
+				fractIntensThresh		= 0.3;
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy
-
-		% Set parameters for brain extraction and segmentation depending on voxel location
-		coordCenterOfBrain		= [87 115 180];		% [87 115 180];	[87 115 170];	[87 115 150];	
-		fractIntensThresh		= 0.3;
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
