@@ -43,13 +43,16 @@ strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
 % positional information about the VOI
 switch strDataFormat
 	case 'rda'
-		strDataExtension        = '*.rda';
+		%strDataExtension        = '*.rda';
+		strDataExtension        = 'rda';
 		strPVoxel               = 'pvoxel4_rda.py';
 	case 'RawData'
-		strDataExtension        = '*.dat';
+		%strDataExtension        = '*.dat';
+		strDataExtension        = 'dat';
 		strPVoxel               = 'pvoxel4_RawData.py';
 	case 'DICOM'
-		strDataExtension        = '*.IMA';
+		%strDataExtension        = '*.IMA';
+		strDataExtension        = 'IMA';
 		strPVoxel               = 'pvoxel4_DICOM.py';
 
 	otherwise
@@ -115,6 +118,9 @@ switch seqType
 				% 3T MRS TGA study
 				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
 				% Select directory for MRS data based on data format
+				% Select directories for NIfTI and segmented data also based on data
+				% format, since available cases for MRS data of different format are
+				% different
 				switch strDataFormat
 					case 'rda'
 						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_rda_Files_MRS_', strVOI, filesep];
@@ -127,6 +133,9 @@ switch seqType
 					otherwise
 						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
 				end		% End of switch strDataFormat
+				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_', strVOI, '_', strDataExtension, filesep];
+				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
+				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_PartialVolumeCorrection/';
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
@@ -168,7 +177,7 @@ fullOutFileName_PVCorr	= fullfile(outputDir_PVCorr, outFileName_PVCorr);
 % means that the actual # of files in the directory is (# of entries in list - 2;
 % however, if dir is used to list specific files, e.g. using a file extension, these two 
 % directories are not included in the resulting list)
-structFileListing_data		= dir([dirData_MRS, strDataExtension]);
+structFileListing_data		= dir([dirData_MRS, '*.', strDataExtension]);
 noEntriesListing_data		= length( structFileListing_data );
 %noDataEntries_data			= noEntriesListing_data - 2;
 
