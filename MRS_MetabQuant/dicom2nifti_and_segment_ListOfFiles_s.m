@@ -93,7 +93,7 @@ switch seqType_MRS
 				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented';
 				% Set parameters for brain extraction and segmentation depending on voxel location
 				% T1w images in 3T_TGA study have different resolution compared to 3T_SBA 
-				% and 3T_SBAM studies
+				% and 3T_SBAM studies				
 				coordCenterOfBrain		= [96 115 170];		% [96 115 170];	[96 120 170];	[90 115 150];
 				fractIntensThresh		= 0.3;
 
@@ -223,7 +223,11 @@ indexStep		= 1;	% Optionally adjustable step size
 fprintf('\n\n');
 if(strcmp(bSegmentImages, 'Yes'))
 	disp('Segmenting imaging datasets into tissues WM, GM, and CSF ...');
-	for ind=indexStart : indexStep : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
+	% Try to speed up this process by using a parfor loop from the Matlab parallel
+	% computing toolbox; if it is installed and if it works, Matlab should automatically 
+	% then use all available CPUs for parallel processing of the tasks
+	%for ind=indexStart : indexStep : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
+	parfor ind=indexStart : indexStep : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
 		% Select file from list of NIfTI files and obtain parts of filename
 		inputFileNameSeg				= structFileListing_NIfTI(ind).name;
 		[filepathSeg,nameSeg,extSeg]	= fileparts(inputFileNameSeg);
