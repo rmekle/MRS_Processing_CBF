@@ -60,6 +60,9 @@ switch strDataFormat
 		error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
 end		% End of switch strDataFormat
 
+% Combine information about VOI and data extension used for tissue correction
+strPVCorr_AddOn_1		= [strVOI, '_', strDataExtension];
+
 % Set (additional) parameters depending on sequence type 
 switch seqType
 	case 'SPECIAL'
@@ -75,12 +78,13 @@ switch seqType
 		dirData_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_DistCorr/';
 		dirData_Seg				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/DOPA_bet_CenterOfBrain_87_115_180_fractThresh_0_3_DistCorr/';
 		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_PartialVolumeCorrection/PVCorr_bet_87_115_180_fractThresh_0_3_DistCorr/Test/';
-    case 'sLASER'
+    case 'sLASER'		
 		switch strStudy
 			case '3T_Trauma'
 				% 3T BCAN MRS Trauma study
 				% SBA
-				outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
+				%outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strVOI, '.txt'];
+				outFileName_PVCorr		= ['3T_MRS_Trauma_TissueVolCoeffs_', strPVCorr_AddOn_1, '.txt'];
 				% Select directory for MRS data based on data format
 				switch strDataFormat
 					case 'rda'
@@ -99,7 +103,8 @@ switch seqType
 			case '3T_SBAM'	
 				% 3T BCAN MRS Trauma study
 				% SBAM
-				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
+				%outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
+				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strPVCorr_AddOn_1, '.txt'];
 				% Select directory for MRS data based on data format
 				switch strDataFormat
 					case 'rda'
@@ -117,7 +122,8 @@ switch seqType
 				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_PartialVolumeCorrection/';
 			case '3T_TGA'
 				% 3T MRS TGA study
-				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
+				%outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
+				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strPVCorr_AddOn_1, '.txt'];
 				% Select directory for MRS data based on data format
 				% Select directories for NIfTI and segmented data also based on data
 				% format, since available cases for MRS data of different format are
@@ -144,8 +150,6 @@ switch seqType
 		end				% End of switch strStudy
 		
 		% Finalize name of output directory for partial volume coefficients
-		% Include information about VOI and data used for partial volume correction
-		strPVCorr_AddOn_1		= [strVOI, '_', strDataExtension];
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
 			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
