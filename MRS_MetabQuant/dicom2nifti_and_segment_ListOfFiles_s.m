@@ -120,7 +120,7 @@ outputDir_Seg			= [outputDir_Seg, filesep];
 % (assuming that there are three coordinates of the brain center and two digits describing
 % the fractional threshold for the segmentation)
 digits_fract			= [fix(fractIntensThresh) round(abs(fractIntensThresh-fix(fractIntensThresh))*10)];
-outSubDir				= sprintf('%s_bet_BrainCenter_%d_%d_%d_fractThrash_%d_%d', ...
+outSubDir				= sprintf('%s_bet_BrainCenter_%d_%d_%d_fractThresh_%d_%d', ...
 	strStudy, coordCenterOfBrain(1), coordCenterOfBrain(2), coordCenterOfBrain(3), digits_fract(1), digits_fract(2));
 outputDir_Seg			= [outputDir_Seg, outSubDir, filesep];
 
