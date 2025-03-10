@@ -63,9 +63,9 @@ switch seqType
 				%inputDirBase		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/';
 				inputDirBase		= '/data01/Data/3T_MRS_TGA/';
 				inputDirImages 		= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI/'];
-				%inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_87_115_180_fractThrash_0_3/'];
-				inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_96_115_170_fractThrash_0_3/'];
-				%inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_90_115_150_fractThrash_0_3/'];
+				%inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_87_115_180_fractThresh_0_3/'];
+				inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_96_115_170_fractThresh_0_3/'];
+				%inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_90_115_150_fractThresh_0_3/'];
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
