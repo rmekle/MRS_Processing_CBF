@@ -34,9 +34,10 @@ strVOI					= 'HC';			% 'HC';		% 'PCG';
 strDataFormat           = 'RawData';		% 'DICOM';      % 'RawData';      %'rda';
 %strDataExtension        = '*.rda';      %'*.IMA';       %'*.dat';       %'*.rda';
 %strPVoxel               = 'pvoxel4_rda.py';     %'pvoxel4_rda.py' for rda data;      %'pvoxel4_RawData.py' for RawData;    %'pvoxel4_DICOM.py' for DICOM
-strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
-%strSeg					= 'Trauma_bet_CenterOfBrain_87_115_180_fractThresh_0_3';
-strSeg					= [strStudy, '_bet_BrainCenter_87_115_180_fractThresh_0_3'];
+%strPVCorr 				= 'PVCorr_bet_87_115_180_fractThresh_0_3';		% '';
+strPVCorr 				= 'PVCorr_bet_96_115_170_fractThresh_0_3';
+%strSeg					= [strStudy, '_bet_BrainCenter_87_115_180_fractThresh_0_3'];
+strSeg					= [strStudy, '_bet_BrainCenter_96_115_170_fractThresh_0_3'];
 strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
 
 % Select some parameters based on data format, i.e. which data is used to obtain
@@ -134,7 +135,8 @@ switch seqType
 						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
 				end		% End of switch strDataFormat
 				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_', strVOI, '_', strDataExtension, filesep];
-				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
+				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', ...
+											strVOI, '_', strDataExtension, filesep, strSeg, filesep];
 				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_PartialVolumeCorrection/';
 
 			otherwise
@@ -142,12 +144,16 @@ switch seqType
 		end				% End of switch strStudy
 		
 		% Finalize name of output directory for partial volume coefficients
+		% Include information about VOI and data used for partial volume correction
+		strPVCorr_AddOn_1		= [strVOI, '_', strDataExtension];
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
-			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
+			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
+			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strPVCorr_AddOn_1, filesep];
 		else
 			% Empty string strPVCorr, use base directorey 
-			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strVOI, filessep];
+			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strVOI, filessep];
+			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr_AddOn_1, filessep];
 		end
 		
 	otherwise
