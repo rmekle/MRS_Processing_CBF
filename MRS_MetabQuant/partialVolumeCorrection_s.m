@@ -41,7 +41,12 @@ strSeg					= [strStudy, '_bet_BrainCenter_96_115_170_fractThresh_0_3'];
 strDistCorr				= 'DistCorr';		% 'DistCorr';		% 'ND';
 
 % Select some parameters based on data format, i.e. which data is used to obtain
-% positional information about the VOI
+% positional information about the VOI and Python routine to be called
+% NOTE: Ensure that for calling these Python routines, the required (Python) dependencies 
+% are all installed, e.g.
+% regex - if missing, install via 'pip install regex'
+% routines from suspect MRS Python package - if missing, install via 'pip install suspect'
+% Check for correct installations with different Python versions installed!
 switch strDataFormat
 	case 'rda'
 		%strDataExtension        = '*.rda';
@@ -323,7 +328,7 @@ if(strcmp(bCalcPartialVolCoeffs, 'Yes'))
 			error('%s: Error in calculation of tissue volume coefficients for case %s!\n\n%s', sFunctionName, inFileName_data, cmdout);
 		end
 		
-		% When using pvoxel3.py with the option '-w', for each case, a file "winner.nii" 
+		% When using pvoxelx_.py with the option '-w', for each case, a file "winner.nii" 
 		% is created in the directory, where MATLAB is executed in;
 		% Rename "winner.nii" to be case-specific and move renamed file into output
 		% directory for tissue volume coefficients
