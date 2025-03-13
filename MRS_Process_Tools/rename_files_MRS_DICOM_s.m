@@ -27,7 +27,8 @@ sFunctionName		= 'rename_files_MRS_DICOM_s';
 %parentDir_AddOn		= 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_HC/';	
 					% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_PCG/';	% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_HC/';
 parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/';
-parentDir_AddOn		= 'MRS_TGA_00_All_DICOM_IMA_Files_SUM_MRS_HC/';
+%parentDir_AddOn		= 'MRS_TGA_00_All_DICOM_IMA_Files_SUM_MRS_HC/';
+parentDir_AddOn		= 'MRS_TGA_00_All_DICOM_IMA_Files_LW_HC/';
 %parentDir_AddOn		= 'TGA_Test/';	
 parentDir			= [parentDir_Base, parentDir_AddOn];
 
