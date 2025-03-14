@@ -25,6 +25,7 @@ fprintf('\n\n');
 %% Init input parameters
 command					= '';
 status					= 0;
+bProcessNewFiles		= 1;
 noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
@@ -149,7 +150,7 @@ switch seqType
 				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', ...
 											strVOI, '_', strDataExtension, filesep, strSeg, filesep];
 				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_PartialVolumeCorrection/';
-
+				
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy
@@ -168,6 +169,14 @@ switch seqType
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 end
+% Add option for processing new data files by appending '_New' to all directory names
+if bProcessNewFiles
+	dirData_MRS		    = [dirData_MRS, '_New'];
+	dirData_NIfTI		= [dirData_NIfTI, '_New'];
+	dirData_Seg		    = [dirData_Seg, '_New'];
+	outputDir_PVCorr	= [outputDir_PVCorr, '_New'];
+end		% End of if bProcessNewFiles
+% Complete full path to output file
 fullOutFileName_PVCorr	= fullfile(outputDir_PVCorr, outFileName_PVCorr);
 
 
