@@ -25,7 +25,7 @@ fprintf('\n\n');
 %% Init input parameters
 command					= '';
 status					= 0;
-bProcessNewFiles		= 1;
+bProcessNewFiles		= 0;
 noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
