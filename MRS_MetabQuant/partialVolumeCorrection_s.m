@@ -94,18 +94,20 @@ switch seqType
 				% Select directory for MRS data based on data format
 				switch strDataFormat
 					case 'rda'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI, filesep];
+						%dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_rda_Files_MRS_', strVOI];
 					case 'RawData'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_Water_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_RawData_dat_Files_Water_', strVOI];
 					case 'DICOM'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_DICOM_Files_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_DICOM_Files_MRS_', strVOI];
 
 					otherwise
 						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
 				end		% End of switch strDataFormat
-				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI, filesep];
-				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
-				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection/';
+				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_', strVOI];
+				%dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg];
+				dirData_Seg_Base		= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MPRAGE_NIfTI_Segmented_', strVOI];
+				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_PartialVolumeCorrection';
 			case '3T_SBAM'	
 				% 3T BCAN MRS Trauma study
 				% SBAM
@@ -114,18 +116,19 @@ switch seqType
 				% Select directory for MRS data based on data format
 				switch strDataFormat
 					case 'rda'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_rda_Files_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_rda_Files_MRS_', strVOI];
 					case 'RawData'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_RawData_dat_Files_Water_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_RawData_dat_Files_Water_', strVOI];
 					case 'DICOM'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_DICOM_Files_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_DICOM_Files_MRS_', strVOI];
 
 					otherwise
 						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
 				end		% End of switch strDataFormat
-				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_', strVOI, filesep];
-				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg, filesep];
-				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_PartialVolumeCorrection/';
+				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_', strVOI];
+				%dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented_', strVOI, filesep, strSeg];
+				dirData_Seg_Base 		= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_All_MPRAGE_NIfTI_Segmented_', strVOI];
+				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/SBAM/MRS_SBAM_00_PartialVolumeCorrection';
 			case '3T_TGA'
 				% 3T MRS TGA study
 				%outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
@@ -136,46 +139,53 @@ switch seqType
 				% different
 				switch strDataFormat
 					case 'rda'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_rda_Files_MRS_', strVOI, filesep];
+						%dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_rda_Files_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_rda_Files_MRS_', strVOI];
 					case 'RawData'
-						%dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_RawData_dat_Files_w8_', strVOI, filesep];
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_RawData_dat_Files_MRS_', strVOI, filesep];
+						%dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_RawData_dat_Files_w8_', strVOI];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_RawData_dat_Files_MRS_', strVOI];
 					case 'DICOM'
-						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_DICOM_IMA_Files_SUM_MRS_', strVOI, filesep];
+						dirData_MRS		    	= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_DICOM_IMA_Files_SUM_MRS_', strVOI];
 
 					otherwise
 						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
 				end		% End of switch strDataFormat
-				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_', strVOI, '_', strDataExtension, filesep];
-				dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', ...
-											strVOI, '_', strDataExtension, filesep, strSeg, filesep];
-				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_PartialVolumeCorrection/';
+				dirData_NIfTI 			= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_', strVOI, '_', strDataExtension];
+				%dirData_Seg				= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', ...
+				%							strVOI, '_', strDataExtension, filesep, strSeg];
+				dirData_Seg_Base		= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', ...
+											strVOI, '_', strDataExtension];
+				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_PartialVolumeCorrection';
 				
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy
 		
-		% Finalize name of output directory for partial volume coefficients
+		% Add option for processing new data files by appending '_New' to all directory names
+		if bProcessNewFiles
+			dirData_MRS				= [dirData_MRS, '_New'];
+			dirData_NIfTI			= [dirData_NIfTI, '_New'];
+			dirData_Seg_Base		= [dirData_Seg_Base, '_New'];
+			outputDir_PVCorr_Base	= [outputDir_PVCorr_Base, '_New'];
+		end		% End of if bProcessNewFiles
+
+		% Finalize name of input and output directories for partial volume coefficients
+		dirData_Seg			= fullfile(dirData_Seg_Base, strSeg);
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
 			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
-			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strPVCorr_AddOn_1, filesep];
+			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strPVCorr_AddOn_1, filesep];
+			outputDir_PVCorr 	= [outputDir_PVCorr_Base, filesep, strPVCorr, '_', strPVCorr_AddOn_1];
 		else
 			% Empty string strPVCorr, use base directorey 
 			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strVOI, filessep];
-			outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr_AddOn_1, filessep];
+			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr_AddOn_1, filessep];
+			outputDir_PVCorr 	= [outputDir_PVCorr_Base, filesep, strPVCorr_AddOn_1];
 		end
 		
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 end
-% Add option for processing new data files by appending '_New' to all directory names
-if bProcessNewFiles
-	dirData_MRS		    = [dirData_MRS, '_New'];
-	dirData_NIfTI		= [dirData_NIfTI, '_New'];
-	dirData_Seg		    = [dirData_Seg, '_New'];
-	outputDir_PVCorr	= [outputDir_PVCorr, '_New'];
-end		% End of if bProcessNewFiles
 % Complete full path to output file
 fullOutFileName_PVCorr	= fullfile(outputDir_PVCorr, outFileName_PVCorr);
 
