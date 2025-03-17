@@ -380,7 +380,8 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
 % workspace file with a "." in its filename)
 strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', dt];
-strSavedWorkspaceFileNameFull	= [outputDir_PVCorr, strSavedWorkspaceFileName];
+%strSavedWorkspaceFileNameFull	= [outputDir_PVCorr, strSavedWorkspaceFileName];
+strSavedWorkspaceFileNameFull	= fullfile(outputDir_PVCorr, strSavedWorkspaceFileName);
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'y';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
