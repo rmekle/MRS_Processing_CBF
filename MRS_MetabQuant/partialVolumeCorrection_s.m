@@ -73,17 +73,17 @@ strPVCorr_AddOn_1		= [strVOI, '_', strDataExtension];
 switch seqType
 	case 'SPECIAL'
 		outFileName_PVCorr		= '3T_Potsdam_Pain_TissueVolCoeffs.txt';
-		dirData_MRS_rda			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_rda_Files_Spectra/';
-		dirData_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_NIfTI_Files_DistCorr/';
-		dirData_Seg				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented/bet_coordCenterOfBrain_mixed_87_115_180_150_fractThresh_0_3_DistCorr/';
-		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_PartialVolumeCorrection/PVCorr_bet_mixed_87_115_180_150_fractThresh_0_3_DistCorr/Test/';
+		dirData_MRS_rda			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_rda_Files_Spectra';
+		dirData_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_NIfTI_Files_DistCorr';
+		dirData_Seg				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_All_MPRAGE_Segmented/bet_coordCenterOfBrain_mixed_87_115_180_150_fractThresh_0_3_DistCorr';
+		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_Potsdam_Pain/Potsdam_Pain_00_PartialVolumeCorrection/PVCorr_bet_mixed_87_115_180_150_fractThresh_0_3_DistCorr/Test';
 	case 'MEGA-PRESS'
 		outFileName_PVCorr		= '3T_MRS_Dopamin_TissueVolCoeffs.txt';
 		%dirData_MRS_rda			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_rda_Files_MRS/';
-		dirData_MRS_rda			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_rda_Files_MRS_editOFF/';
-		dirData_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_DistCorr/';
-		dirData_Seg				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/DOPA_bet_CenterOfBrain_87_115_180_fractThresh_0_3_DistCorr/';
-		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_PartialVolumeCorrection/PVCorr_bet_87_115_180_fractThresh_0_3_DistCorr/Test/';
+		dirData_MRS_rda			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_rda_Files_MRS_editOFF';
+		dirData_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Files_DistCorr';
+		dirData_Seg				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_All_MPRAGE_NIfTI_Segmented/DOPA_bet_CenterOfBrain_87_115_180_fractThresh_0_3_DistCorr';
+		outputDir_PVCorr		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Dopamin/MRS_Dopamin_00_PartialVolumeCorrection/PVCorr_bet_87_115_180_fractThresh_0_3_DistCorr/Test';
     case 'sLASER'		
 		switch strStudy
 			case '3T_Trauma'
@@ -170,7 +170,6 @@ switch seqType
 		end		% End of if bProcessNewFiles
 
 		% Finalize name of input and output directories for partial volume coefficients
-		dirData_Seg			= fullfile(dirData_Seg_Base, strSeg);
 		if ~isempty(strPVCorr)
 			% Append name of subdirectory 
 			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr, '_', strVOI, filesep];
@@ -182,7 +181,14 @@ switch seqType
 			%outputDir_PVCorr 	= [outputDir_PVCorr_Base, strPVCorr_AddOn_1, filessep];
 			outputDir_PVCorr 	= [outputDir_PVCorr_Base, filesep, strPVCorr_AddOn_1];
 		end
-		
+		dirData_Seg			= fullfile(dirData_Seg_Base, strSeg);
+		% % File separator at end of directory name is required so that searching for 
+		% % specific files works properly when using
+		% % structFileListing_data		= dir([dirData_MRS, '*.', strDataExtension]);
+		% dirData_MRS			= [dirData_MRS, filesep];
+		% dirData_NIfTI		= [dirData_NIfTI, filesep];
+		% dirData_Seg			= [dirData_Seg, filesep];
+
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType);
 end
@@ -211,7 +217,11 @@ fullOutFileName_PVCorr	= fullfile(outputDir_PVCorr, outFileName_PVCorr);
 % means that the actual # of files in the directory is (# of entries in list - 2;
 % however, if dir is used to list specific files, e.g. using a file extension, these two 
 % directories are not included in the resulting list)
-structFileListing_data		= dir([dirData_MRS, '*.', strDataExtension]);
+% NOTE: File separator at end of directory name is required so that searching for 
+%		specific files works properly when using the subsequent notation; multiple file
+%		separators at end do not cause an error
+%structFileListing_data		= dir([dirData_MRS, '*.', strDataExtension]);
+structFileListing_data		= dir([dirData_MRS, filesep, '*.', strDataExtension]);
 noEntriesListing_data		= length( structFileListing_data );
 %noDataEntries_data			= noEntriesListing_data - 2;
 
@@ -221,12 +231,12 @@ noEntriesListing_data		= length( structFileListing_data );
 % means that the actual # of files in the directory is (# of entries in list - 2)
 %disp(sMsg_newLines);
 %fprintf('\n\n');
-structFileListing_NIfTI		= dir([dirData_NIfTI, '*.nii']);
+structFileListing_NIfTI		= dir([dirData_NIfTI, filesep, '*.nii']);
 noEntriesListing_NIfTI		= length( structFileListing_NIfTI );
 
 % Obtain information about the list of files of segmented tissue volumes
 % (for tissues WM. GM, and CSF, there should be 3 tissue volumes per case)
-structFileListing_Seg		= dir([dirData_Seg, '*_pve_*.gz']);
+structFileListing_Seg		= dir([dirData_Seg, filesep, '*_pve_*.gz']);
 noEntriesListing_Seg		= length( structFileListing_Seg );
 
 
