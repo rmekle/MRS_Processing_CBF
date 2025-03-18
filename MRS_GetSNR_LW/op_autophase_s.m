@@ -1,5 +1,5 @@
 % op_autophase.m
-% Jamie Near, McGill University 2015, Ralf Mekle (RM), Charite, 2024.
+% Jamie Near, McGill University 2015, Ralf Mekle (RM), Charite, 2024, 2025.
 % 
 % USAGE:
 % [out,phaseShift]=op_autophase(in,ppmmin,ppmmax,ph,dimNum);
@@ -29,9 +29,14 @@ end
 if in.dims.averages>0
     error('ERROR:  Can not operate on data with multiple averages!  ABORTING!!');
 end
-if in.dims.extras>0
-    error('ERROR:  Can not operate on data with extras dimension!  ABORTING!!');
-end
+% Change RM
+% Check whether field 'extras' exists as a dimension
+% (otherwise the if statement results in an error, if field 'extras' does not exist)
+if isfield(in.dims, 'extras')
+	if in.dims.extras>0
+		error('ERROR:  Can not operate on data with extras dimension!  ABORTING!!');
+	end
+end		% End of if isfield(in.dims, 'extras')
 if in.dims.subSpecs>0
     if nargin<5
         plot(in.ppm,in.specs);
