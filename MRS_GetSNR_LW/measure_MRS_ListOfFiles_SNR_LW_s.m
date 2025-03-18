@@ -32,7 +32,7 @@ fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
 % Select range (here first field) in Excel to write cell array of results to
-bSaveResults			= 0;
+bSaveResults			= 1;
 outNamingOption			= 1;
 %outputFileName_Add_1	= '_SNR_FWHM';
 acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
@@ -246,8 +246,10 @@ dt		= datestr(now,'yyyymmdd_HH_MM_SS');
 % Save workspace into output directory (optional with user input)
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
 % workspace file with a "." in its filename)
-strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS_In, '_', dataType_MRS_In, '_', dt];
-strSavedWorkspaceFileNameFull	= [outDirString_In, strSavedWorkspaceFileName, '.mat'];
+%strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS_In, '_', dataType_MRS_In, '_', dt];
+%strSavedWorkspaceFileNameFull	= [outDirString_In, strSavedWorkspaceFileName, '.mat'];
+strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS_In, '_', dataType_MRS_In, '_', dt, '.mat'];
+strSavedWorkspaceFileNameFull	= fullfile(outDirString_In, strSavedWorkspaceFileName);
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'y';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
