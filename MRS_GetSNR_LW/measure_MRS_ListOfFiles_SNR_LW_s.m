@@ -4,7 +4,7 @@
 %
 %% Script to measure SNR and Linewidth (LW) in list of files of MR spectroscopy (MRS) data
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024, 2025
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,13 +26,13 @@ fprintf('\n\n');
 % Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
 % of original MRS data
 seqType_MRS_In			= 'sLASER';
-strStudy				= '3T_Trauma';  	% 'Test'; '3T_Trauma'; 
-strVOI					= 'PCG'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+strStudy				= '3T_TGA';  	% 'Test'; '3T_Trauma'; '3T_TGA';
+strVOI					= 'HC'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
+fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
 % Select range (here first field) in Excel to write cell array of results to
-bSaveResults			= 1;
+bSaveResults			= 0;
 outNamingOption			= 1;
 %outputFileName_Add_1	= '_SNR_FWHM';
 acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
@@ -62,6 +62,22 @@ switch seqType_MRS_In
 				end			% End of switch fileExtension
 				dirString_In_AddOn_2	= [strVOI, '_LCModel_Data_MRS_only'];
 				outNamingOption			= 1;
+			case '3T_TGA'
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA';
+				switch fileExtension
+					case 'dat'
+						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
+					case 'IMA'
+						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
+						% .IMA svs_sLaser_dkd_LW scans
+						dirString_In_AddOn_1	= ['MRS_TGA_00_All_DICOM_IMA_Files_LW_HC'];
+						dirString_In_AddOn_2	= '';
+						outNamingOption			= 1;
+
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+				end			% End of switch fileExtension
+				%outNamingOption			= 1;
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
@@ -71,17 +87,18 @@ switch seqType_MRS_In
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS_In);
 end		% End of switch seqType_MRS_In
 % Complete name of input directory
-dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep, dirString_In_AddOn_2, filesep];
+%dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep, dirString_In_AddOn_2, filesep];
+dirString_In			= fullfile(dirString_In_Base, dirString_In_AddOn_1, dirString_In_AddOn_2);
 
 % Additional parameters
 filename_MRS_In			= '';
 filename_w_In			= '';
-dataFormat_MRS_In		= 'lcmRAW';
-signal_ppmRange_In		= [1.8, 2.2];
-noise_ppmRange_In		= [-3.0, -1.0];
-LWpeak_ppmRange_In		= [2.9, 3.1];
+dataFormat_MRS_In		= 'IMA';			% 'lcmRAW';
+signal_ppmRange_In		= [3.7, 5.7];		% [1.8, 2.2];
+noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
+LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];
 zp_factor_In			= 8;
-dataType_MRS_In			= 'mrs';
+dataType_MRS_In			= 'water';
 bAutoPhase_In			= 0;
 bOutFile_In				= 0;
 plotswitch_In			= 0;
@@ -139,7 +156,11 @@ switch dataFormat_MRS_In
     otherwise
         error('%s: ERROR: Unknown dataFormat_MRS_In %s!', sFunctionName, dataFormat_MRS_In);
 end
-structFileListing		= dir([dirString_In, acSearchString]);
+% NOTE: File separator at end of directory name is required so that searching for 
+%		specific files works properly when using the subsequent notation; multiple file
+%		separators at end do not cause an error
+%structFileListing		= dir([dirString_In, acSearchString]);
+structFileListing		= dir([dirString_In, filesep, acSearchString]);
 noEntriesListing		= length( structFileListing );
 
 
