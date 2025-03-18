@@ -218,6 +218,15 @@ cellInfoAndData		= [cellInfoLine; cellData];							% Yields (N+1)x4 cell array
 
 
 %% Save results from SNR and LW measurements to file, if selected
+% Check whether output directory already exists; if not, create it
+if not(isfolder(outDirString_In))
+	%sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
+	%disp(sMsg);
+	fprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
+	if ~mkdir(outDirString_In)
+		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outDirString_In);
+	end
+end		% End of if not(isfolder(outDirString_In))
 if bSaveResults
 	% Create output filename for results depending on selected naming option:
 	%		Name of (input) subfolder chosen to best describe the MRS data
