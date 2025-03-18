@@ -32,13 +32,43 @@ fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
 % Select range (here first field) in Excel to write cell array of results to
-bSaveResults			= 1;
+bSaveResults			= 0;
 outNamingOption			= 1;
 %outputFileName_Add_1	= '_SNR_FWHM';
 acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
 strRangeSel				= 'A4';		% 'A4';
 
-% Input directory options
+
+%% Additional parameters
+filename_MRS_In			= '';
+filename_w_In			= '';
+dataFormat_MRS_In		= 'IMA';			% 'lcmRAW';
+signal_ppmRange_In		= [3.7, 5.7];		% [1.8, 2.2];
+noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
+LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];
+zp_factor_In			= 8;
+dataType_MRS_In			= 'water';
+bAutoPhase_In			= 0;
+bOutFile_In				= 0;
+plotswitch_In			= 0;
+procParams_In			= struct([]);
+Bo_field_In				= [];
+spectralWidth_In		= [];
+TE_In					= [];
+TR_In					= [];
+
+% Output directory and filename options
+outDirString_AddOn_1	= '';
+%outDirString_In			= [dirString_In, outDirString_AddOn_1];
+outputFileName_Add_1	= sprintf('_SNR_%.1f_%.1f_%.1f_%.1f_FWHM_%.2f_%.2f', ...
+	signal_ppmRange_In(1), signal_ppmRange_In(2), noise_ppmRange_In(1), noise_ppmRange_In(2), ...
+	LWpeak_ppmRange_In(1), LWpeak_ppmRange_In(2));
+outputFileName_Add_2	= '';
+if bAutoPhase_In
+	outputFileName_Add_2	= '_phasedZO';
+end
+
+% Select directory  and other options depending on sequence type and study
 % Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
 % of output filename, if results are saved to file
 switch seqType_MRS_In
@@ -73,6 +103,7 @@ switch seqType_MRS_In
 						dirString_In_AddOn_1	= ['MRS_TGA_00_All_DICOM_IMA_Files_LW_HC'];
 						dirString_In_AddOn_2	= '';
 						outNamingOption			= 1;
+						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
 
 					otherwise
 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
@@ -86,38 +117,11 @@ switch seqType_MRS_In
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS_In);
 end		% End of switch seqType_MRS_In
-% Complete name of input directory
+% Complete name of input and output directory
 %dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep, dirString_In_AddOn_2, filesep];
 dirString_In			= fullfile(dirString_In_Base, dirString_In_AddOn_1, dirString_In_AddOn_2);
-
-% Additional parameters
-filename_MRS_In			= '';
-filename_w_In			= '';
-dataFormat_MRS_In		= 'IMA';			% 'lcmRAW';
-signal_ppmRange_In		= [3.7, 5.7];		% [1.8, 2.2];
-noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
-LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];
-zp_factor_In			= 8;
-dataType_MRS_In			= 'water';
-bAutoPhase_In			= 0;
-bOutFile_In				= 0;
-plotswitch_In			= 0;
-procParams_In			= struct([]);
-Bo_field_In				= [];
-spectralWidth_In		= [];
-TE_In					= [];
-TR_In					= [];
-
-% Output directory and filenmae options
-outDirString_AddOn_1	= '';
-outDirString_In			= [dirString_In, outDirString_AddOn_1];
-outputFileName_Add_1	= sprintf('_SNR_%.1f_%.1f_%.1f_%.1f_FWHM_%.2f_%.2f', ...
-	signal_ppmRange_In(1), signal_ppmRange_In(2), noise_ppmRange_In(1), noise_ppmRange_In(2), ...
-	LWpeak_ppmRange_In(1), LWpeak_ppmRange_In(2));
-outputFileName_Add_2	= '';
-if bAutoPhase_In
-	outputFileName_Add_2	= '_phasedZO';
-end
+%outDirString_In			= [dirString_In, outDirString_AddOn_1];
+outDirString_In			= fullfile(dirString_In, outDirString_AddOn_1);
 
 
 %% Obtain information about the list of files for (preprocessed) MR spectra
