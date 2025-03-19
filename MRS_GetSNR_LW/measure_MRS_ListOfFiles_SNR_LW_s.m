@@ -102,6 +102,9 @@ switch seqType_MRS_In
 						dirString_In_AddOn_2	= '';
 						outNamingOption			= 1;
 						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
+						% Init MRS parameters for specific signals chosen for SNR and FWHM
+						% measurements that are needed to process these signals
+						[procParams_In]			= initParams_MRS_s('config_3T_TGA_sLASER_water_dat');
 					case 'IMA'
 						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
 						% .IMA svs_sLaser_dkd_LW scans
