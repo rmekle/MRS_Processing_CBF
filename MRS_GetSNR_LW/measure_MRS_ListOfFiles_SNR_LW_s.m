@@ -210,7 +210,10 @@ for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 	else	% No water file
 		fprintf('ind = %d\t\t%s\n\n', ind, filename_MRS_In);
 	end
-	[data_MRS{ind}, SNR(ind), FWHM(ind), phase0(ind), info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bAutoPhase_In, bOutFile_In, plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
+	[data_MRS{ind}, SNR(ind), FWHM(ind), phase0(ind), info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, ...
+		filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, ...
+		LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bAutoPhase_In, bOutFile_In, ...
+		plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
 end		% End of or ind=indexStart : indexStep : noEntriesListing
 fprintf('\n\n');
 
