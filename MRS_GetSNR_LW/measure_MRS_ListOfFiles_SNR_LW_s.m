@@ -28,11 +28,11 @@ fprintf('\n\n');
 seqType_MRS_In			= 'sLASER';
 strStudy				= '3T_TGA';  	% 'Test'; '3T_Trauma'; '3T_TGA';
 strVOI					= 'HC'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
-fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
 % Select range (here first field) in Excel to write cell array of results to
-bSaveResults			= 1;
+bSaveResults			= 0;
 outNamingOption			= 1;
 %outputFileName_Add_1	= '_SNR_FWHM';
 acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
@@ -42,7 +42,7 @@ strRangeSel				= 'A4';		% 'A4';
 %% Additional parameters
 filename_MRS_In			= '';
 filename_w_In			= '';
-dataFormat_MRS_In		= 'IMA';			% 'lcmRAW';
+dataFormat_MRS_In		= 'dat';			% 'lcmRAW';
 signal_ppmRange_In		= [3.7, 5.7];		% [1.8, 2.2];	[3.7, 5.7];
 noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
 LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];	[3.7, 5.7];
@@ -96,7 +96,12 @@ switch seqType_MRS_In
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA';
 				switch fileExtension
 					case 'dat'
-						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
+						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
+						% .dat svs_sLaser_dkd_LW scans
+						dirString_In_AddOn_1	= ['MRS_TGA_00_All_RawData_dat_Files_LW_HC'];
+						dirString_In_AddOn_2	= '';
+						outNamingOption			= 1;
+						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
 					case 'IMA'
 						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
 						% .IMA svs_sLaser_dkd_LW scans
