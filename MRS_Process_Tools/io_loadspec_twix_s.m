@@ -1,6 +1,6 @@
 %io_loadspec_twix_s.m
 %Jamie Near, McGill University 2014.
-%Edits from Franck Lamberton, 2017, Ralf Mekle (RM), Charite, 2021, 2023, 2024.
+%Edits from Franck Lamberton, 2017, Ralf Mekle (RM), Charite, 2021, 2023, 2024, 2025.
 %
 % USAGE:
 % [out, out_ref] = io_loadspec_twix_s(filename);
@@ -167,17 +167,32 @@ else if isSVSdkdseq
 		% In VE11 & XA60, # of averages can be found in twix_obj_hdr.MeasYaps.lAverages
 		%noAverages	= twix_obj.hdr.Meas.Averages;
 		%noRefScans	= sqzSize(indSet) - twix_obj.hdr.Meas.Averages;
-		noAverages		= twix_obj.hdr.MeasYaps.lAverages;
-		nAutoRefScanNo	= twix_obj.hdr.MeasYaps.sSpecPara.lAutoRefScanNo;
+		noAverages			= twix_obj.hdr.MeasYaps.lAverages;
+		nAutoRefScanMode	= twix_obj.hdr.MeasYaps.sSpecPara.lAutoRefScanMode;
+		nAutoRefScanNo		= twix_obj.hdr.MeasYaps.sSpecPara.lAutoRefScanNo;
 
 		% Determine true # of averages and total # of reference scans actually acquired
+		% If nAutoRefScanMode = 1, then it seems that NO reference scans were acquired
+		% If nAutoRefScanMode = 8, (only) then reference scans were acquired
 		% In Dinesh's dkd SVS sLASER sequence, # of reference scans selected on UI has to
 		% be applied by 4 to obtain total # of reference scans, since they are acquired
 		% like this
 		% nAutoRefScanNo_ECC nAutoRefScanNo_Quant MRS nAutoRefScanNo_ECC nAutoRefScanNo_Quant
 		%noRefScans		= sqzSize(indSet) - noAverages;
 		factorRefScans	= 4;
-		noRefScans		= factorRefScans * nAutoRefScanNo;
+		switch nAutoRefScanMode
+			case 1
+				% No reference scans were acquired
+				% E.g. for LW, 90Calib, WSCalib, and w8 scans
+				noRefScans	= 0;
+			case 8
+			% Reference scans were acquired
+			% E.g. for any MR spectra with reference scans, typically WS128
+			noRefScans		= factorRefScans * nAutoRefScanNo;
+
+			otherwise
+			error('%s: ERROR: Unknown nAutoRefScanMode = %d!\n\n', sFunctionName, nAutoRefScanMode);
+		end		% End of switch nAutoRefScanMode
 		
 		% Check whether acquisition was completed, i.e. that all reference scans and
 		% averages from the sequence protocol were actually acquired
