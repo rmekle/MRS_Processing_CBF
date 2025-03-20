@@ -153,12 +153,6 @@ elseif ishdSPECIAL %For Masoumeh Dehghani's hadamard-encoded dual-voxel SPECIAL 
 	% 	data=dOut.data;
 	% end
 else if isSVSdkdseq
-		% All shots, i.e. reference scans and averages are stored in 'Set' dimension of
-		% twix object
-		% Find index of set dimension within cell array of dimensions and use this index
-		% into array of sizes of dimensions assuming that only sizes of non-singleton
-		% dimensions are stored in array of sizes of dimensions
-		indSet	=  contains(sqzDims,'Set');
 		% Obtain # of averages and  # of reference scans from the protocol/sequence UI
 		% In VE11: # of averages can be found in twix_obj.hdr.Meas.Averages
 		% In VE11: twix_obj.hdr.Protocol does NOT exist
@@ -166,7 +160,7 @@ else if isSVSdkdseq
 		% In XA60: twix_obj.hdr.Meas.Averages is empty []
 		% In VE11 & XA60, # of averages can be found in twix_obj_hdr.MeasYaps.lAverages
 		%noAverages	= twix_obj.hdr.Meas.Averages;
-		%noRefScans	= sqzSize(indSet) - twix_obj.hdr.Meas.Averages;
+		%noRefScans	= sqzSize(isWithSet) - twix_obj.hdr.Meas.Averages;
 		noAverages			= twix_obj.hdr.MeasYaps.lAverages;
 		nAutoRefScanMode	= twix_obj.hdr.MeasYaps.sSpecPara.lAutoRefScanMode;
 		nAutoRefScanNo		= twix_obj.hdr.MeasYaps.sSpecPara.lAutoRefScanNo;
@@ -178,7 +172,7 @@ else if isSVSdkdseq
 		% be applied by 4 to obtain total # of reference scans, since they are acquired
 		% like this
 		% nAutoRefScanNo_ECC nAutoRefScanNo_Quant MRS nAutoRefScanNo_ECC nAutoRefScanNo_Quant
-		%noRefScans		= sqzSize(indSet) - noAverages;
+		%noRefScans		= sqzSize(isWithSet) - noAverages;
 		factorRefScans	= 4;
 		switch nAutoRefScanMode
 			case 1
@@ -193,12 +187,34 @@ else if isSVSdkdseq
 			otherwise
 			error('%s: ERROR: Unknown nAutoRefScanMode = %d!\n\n', sFunctionName, nAutoRefScanMode);
 		end		% End of switch nAutoRefScanMode
-		
+
+		% In Dinesh's dkd SVS sLASER sequence, all shots, i.e. reference scans and 
+		% averages are stored in 'Set' dimension of twix object
+		% Determine if set dimension is within cell array of dimensions 
+		% (result is logical array)
+		isWithSet	=  contains(sqzDims,'Set');
+
+		% Check whether set dimension exists, and if it does, use logical array isWithSet
+		% as index into array of sizes of dimensions to determine the # of shots acquired 
+		% per repetition assuming that only sizes of non-singleton dimensions are stored 
+		% in array of sizes of dimensions
+		if sum(isWithSet(:)) == 0
+			% Set dimension does not exist, but, at least one shot was acquired for each 
+			% repetition, since otherwise the twix object should be empty
+			% (the one shot for each repetition is usually then a single average without 
+			%  reference scans; othwerwise there would be a set dimension)  
+			noShotsAcq		= 1;
+		else
+			% Set dimension exists and holds all shots (averages + reference scans) 
+			% acquired per repetition
+			noShotsAcq		= sqzSize(isWithSet);
+		end		% End of sum(isWithSet(:)) == 0
+
 		% Check whether acquisition was completed, i.e. that all reference scans and
-		% averages from the sequence protocol were actually acquired
-		% # of shots acquired (in data object)
+		% averages from the sequence protocol were actually acquired for each repetition 
+		% = # of shots in data object
 		noShots			= noRefScans + noAverages;
-		noShotsAcq		= sqzSize(indSet);
+		%noShotsAcq		= sqzSize(isWithSet);
 		noRefScansAcq	= noRefScans;
 		noAveragesAcq	= noAverages;
 		if noShotsAcq ~= (noRefScans + noAverages)
@@ -231,7 +247,7 @@ else if isSVSdkdseq
 		end		% End of if noShotsAcq ~= (noRefScans + noAverages)		
 		
 		% Extract and squeeze data from twix object for easier processing
-		% (required, so that 'sqzSize' and 'indSet' that refer to information about 
+		% (required, so that 'sqzSize' and 'isWithSet' that refer to information about 
 		% the dimensions and size of the squeezed twix data can be used)
 		squeezedData	= squeeze(dOut.data);
 		%sqz_ndims		= ndims(squeezedData);
@@ -241,45 +257,46 @@ else if isSVSdkdseq
 			% information about data objects
 			% In this case here, half of the reference scans are stored at beginning and
 			% the other half at the end of the 'Set' dimension
-			indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+noAverages+1):sqzSize(indSet)];
+			%indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+noAverages+1):sqzSize(indSet)];
+			indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+noAverages+1):noShotsAcq];
 			indicesAverages	= [(noRefScans/2+1):(noRefScans/2+noAverages)];
 			
 			% Use substruct indexing to extract selected data independent of # of
 			% dimensions of squeezed data object
-			% NOTE: For this to work, 'indSet' must also refer to 'Set' dimension in 
+			% NOTE: For this to work, 'isWithSet' must also refer to 'Set' dimension in 
 			% squeezed data object (array)
 			% Define indexing structure for squeezed data object (array)
 			% S.type is character vector or string scalar containing (), {}, or .,
 			% specifying the subscript type; here it is '()' that is used for indexing
 			% S.subs is cell array, character vector, or string scalar containing the
 			% actual subscripts; here it is cell array of {':'} for each data dimension
-			S.type			= '()';
-			S.subs			= repmat({':'}, 1, ndims(squeezedData));
+			S.type				= '()';
+			S.subs				= repmat({':'}, 1, ndims(squeezedData));
 			
 			% Select subscripts (indices) in 'Set' dimension of squezzed data object
 			% for reference data
-			S.subs{indSet}	= indicesRefScans;
-			refData			= subsref(squeezedData, S);
+			S.subs{isWithSet}	= indicesRefScans;
+			refData				= subsref(squeezedData, S);
 			
 			% Select subscripts (indices) in 'Set' dimension of squezzed data object
 			% for averages
-			S.subs{indSet}	= indicesAverages;
-			data			= subsref(squeezedData, S);
+			S.subs{isWithSet}	= indicesAverages;
+			data				= subsref(squeezedData, S);
 			
 			% 			% Check whether "Set' dimension is last dimension of data array and extract
 			% 			% reference scans and averages according to # of non-singleton data dimensions
-			% 			if indSet == sqz_ndims
+			% 			if isWithSet == sqz_ndims
 			% 				% Use substruct indexing to extract selected data
 			% 				refData		= squeezedData(:, :, indicesRefScans);
 			% 				data		= squeezedData(:, :, indicesAverages);
 			% 			else
-			% 				error('Set dimension in data array not last data dimension! indSet = %d \t sqz_ndims = %d', indSet, sqz_ndims);
-			% 			end		% End of if indSet == sqz_ndims
+			% 				error('Set dimension in data array not last data dimension! isWithSet = %d \t sqz_ndims = %d', isWithSet, sqz_ndims);
+			% 			end		% End of if isWithSet == sqz_ndims
 			
 			% Update information about data objects
-			% (should be correct here, since 'sqzSize' and 'indSet' already refer to
+			% (should be correct here, since 'sqzSize' and 'isWithSet' already refer to
 			% information about the dimensions and size of the squeezed twix data)
-			sqzSize(indSet)		= sqzSize(indSet) - noRefScans;
+			sqzSize(isWithSet)		= sqzSize(isWithSet) - noRefScans;
 		else
 			% No reference scans, data only includes averages
 			data	= squeezedData;
@@ -296,7 +313,7 @@ else if isSVSdkdseq
 			indCol	=  contains(sqzDims,'Col');
 			
 			% Extract data from twix object for easier processing
-			% (required, so that 'sqzSize' and 'indSet' that refer to information about 
+			% (required, so that 'sqzSize' and 'indCol' that refer to information about 
 			% the dimensions and size of the squeezed twix data can be used)
 			squeezedData	= squeeze(dOut.data);
 			%sqz_ndims		= ndims(squeezedData);
