@@ -208,7 +208,7 @@ switch config
 		paramsMRS_struct.bPhaseCorrFreqShift		= 0;
 		paramsMRS_struct.strMinUserIn				= 'y';
 		paramsMRS_struct.plotSwitch					= 0;
-		paramsMRS_struct.reportSwitch				= 1;
+		paramsMRS_struct.reportSwitch				= 0;
 		paramsMRS_struct.strProcessTool				= 'FID-A';
 		paramsMRS_struct.bPrep_MetabQuant			= 1;
 
