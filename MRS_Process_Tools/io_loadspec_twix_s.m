@@ -510,6 +510,8 @@ else
     %option in FID-A.
     dims.averages=find(strcmp(sqzDims,'Rep'));
     if ~isempty(dims.averages)
+		fprintf('\n\n%s: No "Averages", but a "Repetitions" dimension was found! => Repetitions are stored under "averages" in FID-A struct.\n\n', ...
+			sFunctionName);
         dimsToIndex=dimsToIndex(dimsToIndex~=dims.averages);
     else
         %If neither an "Averages" or a "Repetitions" dimension is found,
