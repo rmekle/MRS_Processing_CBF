@@ -153,7 +153,8 @@ elseif ishdSPECIAL %For Masoumeh Dehghani's hadamard-encoded dual-voxel SPECIAL 
 	% 	data=dOut.data;
 	% end
 else if isSVSdkdseq
-		% Obtain # of averages and  # of reference scans from the protocol/sequence UI
+		% Obtain # of averages, reference scan mode, and  # of reference scans from the 
+		% protocol/sequence UI
 		% In VE11: # of averages can be found in twix_obj.hdr.Meas.Averages
 		% In VE11: twix_obj.hdr.Protocol does NOT exist
 		% In XA60: # of averages can be found in twix_obj.hdr.Protocol.Averages
@@ -257,7 +258,7 @@ else if isSVSdkdseq
 			% information about data objects
 			% In this case here, half of the reference scans are stored at beginning and
 			% the other half at the end of the 'Set' dimension
-			%indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+noAverages+1):sqzSize(indSet)];
+			%indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+noAverages+1):sqzSize(isWithSet)];
 			indicesRefScans	= [1:(noRefScans/2) (noRefScans/2+noAverages+1):noShotsAcq];
 			indicesAverages	= [(noRefScans/2+1):(noRefScans/2+noAverages)];
 			
@@ -307,13 +308,14 @@ else if isSVSdkdseq
 		% at end of FID are acquired to avoid digital filtering effects; these samples can
 		% be discarded, their actual number depends on sequence parameter settings and TE)
 	else if isMinn
-			% Find index of col dimension within cell array of dimensions and use this
-			% index into array of sizes of dimensions assuming that only sizes of
-			% non-singleton dimensions are stored in array of sizes of dimensions
-			indCol	=  contains(sqzDims,'Col');
+			% Determine if set column is within cell array of dimensions
+			% (result is logical array) and use this logical array isWithCol as index into
+			% array of sizes of dimensions assuming that only sizes of non-singleton
+			% dimensions are stored in array of sizes of dimensions
+			isWithCol	=  contains(sqzDims,'Col');
 			
 			% Extract data from twix object for easier processing
-			% (required, so that 'sqzSize' and 'indCol' that refer to information about 
+			% (required, so that 'sqzSize' and 'isWithCol' that refer to information about 
 			% the dimensions and size of the squeezed twix data can be used)
 			squeezedData	= squeeze(dOut.data);
 			%sqz_ndims		= ndims(squeezedData);
@@ -378,27 +380,27 @@ else if isSVSdkdseq
 			
 			% Use substruct indexing to extract selected data independent of # of
 			% dimensions of squeezed data object
-			% NOTE: For this to work, 'indCol' must also refer to 'Col' dimension in 
+			% NOTE: For this to work, 'isWithCol' must also refer to 'Col' dimension in 
 			% squeezed data object (array)
 			% Define indexing structure for squeezed data object (array)
 			% S.type is character vector or string scalar containing (), {}, or .,
 			% specifying the subscript type; here it is '()' that is used for indexing
 			% S.subs is cell array, character vector, or string scalar containing the
 			% actual subscripts; here it is cell array of {':'} for each data dimension
-			S.type			= '()';
-			S.subs			= repmat({':'}, 1, ndims(squeezedData));
+			S.type				= '()';
+			S.subs				= repmat({':'}, 1, ndims(squeezedData));
 			
 			% Select subscripts (indices) in 'Col' dimension of squezzed data object
 			% for real/relevant points of all FIDs
-			S.subs{indCol}	= indicesFID;
-			data			= subsref(squeezedData, S);
+			S.subs{isWithCol}	= indicesFID;
+			data				= subsref(squeezedData, S);
 			
 			% Update information about data objects
-			% (should be correct here, since 'sqzSize' and 'indCol' already refer to
+			% (should be correct here, since 'sqzSize' and 'isWithCol' already refer to
 			% information about the dimensions and size of the squeezed twix data)
 			% (here it could also be set to (Vector Size * OversamplingFactor))
 			data_size			= size(data);
-			sqzSize(indCol)		= data_size(indCol);
+			sqzSize(isWithCol)	= data_size(isWithCol);
 			
 			% Indicate that data (FIDs) have already been left shifted
 			bLeftshifted	= 1;
