@@ -104,7 +104,7 @@ switch seqType_MRS_In
 						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
 						% Init MRS parameters for specific signals chosen for SNR and FWHM
 						% measurements that are needed to process these signals
-						[procParams_In]			= initParams_MRS_s('config_3T_Study_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC');
+						[procParams_In]			= initParams_MRS_s('config_Study_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC');
 					case 'IMA'
 						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
 						% .IMA svs_sLaser_dkd_LW scans
