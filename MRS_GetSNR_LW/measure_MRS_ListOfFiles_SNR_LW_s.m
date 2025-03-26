@@ -28,11 +28,11 @@ fprintf('\n\n');
 seqType_MRS_In			= 'sLASER';
 strStudy				= '3T_TGA';  	% 'Test'; '3T_Trauma'; '3T_TGA';
 strVOI					= 'HC'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
-fileExtension           = 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 
 % Parameters for saving of results to file
 % Select range (here first field) in Excel to write cell array of results to
-bSaveResults			= 0;
+bSaveResults			= 1;
 outNamingOption			= 1;
 %outputFileName_Add_1	= '_SNR_FWHM';
 acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
@@ -42,10 +42,10 @@ strRangeSel				= 'A4';		% 'A4';
 %% Additional parameters
 filename_MRS_In			= '';
 filename_w_In			= '';
-dataFormat_MRS_In		= 'dat';			% 'lcmRAW';
-signal_ppmRange_In		= [3.7, 5.7];		% [1.8, 2.2];	[3.7, 5.7];
+dataFormat_MRS_In		= 'IMA';			% 'lcmRAW';
+signal_ppmRange_In		= [3.7, 5.7];		% [1.8, 2.2];	[3.7, 5.7];	[4.2, 5.2];
 noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
-LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];	[3.7, 5.7];
+LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];	[3.7, 5.7];	[4.2, 5.2];
 zp_factor_In			= 8;
 dataType_MRS_In			= 'water';
 bAutoPhase_In			= 1;
