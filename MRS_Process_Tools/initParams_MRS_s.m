@@ -40,7 +40,7 @@ paramsMRS_struct.filename_w				= '';
 
 % Parameter settings depending on selected configuration
 switch config
-	case 'config_3T_TGA_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC'
+	case 'config_3T_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC'
 		%paramsMRS_struct.dirString_In			= '';
 		%paramsMRS_struct.dirString_Out			= '';
 		%paramsMRS_struct.filename				= '';
@@ -129,7 +129,7 @@ switch config
 		paramsMRS_struct.reportSwitch			= 1;
 		paramsMRS_struct.strProcessTool			= 'FID-A';
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
-	case 'config_3T_TGA_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC'
+	case 'config_3T_Study_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC'
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
 		paramsMRS_struct.strVOI_MRS				= 'HC';
