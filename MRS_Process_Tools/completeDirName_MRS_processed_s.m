@@ -8,7 +8,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, dataType, signals, leftshift, avgBlockSize, rmbadav, noSD, strSpecReg, driftCorr, bECC, strProcessTool)
+% [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, strVOI, fileExt, dataType, signals, leftshift, avgBlockSize, strProcessTool, rmbadav, noSD, strSpecReg, driftCorr, bECC)
 % 
 % DESCRIPTION:
 % Function to complete directory name for processed magnetic resonance spectroscopy (MRS)
@@ -18,9 +18,9 @@
 % INPUTS:
 % strDir_Out_Base    = String variable for the name of the base directory containing all
 %						processed MR spectra for a specific study
-% fileExt	   = File extension of MRS data; currently: 'dat' (raw data) or 'IMA' (DICOM)
 % strVOI	   = String desribing volume-of-interst(VOI) of MRS acquisition, e.g.
 %					'PCG', 'HC', 'Pons', 'CB', 'PFC', 'PCC'
+% fileExt	   = File extension of MRS data; currently: 'dat' (raw data) or 'IMA' (DICOM)
 % dataType	   = String describing the type of MRS data:
 %					'mrs'		= MR spectrum without water signal, 
 %					'mrs_w'		= MR spectrum with unsuppressed water signal
@@ -38,6 +38,8 @@
 % avgBlockSize = ['avgBlockSize'] Block size of averages used for block
 %					averaging prior to processing for noisy data. If equal to 0, block
 %					averaging is not applied.
+% strProcessTool = ['ProcessingTool'] String describing processing tool mainly used for 
+%					processing of MRS data, e.g. 'FID-A'.
 % rmbadav	   = ['RemoveBadAverages'] Character array that specifies whether 
 %					removal of bad averages should be performed or not. 
 % noSD		   = ['StandardDeviation'] # of standard deviations for bad average removal.
@@ -48,18 +50,16 @@
 %					spectral registration (drift correction) should be performed or not. 
 % bECC 		   = ['ECC'] Boolean that specifies whether eddy current correction (ECC) 
 %					 should be performed or not.
-% strProcessTool = ['ProcessingTool'] String describing processing tool mainly used for 
-%					processing of MRS data, e.g. 'FID-A'.
 % 
 % OUTPUTS:
 % strDir_Out		= Completed directory name for processed MRS data
 %
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024;
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024, 2025;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, fileExt, strVOI, dataType, signals, leftshift, avgBlockSize, rmbadav, noSD, strSpecReg, driftCorr, bECC, strProcessTool)
+function [strDir_Out] = completeDirName_MRS_processed_s(strDir_Out_Base, strVOI, fileExt, dataType, signals, leftshift, avgBlockSize, strProcessTool, rmbadav, noSD, strSpecReg, driftCorr, bECC)
 
 % Select directory for output data depending on voxel location, data type,
 % # of SDs, and other options used for pre-processing of MR spectra or acquired
