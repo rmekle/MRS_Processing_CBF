@@ -34,17 +34,21 @@ fprintf('\n\n');
 
 
 %% Init input parameters for (pre)processing of magnetic resonance spectroscopy (MRS) data
-% depending on selected configuration
+% Parameter settings that are the same for all acquisitions
+paramsMRS_struct.filename				= '';
+paramsMRS_struct.filename_w				= '';
+
+% Parameter settings depending on selected configuration
 switch config
-	case 'config_3T_TGA_sLASER_MRS_dat'
+	case 'config_3T_TGA_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC'
 		%paramsMRS_struct.dirString_In			= '';
 		%paramsMRS_struct.dirString_Out			= '';
-		paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
-		paramsMRS_struct.filename				= '';
-		paramsMRS_struct.filename_w				= '';
+		%paramsMRS_struct.filename				= '';
+		%paramsMRS_struct.filename_w				= '';
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
-		paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+		paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+		paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
 		paramsMRS_struct.dataType_MRS			= 'mrs_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 		paramsMRS_struct.signals_MRS			= 'Spectra';	% 'MMs';	% 'Spectra';
 		paramsMRS_struct.strOVS					= 'wOVS';		% 'wOVS';	% 'woutOVS';
@@ -125,13 +129,11 @@ switch config
 		paramsMRS_struct.reportSwitch			= 1;
 		paramsMRS_struct.strProcessTool			= 'FID-A';
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
-	case 'config_3T_TGA_sLASER_water_dat'
-		paramsMRS_struct.fileExt_MRS			= 'dat';
-		paramsMRS_struct.filename				= '';
-		paramsMRS_struct.filename_w				= '';
+	case 'config_3T_TGA_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC'
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
-		paramsMRS_struct.strVOI_MRS				= 'HC';	
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
+		paramsMRS_struct.strVOI_MRS				= 'HC';
+		paramsMRS_struct.fileExt_MRS			= 'dat';
 		paramsMRS_struct.dataType_MRS			= 'water';
 		paramsMRS_struct.signals_MRS			= 'Spectra';
 		paramsMRS_struct.strOVS					= 'woutOVS';
