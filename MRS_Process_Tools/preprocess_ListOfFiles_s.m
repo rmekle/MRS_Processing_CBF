@@ -22,7 +22,7 @@ fprintf('\n\n');
 
 %% Init input parameters for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_3T_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
+configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
 % Extract parameter settings from parameter struct
