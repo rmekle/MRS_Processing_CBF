@@ -39,6 +39,9 @@ strOVS_w_In				= sParamsMRS_struct.strOVS_w;
 leftshift_In			= sParamsMRS_struct.leftshift;
 avgBlockSize_In			= sParamsMRS_struct.avgBlockSize;
 
+% Info about processing tool(s) mainly used
+strProcessTool_In		= sParamsMRS_struct.strProcessTool;
+
 % Parameters for removal of bad averages
 rmbadav_In				= sParamsMRS_struct.rmbadav;
 noSD_In					= sParamsMRS_struct.noSD;
@@ -69,7 +72,6 @@ bPhaseCorrFreqShift_In	= sParamsMRS_struct.bPhaseCorrFreqShift;
 strMinUserIn_In			= sParamsMRS_struct.strMinUserIn;
 plotSwitch_In			= sParamsMRS_struct.plotSwitch;
 reportSwitch_In			= sParamsMRS_struct.reportSwitch;
-strProcessTool_In		= sParamsMRS_struct.strProcessTool;
 bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 
 
