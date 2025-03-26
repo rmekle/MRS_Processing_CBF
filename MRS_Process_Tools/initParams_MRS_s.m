@@ -55,6 +55,9 @@ switch config
 		paramsMRS_struct.strOVS_w				= 'wOVS';	% 'wOVS';	% 'woutOVS';
 		paramsMRS_struct.leftshift				= 3;			% 3;	% 2;	% 0;	% 1;
 		paramsMRS_struct.avgBlockSize			= 0;			% 0;	2;		4;		8;		16;
+		
+		% Info about processing tool(s) mainly used
+		paramsMRS_struct.strProcessTool			= 'FID-A';
 
 		% Parameters for removal of bad averages
 		paramsMRS_struct.rmbadav				= 'y';			% 'y';		'n';
@@ -127,7 +130,6 @@ switch config
 		paramsMRS_struct.strMinUserIn			= 'y';
 		paramsMRS_struct.plotSwitch				= 0;
 		paramsMRS_struct.reportSwitch			= 1;
-		paramsMRS_struct.strProcessTool			= 'FID-A';
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
 	case 'config_Study_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC'
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
@@ -140,6 +142,9 @@ switch config
 		paramsMRS_struct.strOVS_w				= 'woutOVS';
 		paramsMRS_struct.leftshift				= 3;
 		paramsMRS_struct.avgBlockSize			= 0;
+
+		% Info about processing tool(s) mainly used
+		paramsMRS_struct.strProcessTool			= 'FID-A';
 
 		% Parameters for removal of bad averages
 		paramsMRS_struct.rmbadav				= 'y';
@@ -211,7 +216,6 @@ switch config
 		paramsMRS_struct.strMinUserIn				= 'y';
 		paramsMRS_struct.plotSwitch					= 0;
 		paramsMRS_struct.reportSwitch				= 0;
-		paramsMRS_struct.strProcessTool				= 'FID-A';
 		paramsMRS_struct.bPrep_MetabQuant			= 1;
 
 	otherwise
