@@ -22,16 +22,16 @@ fprintf('\n\n');
 
 %% Init input parameters for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_3T_TGA_sLASER_MRS_dat';
+configSel				= 'config_3T_TGA_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
 % Extract parameter settings from parameter struct
-fileExt_MRS				= sParamsMRS_struct.fileExt_MRS;
 filename_In				= sParamsMRS_struct.filename;
 filename_w_In			= sParamsMRS_struct.filename_w;
 strStudy_MRS			= sParamsMRS_struct.strStudy_MRS;
-strVOI_MRS				= sParamsMRS_struct.strVOI_MRS;
 seqType_MRS				= sParamsMRS_struct.seqType_MRS;
+strVOI_MRS				= sParamsMRS_struct.strVOI_MRS;
+fileExt_MRS				= sParamsMRS_struct.fileExt_MRS;
 dataType_MRS			= sParamsMRS_struct.dataType_MRS;
 signals_MRS				= sParamsMRS_struct.signals_MRS;
 strOVS_In				= sParamsMRS_struct.strOVS;
