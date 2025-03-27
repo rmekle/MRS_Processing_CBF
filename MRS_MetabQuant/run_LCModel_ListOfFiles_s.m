@@ -1315,7 +1315,7 @@ if( noFiles_table > 0 )
 							astrTemplateFilesExcel	= ["3T_MRS_Trauma_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s for study %s!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
+							error('%s: ERROR: Unknown VOI %s for study %s when selecting Excel template!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
 					end			% End of switch strVOI_MRS
 				case '3T_SBAM'
 					% Select template according to selected VOI
@@ -1326,7 +1326,16 @@ if( noFiles_table > 0 )
 							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_PCG.xltx"];
 
 						otherwise
-							error('%s: ERROR: Unknown VOI %s for study %s!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
+							error('%s: ERROR: Unknown VOI %s for study %s when selecting Excel template!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
+					end			% End of switch strVOI_MRS
+				case '3T_TGA'
+					% Select template according to selected VOI
+					switch strVOI_MRS
+						case 'HC'
+							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_HC.xltx"];
+
+						otherwise
+							error('%s: ERROR: Unknown VOI %s for study %s when selecting Excel template!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
 					end			% End of switch strVOI_MRS
 				case '3T_MMs'
 					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy_MRS);
@@ -1336,7 +1345,7 @@ if( noFiles_table > 0 )
 					bCopyIntoExcel			= 0;	
 
 				otherwise
-					error('%s: ERROR: Unknown study %s!\n', sFunctionName, strStudy_MRS);
+					error('%s: ERROR: No Excel template for unknown study %s!\n', sFunctionName, strStudy_MRS);
 			end			% End of switch strStudy_MRS
 			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
 
