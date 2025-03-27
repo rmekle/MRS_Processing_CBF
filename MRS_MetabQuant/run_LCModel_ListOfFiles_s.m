@@ -6,7 +6,7 @@
 %% spectroscopy (MRS) data
 %
 % Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2018, 2019, 2020, 2021, 2022,
-% 2023, 2024;
+% 2023, 2024, 2025;
 % Ivo Opitz, Charite Universitätsmedizin Berlin, Germany, 2022;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,95 +21,59 @@ sFunctionName		= 'run_LCModel_ListOfFiles_s';
 fprintf('\n\n');
 
 
-%% Init parameter settings from preprocessing of MR spectra for running LCModel analysis
-%dirString_In			= '';
-%dirString_Out			= '';
-fileExt_MRS				= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
-filename_In				= '';
-filename_w_In			= '';
-strStudy_MRS			= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';
-strVOI_MRS				= 'PCG';			% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
-seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-dataType_MRS			= 'mrs_w_ref';		% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';	
-signals_MRS				= 'Spectra';		% 'MMs';	% 'Spectra';
-strOVS_In				= 'wOVS';		% 'wOVS';	% 'woutOVS';
-strOVS_w_In				= 'woutOVS';		% 'wOVS';	% 'woutOVS';
-leftshift_In			= 3;		% 3;	% 2;	% 0;	% 1;
-avgBlockSize_In			= 0;		% 0;	2;		4;		8;		16;
+%% Init input parameters for preprocessing
+% Obtain parameter settings for preprocessing from initialization routine
+configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
+[sParamsMRS_struct]		= initParams_MRS_s(configSel);
+
+% Extract parameter settings from parameter struct
+filename_In				= sParamsMRS_struct.filename;
+filename_w_In			= sParamsMRS_struct.filename_w;
+strStudy_MRS			= sParamsMRS_struct.strStudy_MRS;
+seqType_MRS				= sParamsMRS_struct.seqType_MRS;
+strVOI_MRS				= sParamsMRS_struct.strVOI_MRS;
+fileExt_MRS				= sParamsMRS_struct.fileExt_MRS;
+dataType_MRS			= sParamsMRS_struct.dataType_MRS;
+signals_MRS				= sParamsMRS_struct.signals_MRS;
+strOVS_In				= sParamsMRS_struct.strOVS;
+strOVS_w_In				= sParamsMRS_struct.strOVS_w;
+leftshift_In			= sParamsMRS_struct.leftshift;
+avgBlockSize_In			= sParamsMRS_struct.avgBlockSize;
+
+% Info about processing tool(s) mainly used
+strProcessTool_In		= sParamsMRS_struct.strProcessTool;
 
 % Parameters for removal of bad averages
-rmbadav_In				= 'y';		% 'y';		'n';
-noSD_In					= 3.2;		% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
+rmbadav_In				= sParamsMRS_struct.rmbadav;
+noSD_In					= sParamsMRS_struct.noSD;
 %digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 % Parameters for spectral registration (aligning of averages/frequency and phase drift
 % correction) performed in either frequency or time domain
-strSpecReg_In			= 'SR1';	% To distinguish settings for spectral registration
-driftCorr_In			= 'y';		% 'y';		'n';
-iterin_In				= 20;
-aaDomain_In				= 'f';		% 'f';		't';
-tmaxin_In				= 0.2;		% 0.2;		0.1;
-bTmaxset_In				= 1;
-ppmOption				= 1;
-medin_In				= 'y';		% 'y';	'n';	'a';	'ref';
-alignSS_In				= 2;		% For aligning subspectra (e.g. in SPECIAL)
-% Set parameters for drift correction depending on type of data, i.e. whether MRS
+strSpecReg_In			= sParamsMRS_struct.strSpecReg;	% To distinguish settings for spectral registration
+driftCorr_In			= sParamsMRS_struct.driftCorr;
+iterin_In				= sParamsMRS_struct.iterin;
+aaDomain_In				= sParamsMRS_struct.aaDomain;
+tmaxin_In				= sParamsMRS_struct.tmaxin;
+bTmaxset_In				= sParamsMRS_struct.bTmaxset;
+ppmOption				= sParamsMRS_struct.ppmOption;
+medin_In				= sParamsMRS_struct.medin;
+alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
+% Obtain parameters for drift correction depending on type of data, i.e. whether MRS
 % data is spectrum or water signal
 % NOTE: Check whether aligning of averages in frequency domain works, if the MR
 % spectrum is water signal itself; if not, simply align averages in time domain
-switch dataType_MRS
-	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
-		% MR spectrum is provided together without or with unsuppressed water
-		% signal and/or with reference scans
-		%ppmmin_fix_In		= 1.6;		% 1.6;		1.8;
-		%ppmmaxarray_fix_In	= [3.5; 4.0; 5.5];
-		%ppmmaxarray_fix_In	= [2.4,2.85,3.35,4.2,4.4,5.2];
-		switch ppmOption
-			case 1
-				% For MR spectra
-				ppmmin_fix_In			= 1.6;		% 1.6;		1.8;
-				ppmmaxarray_fix_In		= [2.4,2.85,3.35,4.2,4.4,5.2];
-			case 2
-				% For MR spectra
-				ppmmin_fix_In			= 1.6;
-				ppmmaxarray_fix_In		= [3.5; 4.0; 5.5];
-			case 3
-				% For MR spectra using settings for water signals
-				ppmmin_fix_In			= 4.2;
-				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
-			case 4
-				% Wide range to always include water resonance
-				ppmmin_fix_In			= 1.6;
-				ppmmaxarray_fix_In		= [5.5 5.5 5.2];
-			case 5
-				% For MMs signals
-				ppmmin_fix_In			= 0.2;
-				ppmmaxarray_fix_In		= [3.35,4.2,4.4];
-			case 6
-				% For MMs signals
-				ppmmin_fix_In			= 0.2;
-				ppmmaxarray_fix_In		= [3.35,4.0,4.1];
+ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix;
+ppmmaxarray_fix_In		= sParamsMRS_struct.ppmmaxarray_fix;
 
-			otherwise
-				error('%s: Unknown ppmOption = %d!\n', sFunctionName, ppmOption);
-		end			% End of switch ppmOption
-	case {'water', 'water_ref'}
-		% MR spectrum is water signal itself without or with reference scans
-		ppmmin_fix_In		= 4.2;
-		ppmmaxarray_fix_In	= [5.5 5.5 5.2];
-
-	otherwise
-		error('%s: Unknown MRS dataType_MRS = %s!\n', sFunctionName, dataType_MRS);
-end		% End of switch dataType_MRS
 
 % Additional parameter settings
-bECC_In					= 1;
-bPhaseCorrFreqShift_In	= 0;
-strMinUserIn_In			= 'y';
-plotSwitch_In			= 0;
-reportSwitch_In			= 1;
-strProcessTool_In		= 'FID-A';
-bPrep_MetabQuant		= 1;
+bECC_In					= sParamsMRS_struct.bECC;
+bPhaseCorrFreqShift_In	= sParamsMRS_struct.bPhaseCorrFreqShift;
+strMinUserIn_In			= sParamsMRS_struct.strMinUserIn;
+plotSwitch_In			= sParamsMRS_struct.plotSwitch;
+reportSwitch_In			= sParamsMRS_struct.reportSwitch;
+bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 
 
 %% Additional (input) parameters specific to metabolite quantification using LCM analysis
