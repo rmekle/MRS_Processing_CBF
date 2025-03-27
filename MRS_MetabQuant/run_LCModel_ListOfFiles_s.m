@@ -668,8 +668,8 @@ switch seqType_MRS
 
 		% Complete output data directory name for preprocessed MRS data
 		%dirData_Processed	= [dirData_Base, dirData_AddOn1, dirData_AddOn2, filesep];
-		dirData_Processed	= completeDirName_MRS_processed_s(dirData_Base, fileExt_MRS, strVOI_MRS, dataType_MRS, signals_MRS, leftshift_In, avgBlockSize_In, ...
-			rmbadav_In, noSD_In, strSpecReg_In, driftCorr_In, bECC_In, strProcessTool_In);
+		dirData_Processed	= completeDirName_MRS_processed_s(dirData_Base, strVOI_MRS, fileExt_MRS, dataType_MRS, signals_MRS, leftshift_In, avgBlockSize_In, ...
+			strProcessTool_In, rmbadav_In, noSD_In, strSpecReg_In, driftCorr_In, bECC_In);
 
 		% Add elements for voxel location and quantification analysis to input directory
 		% name
