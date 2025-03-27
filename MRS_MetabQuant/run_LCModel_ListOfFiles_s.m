@@ -519,7 +519,29 @@ switch seqType_MRS
 						error('%s: ERROR: No LCM control file found for strVOI_MRS = %s!\n', sFunctionName, strVOI_MRS);
 				end				% End of switch strVOI_MRS
 			case '3T_TGA'
+				% svs_dkd_slaser with TE = 23 ms
+				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_DineshKD/';
+				LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
+				dirControl_Add1					= 'LCM_Control_sLASER_dkd_TE23/';
+				switch strVOI_MRS
+					case 'HC'
+						switch fileExt_MRS
+							case 'dat'
+								% RAW4093 for leftshit = 3
+								LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8';
+							case 'IMA'
+								% IMA2047 for leftshit = 1
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8';
 
+							otherwise
+								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
+						end			% End of switch fileExt_MRS
+
+					otherwise
+						error('%s: ERROR: No LCM control file found for strVOI_MRS = %s!\n', sFunctionName, strVOI_MRS);
+				end				% End of switch strVOI_MRS
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_Gosia/';
