@@ -667,6 +667,10 @@ switch seqType_MRS
 				% svs_dkd_slaser with TE = 23 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_SBAM_Analysis/';
 				dirData_Base		= dirDataAnalysis;
+			case '3T_TGA'
+				% svs_dkd_slaser with TE = 23 ms
+				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_MRS_TGA_Analysis/';
+				dirData_Base		= dirDataAnalysis;
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
