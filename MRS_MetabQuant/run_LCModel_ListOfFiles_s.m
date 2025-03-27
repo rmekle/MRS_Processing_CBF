@@ -80,7 +80,7 @@ bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 str_noSD_In				= sprintf('%d_%d', digits_noSD_In(1), digits_noSD_In(2));
 %strTissue				= 'HC';	% 'GM';	% 'WM';	% 'HC';	% 'PCG'; % 'OCC';
-strTissue				= strVOI_MRS;
+%strTissue				= strVOI_MRS;
 strAnalysisData			= 'MRS_reg';	% 'MRS_diff';	'MRS_editOFF';	'MRS_reg';
 %b0nratio				= 1;		% Currently, only used for seqType_MRS =  'sLASER'
 % Indicate whether water scaling is used
@@ -96,10 +96,10 @@ bTestOutput				= 0;
 % if strcmp(strAnalysisData, 'MRS_diff') && strcmp(charWaterScaling, 'Yes')
 % 	error('%s: ERROR: Difference spectra set to be analyzed with water scaling: strAnalysisData = %s\t charwaterScaling = %s!\n', sFunctionName, strAnalysisData, charWaterScaling);
 % end
-% Usually variable strVOI_MRS should be equal to variable strTissue
-if ~strcmp(strVOI_MRS, strTissue)
-	error('%s: ERROR: strVOI_MRS = %s different from strTissue = %s!\n', sFunctionName, strVOI_MRS, strTissue);
-end
+% % Usually variable strVOI_MRS should be equal to variable strTissue
+%if ~strcmp(strVOI_MRS, strTissue)
+%	error('%s: ERROR: strVOI_MRS = %s different from strTissue = %s!\n', sFunctionName, strVOI_MRS, strTissue);
+%end
 % For studies '3T_Trauma' and ''3T_SBAM', water signals for the HC and the PCG have been
 % acquired with different OVS settings (by accident), so adjust for this automatically
 %fprintf('\n\n');
@@ -237,7 +237,7 @@ switch seqType_MRS
 				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_DineshKD/';
 				LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
 				dirControl_Add1					= 'LCM_Control_sLASER_dkd_TE23/';
-				switch strTissue
+				switch strVOI_MRS
 					case 'GM'
 						LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
 					case 'HC'
@@ -386,14 +386,14 @@ switch seqType_MRS
 						end			% End of switch fileExt_MRS
 
 					otherwise
-						error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
-				end				% End of switch strTissue	
+						error('%s: ERROR: No LCM control file found for strVOI_MRS = %s!\n', sFunctionName, strVOI_MRS);
+				end				% End of switch strVOI_MRS	
 			case '3T_SBAM'
 				% svs_dkd_slaser with TE = 23 ms
 				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_DineshKD/';
 				LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
 				dirControl_Add1					= 'LCM_Control_sLASER_dkd_TE23/';
-				switch strTissue
+				switch strVOI_MRS
 					case 'GM'
 						LCM_Control						= '3T_RAW_sLASER_TE23_GM_water_nratio0';
 					case 'HC'
@@ -516,14 +516,16 @@ switch seqType_MRS
 						end			% End of switch fileExt_MRS
 
 					otherwise
-						error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
-				end				% End of switch strTissue
+						error('%s: ERROR: No LCM control file found for strVOI_MRS = %s!\n', sFunctionName, strVOI_MRS);
+				end				% End of switch strVOI_MRS
+			case '3T_TGA'
+
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_Gosia/';
 				LCM_Basis						= 'basis_sLASER_7T_TE=35.BASIS';
 				dirControl_Add1					= 'LCM_Control_sLASER_eja_TE40/';
-				switch strTissue
+				switch strVOI_MRS
 					case 'CB'
 						if bECC_In == 1
 							% ECC included in preprocessing
@@ -566,8 +568,8 @@ switch seqType_MRS
 						end		% End of if bECC_In == 1
 						
 					otherwise
-						error('%s: ERROR: No LCM control file found for strTissue = %s!\n', sFunctionName, strTissue);
-				end				% End of switch strTissue
+						error('%s: ERROR: No LCM control file found for strVOI_MRS = %s!\n', sFunctionName, strVOI_MRS);
+				end				% End of switch strVOI_MRS
 				
 			otherwise
 				error('%s: ERROR: Unknown study %s!\n', sFunctionName, strStudy_MRS);
@@ -686,7 +688,7 @@ switch seqType_MRS
 		
 		% Select output directory based on type of data and type of analysis being used
 		% and add control filename to directory
-		outDir		= [dirData_Processed, strVOI_MRS, '_LCM_Out_', strTissue, strWaterQuant];
+		outDir		= [dirData_Processed, strVOI_MRS, '_LCM_Out_', strVOI_MRS, strWaterQuant];
 		%if b0nratio
 		%	outDir		= [outDir, '_0nratio'];
 		%end
