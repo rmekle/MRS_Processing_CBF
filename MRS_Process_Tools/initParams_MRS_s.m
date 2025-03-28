@@ -46,7 +46,7 @@ switch config
 		%paramsMRS_struct.dirString_Out			= '';
 		%paramsMRS_struct.filename				= '';
 		%paramsMRS_struct.filename_w				= '';
-		paramsMRS_struct.strStudy_MRS			= '3T_TGA';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
+		paramsMRS_struct.strStudy_MRS			= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 		paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 		paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
@@ -62,7 +62,7 @@ switch config
 
 		% Parameters for removal of bad averages
 		paramsMRS_struct.rmbadav				= 'y';			% 'y';		'n';
-		paramsMRS_struct.noSD					= 3.0;			% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
+		paramsMRS_struct.noSD					= 3.2;			% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
 		%paramsMRS_struct.digits_noSD_In		= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
 		% Parameters for spectral registration (aligning of averages/frequency and phase 
