@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 %% Init input parameters for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
+configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
 % Extract parameter settings from parameter struct
@@ -415,7 +415,7 @@ switch seqType_MRS
 
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v2';
 										%LCM_ControlAdd					= '_Con7';
-										LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v3';
+										LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBAM_42720_mac_nratio0_v3';
 										LCM_ControlAdd					= '_Con8';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v4';
 										%LCM_ControlAdd					= '_Con9';
