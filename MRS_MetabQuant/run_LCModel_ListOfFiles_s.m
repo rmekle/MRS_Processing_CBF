@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 %% Init input parameters for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
+configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
 % Extract parameter settings from parameter struct
@@ -528,12 +528,12 @@ switch seqType_MRS
 						switch fileExt_MRS
 							case 'dat'
 								% RAW4093 for leftshit = 3
-								LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v3';
+								LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_TGA_42677_mac_nratio0_v3';
 								LCM_ControlAdd					= '_Con8';
 							case 'IMA'
 								% IMA2047 for leftshit = 1
-								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v3';
-								LCM_ControlAdd					= '_Con8';
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43315_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8_43315';
 
 							otherwise
 								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
@@ -1332,7 +1332,7 @@ if( noFiles_table > 0 )
 					% Select template according to selected VOI
 					switch strVOI_MRS
 						case 'HC'
-							astrTemplateFilesExcel	= ["3T_SBAM_MRS_Analysis_Template_HC.xltx"];
+							astrTemplateFilesExcel	= ["3T_TGA_MRS_Analysis_Template_HC.xltx"];
 
 						otherwise
 							error('%s: ERROR: Unknown VOI %s for study %s when selecting Excel template!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
