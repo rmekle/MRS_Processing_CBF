@@ -1357,10 +1357,18 @@ if( noFiles_table > 0 )
 			
 			% Select sheet and range of Excel file, where table of results is to be saved
 			% and # of columns to be inserted into final table
-			% depending on type of spectra being analyzed
+			% depending on type of spectra being analyzed and MRS study
 			if strcmp(strAnalysisData, 'MRS_reg')
 				% Regular MR spectra
-				strSheetSel				= ['MRS_', strVOI_MRS, '_All'];	
+				switch strStudy_MRS
+					case {'3T_Trauma', '3T_SBAM'}
+						strSheetSel				= ['MRS_', strVOI_MRS, '_All'];
+					case '3T_TGA'
+						strSheetSel				= ['MRS_', strVOI_MRS, '_All', strSheetSel_AddOn];
+
+					otherwise
+						error('%s: ERROR: No sheet in Excel template selected for unknown study %s!\n', sFunctionName, strStudy_MRS);
+				end			% End of switch strStudy_MRS
 				if bDeleteColumns
 					% Select range in Excel for only deleting columns in table
 					strRangeSel				= 'D5';		% 'D5';
