@@ -535,6 +535,7 @@ switch seqType_MRS
 								% IMA2047 for leftshit = 1
 								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43315_mac_nratio0_v3';
 								LCM_ControlAdd					= '_Con8_43315';
+								strSheetSel_AddOn				= '_Left_1';
 
 							otherwise
 								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
