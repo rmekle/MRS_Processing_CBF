@@ -1,6 +1,6 @@
 % op_ecc_s.m
 % Jamie Near, McGill University 2014.
-% Edits from Ralf Mekle (RM), Charite, 2021.
+% Edits from Ralf Mekle (RM), Charite, 2021, 2025.
 % 
 % USAGE:
 % [out,outw]=op_ecc_s(in,inw);
@@ -12,14 +12,18 @@
 % data.
 % 
 % INPUTS:
-% in     = water suppressed input data in matlab structure format.
-% inw    = water unsuppressed input data in matlab structure format.
+% in		= water suppressed input data in matlab structure format.
+% inw		= water unsuppressed input data in matlab structure format.
+% RM: 
+% fileExt	= File extension of MRS data files: 'dat' (raw data) or 'IMA' (DICOM)
 %
 % OUTPUTS:
-% out    = Water suppressed output following eddy current correction  
-% outw   = Water unsuppressed output following eddy current correction
+% out		= Water suppressed output following eddy current correction  
+% outw		= Water unsuppressed output following eddy current correction
 
-function [out,outw]=op_ecc_s(in,inw);
+% RM:
+%function [out,outw]=op_ecc_s(in,inw)
+function [out,outw]=op_ecc_s(in,inw,fileExt)
 
 % RM:
 sFunctionName		= 'op_ecc_s';
@@ -60,10 +64,12 @@ if nDims_fidm == 2 && nDims_fidw == 2
 	% Dinesh's routine for ECC and DC correction can be called without reshaping arrays 
 	% of extracted FIDs
 	% ECC and DC correction for metabolite FIDs
-	fidm_ECC	= eddyCor2(fidw,fidm);
+	%fidm_ECC	= eddyCor2(fidw,fidm);
+	fidm_ECC	= eddyCor2(fidw,fidm,fileExt);
 	% ECC and DC correction for accompanying water signal FIDs
 	% (use water signal itself for this correction)
-	fidw_ECC	= eddyCor2(fidw,fidw);	
+	%fidw_ECC	= eddyCor2(fidw,fidw);
+	fidw_ECC	= eddyCor2(fidw,fidw,fileExt);
 else
 	% NOT YET!
 	error('%s: ECC not yet implemented for dimension of FIDs nDims_fidm = %d!', sFunctionName, nDims_fidm);
