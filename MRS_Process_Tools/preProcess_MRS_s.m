@@ -1996,7 +1996,7 @@ switch seqType
 			%end		% End of  if ~(isIMA && isIMA_w)
 			end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 
-			% Indicate in report, if averaging of blocks of averages was perfromed prior
+			% Indicate in report, if averaging of blocks of averages was performed prior
 			% to processing
 			if avgBlockSize > 0
 				fprintf(fid2,'\n\n<h2>Averaging of blocks of averages prior to processing was performed to improve SNR of data.</h2>');
