@@ -27,10 +27,11 @@ end
 %glitchPts = 200;
 switch fileExt
 	case 'dat'
-		% Use twice # of glitch points for raw data (oversampling not removed)
+		% Use twice # of glitch points for MRS raw data (.dat, oversampling not removed)
 		glitchPts = 400;
-	case 'IMA'
+	case {'IMA', 'dcm'}
 		% Original # of glitch points in Dinesh's routine
+		% for MRS DICOM (.IMA) and MRS extended DICOM (.dcm) files
 		glitchPts = 200;
 
 	otherwise
