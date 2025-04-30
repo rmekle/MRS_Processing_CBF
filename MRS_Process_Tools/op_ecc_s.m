@@ -15,7 +15,8 @@
 % in		= water suppressed input data in matlab structure format.
 % inw		= water unsuppressed input data in matlab structure format.
 % RM: 
-% fileExt	= File extension of MRS data files: 'dat' (raw data) or 'IMA' (DICOM)
+% fileExt	= File extension of MRS data files: 
+%				'dat' (raw data) or 'IMA' (DICOM) or '.dcm (extended DICOM)
 %
 % OUTPUTS:
 % out		= Water suppressed output following eddy current correction  
