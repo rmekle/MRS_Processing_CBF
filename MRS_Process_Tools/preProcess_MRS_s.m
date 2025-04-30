@@ -248,7 +248,8 @@ if( ~strcmp( outDirString(end), filesep ) )
 	outDirString	= [outDirString, filesep];
 end
 
-% Determine flags to indicate whether MRS data is in DICOM format (.IMA) or not
+% Determine flags to indicate whether MRS data and water unsuppressed data (if provided) 
+% are in DICOM format (.IMA) or not
 switch fileExt
 	case 'dat'
 		% MRS raw data (.dat)
@@ -257,7 +258,10 @@ switch fileExt
 	case 'IMA'
 		% MRS DICOM data (.IMA)
 		isIMA		= 1;
-		isIMA_w		= 0;
+		if isempty(dirString_w)
+			isIMA_w = 0;
+		else
+			isIMA_w = 1;
 	case 'dcm'
 		% MRS extended DICOM data (.dcm)
 		isIMA		= 0;
