@@ -248,26 +248,49 @@ if( ~strcmp( outDirString(end), filesep ) )
 	outDirString	= [outDirString, filesep];
 end
 
-% Obtain different parts of input filenames
-% FLAG: Modified
-% Set flags to indicate whether MRS data is in DICOM format (.IMA) or not
-[sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
-if strcmp(extSpec, '.dat')
-    isIMA = 0;
-else
-    isIMA = 1;
-end
+% Determine flags to indicate whether MRS data is in DICOM format (.IMA) or not
+switch fileExt
+	case 'dat'
+		% MRS raw data (.dat)
+		isIMA		= 0;
+		isIMA_w		= 0;
+	case 'IMA'
+		% MRS DICOM data (.IMA)
+		isIMA		= 1;
+		isIMA_w		= 0;
+	case 'dcm'
+		% MRS extended DICOM data (.dcm)
+		isIMA		= 0;
+		isIMA_w		= 0;
 
+	otherwise
+		error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
+end			% End of switch fileExt
+
+% Obtain different parts of input filenames
+[sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
 [sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
-if strcmp(ext_w, '.dat')
-	isIMA_w = 0;
-else
-	if isempty(dirString_w)
-		isIMA_w = 0;
-	else
-		isIMA_w = 1;
-	end
-end
+
+% % Obtain different parts of input filenames
+% % FLAG: Modified
+% % Set flags to indicate whether MRS data is in DICOM format (.IMA) or not
+% [sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
+% if strcmp(extSpec, '.dat')
+%     isIMA = 0;
+% else
+%     isIMA = 1;
+% end
+% 
+% [sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
+% if strcmp(ext_w, '.dat')
+% 	isIMA_w = 0;
+% else
+% 	if isempty(dirString_w)
+% 		isIMA_w = 0;
+% 	else
+% 		isIMA_w = 1;
+% 	end
+% end
 
 % FLAG: Modified
 % % Derive filenames for spectrum and water signal from either input filename of report
