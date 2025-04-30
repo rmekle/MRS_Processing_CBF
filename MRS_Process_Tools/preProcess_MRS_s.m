@@ -1454,7 +1454,8 @@ switch seqType
 			% for further processing depending on which if case is actually invoked)
 			if with_ref
 				out_water_av_ECC_In			= out_ref_ECC_av;
-				[out_av, out_ref_ECC_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+				[out_av, out_ref_ECC_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In, fileExt);
+				%[out_av, out_ref_ECC_av]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
 				% Perform ECC for water reference signals for quantification using these
 				% signals themselves
 				% (output signals are then also both the same, since ECC is performed on
@@ -1463,12 +1464,14 @@ switch seqType
 				% second one is unused)) 
 				out_ref_Quant_av_ECC_In			= out_ref_Quant_av;
 				out_ref_Quant_water_av_ECC_In	= out_ref_Quant_av;
-				[out_ref_Quant_av, out_ref_Quant_av_ECC_w]	= op_ecc_s(out_ref_Quant_av_ECC_In, out_ref_Quant_water_av_ECC_In);
+				[out_ref_Quant_av, out_ref_Quant_av_ECC_w]	= op_ecc_s(out_ref_Quant_av_ECC_In, out_ref_Quant_water_av_ECC_In, fileExt);
+				%[out_ref_Quant_av, out_ref_Quant_av_ECC_w]	= op_ecc_s(out_ref_Quant_av_ECC_In, out_ref_Quant_water_av_ECC_In);
 			else
 				if with_water
 					% If no reference signals, use water signals for ECC, if acquired
 					out_water_av_ECC_In		= out_w_av;
-					[out_av, out_w_av]		= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+					[out_av, out_w_av]		= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In, fileExt);
+					%[out_av, out_w_av]		= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
 				else
 					if strcmp(dataType, 'water')
 						% (dataType = 'water_ref' is covered by 'with_ref')
@@ -1477,7 +1480,8 @@ switch seqType
 						% use different output variables to avoid confusion, though  
 						% second one is unused)) 
 						out_water_av_ECC_In		= out_av;
-						[out_av, out_av_ECC_w]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
+						[out_av, out_av_ECC_w]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In, fileExt);
+						%[out_av, out_av_ECC_w]	= op_ecc_s(out_av_ECC_In, out_water_av_ECC_In);
 					else
 						% No reference and no water signals and MR spectrum is not water
 						% signal itself => ECC not possible
