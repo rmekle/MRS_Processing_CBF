@@ -529,19 +529,27 @@ end		% End of switch seqType
 %disp(sMsg_newLines);
 fprintf('\n\n');
 
-% Read in the 'main' data together with possibly existing reference scans and, 
+% Read in the 'main' MRS data together with possibly existing reference scans and, 
 % if available, the additional unsuppressed water signal
 % FLAG: Modified
-% Selects data loading function depending on data type
+% Selects data loading function depending on file extension of MRS data
 %out_raw				= io_loadspec_twix([dirString filename]);
-if(isIMA)
-    [out_raw, out_ref_raw]  = io_loadspec_IMA_s(dirString, NoSubSpectra);
-else
-    [out_raw, out_ref_raw]	= io_loadspec_twix_s([dirString filename]);
-end
+switch fileExt
+	case 'dat'
+		% MRS raw data (.dat)
+	[out_raw, out_ref_raw]		= io_loadspec_twix_s([dirString filename]);
+	case 'IMA'
+		% MRS DICOM data (.IMA)
+		[out_raw, out_ref_raw]  = io_loadspec_IMA_s(dirString, NoSubSpectra);
+	case 'dcm'
+		% MRS extended DICOM data (.dcm)
+		error('%s: ERROR: Loading of MRS data for file extension (data type) %s not yet implemented!\n', sFunctionName, fileExt);
 
+	otherwise
+		error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
+end			% End of switch fileExt
 
-% Convert single precision data (default format used my mapVBVD.m for imaging data) 
+% Convert single precision data (default format used by mapVBVD.m for imaging data) 
 % into double precision for processing, if not empty
 if ~isempty(out_raw)
 	out_raw.fids		= double(out_raw.fids);
@@ -551,14 +559,15 @@ if ~isempty(out_ref_raw)
 	out_ref_raw.fids	= double(out_ref_raw.fids);
 	out_ref_raw.specs	= double(out_ref_raw.specs);
 end
-disp(newline);
+%disp(newline);
+fprintf('\n');
 
 if with_water
 	%disp('***WITH ADDITIONAL WATER UNSUPPRESSED DATA***');
 	fprintf('%s: ***WITH ADDITIONAL WATER UNSUPPRESSED DATA***\n', sFunctionName);
     
     % FLAG: Modified
-    % Selects data loading function depending on data type
+    % Selects data loading function depending on MRS data type
     if isIMA_w
         if isempty(dirString_w)
             error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
