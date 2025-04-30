@@ -248,6 +248,11 @@ if( ~strcmp( outDirString(end), filesep ) )
 	outDirString	= [outDirString, filesep];
 end
 
+
+% Obtain different parts of input filenames
+[sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
+[sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
+
 % Determine flags to indicate whether MRS data and water unsuppressed data (if provided) 
 % are in DICOM format (.IMA) or not
 switch fileExt
@@ -262,6 +267,7 @@ switch fileExt
 			isIMA_w = 0;
 		else
 			isIMA_w = 1;
+		end
 	case 'dcm'
 		% MRS extended DICOM data (.dcm)
 		isIMA		= 0;
@@ -270,10 +276,6 @@ switch fileExt
 	otherwise
 		error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
 end			% End of switch fileExt
-
-% Obtain different parts of input filenames
-[sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
-[sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
 
 % % Obtain different parts of input filenames
 % % FLAG: Modified
@@ -532,7 +534,7 @@ fprintf('\n\n');
 % Read in the 'main' MRS data together with possibly existing reference scans and, 
 % if available, the additional unsuppressed water signal
 % FLAG: Modified
-% Selects data loading function depending on file extension of MRS data
+% Select data loading function depending on file extension of MRS data
 %out_raw				= io_loadspec_twix([dirString filename]);
 switch fileExt
 	case 'dat'
@@ -565,38 +567,62 @@ fprintf('\n');
 if with_water
 	%disp('***WITH ADDITIONAL WATER UNSUPPRESSED DATA***');
 	fprintf('%s: ***WITH ADDITIONAL WATER UNSUPPRESSED DATA***\n', sFunctionName);
-    
-    % FLAG: Modified
-    % Selects data loading function depending on MRS data type
-    if isIMA_w
-        if isempty(dirString_w)
-            error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
-		else
-			out_w_raw		= io_loadspec_IMA_s(dirString_w, NoSubSpectra);
-		end
-    else
-        if isempty(dirString_w)
-            out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
-        else
-            out_w_raw		= io_loadspec_twix_s([dirString_w filename_w]);
-        end
-    end
-	
-	% Convert single precision data (default format used my mapVBVD.m for imaging data) 
+
+    % Select data loading function depending on file extension of MRS water signals
+	switch fileExt
+		case 'dat'
+			% MRS raw data (.dat)
+			if isempty(dirString_w)
+				out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
+			else
+				out_w_raw		= io_loadspec_twix_s([dirString_w filename_w]);
+			end
+		case 'IMA'
+			% MRS DICOM data (.IMA)
+			if isempty(dirString_w)
+				error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+			else
+				out_w_raw		= io_loadspec_IMA_s(dirString_w, NoSubSpectra);
+			end
+		case 'dcm'
+			% MRS extended DICOM data (.dcm)
+			error('%s: ERROR: Loading of MRS water signals for file extension (data type) %s not yet implemented!\n', sFunctionName, fileExt);
+
+		otherwise
+			error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
+	end			% End of switch fileExt
+
+	% % FLAG: Modified
+	% % Selects data loading function depending on MRS data type
+	% if isIMA_w
+	%     if isempty(dirString_w)
+	%         error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+	% 	else
+	% 	out_w_raw		= io_loadspec_IMA_s(dirString_w, NoSubSpectra);
+	% 	end
+	% else
+	%     if isempty(dirString_w)
+	%         out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
+	%     else
+	%         out_w_raw		= io_loadspec_twix_s([dirString_w filename_w]);
+	%     end
+	% end
+
+	% Convert single precision data (default format used my mapVBVD.m for imaging data)
 	% into double precision for processing, if not empty
 	if ~isempty(out_w_raw)
 		out_w_raw.fids		= double(out_w_raw.fids);
 		out_w_raw.specs		= double(out_w_raw.specs);
 	end
-	
+
 	% Store # of shots (averages) for water signal
 	noAvg_w					= out_w_raw.averages;
 else
 	%disp('***WITHOUT ADDITIONAL WATER UNSUPPRESSED DATA***');
 	fprintf('%s: ***WITHOUT ADDITIONAL WATER UNSUPPRESSED DATA***\n', sFunctionName);
-    %out_w			= struct([]);
-    %out_w_noproc	= struct([)];
-end
+	%out_w			= struct([]);
+	%out_w_noproc	= struct([)];
+end		% End of if with_water
 %disp(sMsg_newLines);
 fprintf('\n\n');
 
