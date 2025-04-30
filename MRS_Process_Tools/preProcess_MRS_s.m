@@ -263,11 +263,7 @@ switch fileExt
 	case 'IMA'
 		% MRS DICOM data (.IMA)
 		isIMA		= 1;
-		if isempty(dirString_w)
-			isIMA_w = 0;
-		else
-			isIMA_w = 1;
-		end
+		isIMA_w		= 1;
 	case 'dcm'
 		% MRS extended DICOM data (.dcm)
 		isIMA		= 0;
@@ -333,14 +329,23 @@ end
 
 if isIMA_w
 	if isempty(dirString_w)
-		error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+		dirParts_w	= '';
+		name_w		= 'waterSignal';
 	else
 		%dirParts_w	= regexp(dirString_w, filesep, 'split');
 		dirParts_w	= strsplit(dirString_w, filesep);
 		name_w		= dirParts_w{end-1};
-		%name_w		= dirParts_w{length(dirParts_w)-1};
-	end
-end
+		%name_w		= dirParts_w{length(dirParts_w)-1};	
+	end		% End of if isempty(dirString_w)
+	% if isempty(dirString_w)
+	% 	error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
+	% else
+	% 	%dirParts_w	= regexp(dirString_w, filesep, 'split');
+	% 	dirParts_w	= strsplit(dirString_w, filesep);
+	% 	name_w		= dirParts_w{end-1};
+	% 	%name_w		= dirParts_w{length(dirParts_w)-1};	
+	% end
+end		% End of if isIMA_w
 
 % Make a new directory for the output report and figures each, if not already existent,
 % and if desired
@@ -796,7 +801,6 @@ switch seqType
 		% dimension does not exist; 
 		% Thus, perform coil combination, if NRS data is not DICOM and index for coil
 		% dimension is non-zero
-		% if ~(isIMA && isIMA_w)
         if ~(isIMA && isIMA_w) && (out_raw.dims.coils ~= 0)
 		    % First step should be to combine coil channels. For this find the coil phases 
 		    % from water unsuppressed data, if available; otherwise from the MR spectra
@@ -987,14 +991,13 @@ switch seqType
             if with_water
                 out_w_cc				= out_w_raw;
                 out_w_noproc			= op_averaging(out_w_cc);
-            end
+			end		% End of if with_water
             if with_ref
                 out_ref_ECC_cc			= out_ref_ECC_raw;
 				out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
                 out_ref_Quant_cc		= out_ref_Quant_raw;		    
 			    out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
-			end
-		%end		% End of  if ~(isIMA && isIMA_w)
+			end		% End of if with_ref
 		end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 		
 
