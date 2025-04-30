@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,options)
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,fileExt,options)
 % 
 % DESCRIPTION:
 % Function for processing Siemens MRS data in .dat format (twix raw data) or in .IMA
@@ -34,6 +34,8 @@
 %					'water'		= MR spectrum is unsuppressed water signal itself
 %					'water_ref' = MR spectrum is unsuppressed water signal itself with
 %									reference (water) scans (should be very rare!)
+% fileExt	   = String variable for the file extension of MRS data files: 
+%					'dat' (raw data) or 'IMA' (DICOM) or '.dcm (extended DICOM)
 % dirString_w  = (Optional) ['DirectoryWater'] String variable for the name of the 
 %					directory containing the water unsuppressed .dat file or .IMA files,
 %                   Optional, because water unsupressed data is optional and dat file can 
@@ -134,7 +136,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,options)
+function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,fileExt,options)
 
 % Parse arguments
 % FLAG: Modified
@@ -143,6 +145,7 @@ arguments
     outDirString    {mustBeText}
     seqType         {mustBeText}
     dataType        {mustBeText}
+	fileExt			{mustBeText}
 	options.WaterDirectory          {mustBeText} = ''
     options.Filename                {mustBeText} = ''    
     options.WaterFilename           {mustBeText} = ''
