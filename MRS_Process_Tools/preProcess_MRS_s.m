@@ -575,22 +575,6 @@ if with_water
 			error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
 	end			% End of switch fileExt
 
-	% % FLAG: Modified
-	% % Selects data loading function depending on MRS data type
-	% if isIMA_w
-	%     if isempty(dirString_w)
-	%         error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
-	% 	else
-	% 	out_w_raw		= io_loadspec_IMA_s(dirString_w, NoSubSpectra);
-	% 	end
-	% else
-	%     if isempty(dirString_w)
-	%         out_w_raw		= io_loadspec_twix_s([dirString filename_w]);
-	%     else
-	%         out_w_raw		= io_loadspec_twix_s([dirString_w filename_w]);
-	%     end
-	% end
-
 	% Convert single precision data (default format used my mapVBVD.m for imaging data)
 	% into double precision for processing, if not empty
 	if ~isempty(out_w_raw)
@@ -769,17 +753,17 @@ switch seqType
 		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', noSD)];
 
 		
-		%% Combine signals from different coil elements
+		%% Combine signals from different coil elements, if required
         % FLAG: Modified
         
-        % Zeroth step is to look if MRS data is in .IMA (DICOM) format which is
-        % usually already combined on the scanner, and, thus coil combination can be
-        % skipped for DICOM data
-		% Index for coil dimension in data struct should then also be zero, since coil
-		% dimension does not exist; 
-		% Thus, perform coil combination, if NRS data is not DICOM and index for coil
+		% Check whether signals from different coil elements were already combined on the
+		% scanner, which is usually the case for MRS DICOM (.IMA) MRS extended DICOM
+		% (.dcm) files, and whether signals from multiple coil elements exist
+		% For the latter, index for coil dimension in data struct should then also be 
+		% zero, since coil dimension does not exist; 
+		% Thus, perform coil combination, if MRS data is not DICOM and index for coil
 		% dimension is non-zero
-        if ~(isIMA && isIMA_w) && (out_raw.dims.coils ~= 0)
+		if ~(out_raw.flags.addedrcvrs) && (out_raw.dims.coils ~= 0)
 		    % First step should be to combine coil channels. For this find the coil phases 
 		    % from water unsuppressed data, if available; otherwise from the MR spectra
 		    % Arguments referring to the nPos_ccth point of the FID and weighting of channels 
@@ -812,7 +796,7 @@ switch seqType
 		    %
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		    
-		    % First, obtain all possible coil phases from existing types of data
+		    % Obtain all possible coil phases from existing types of data
 		    if with_ref && ~isIMA
 			    % Obtain coil phases and amplitudes from reference scans for ECC and for Quant
 			    coilcombos_ref_ECC		= op_getcoilcombos(out_ref_ECC_raw,nPos_cc_w,'w');
@@ -961,9 +945,11 @@ switch seqType
 		    end
 		    close(h1);
         else
-            % Move "raw" DICOM (.IMA) data to coil combined "cc" data, as DICOM data are 
-			% already coil combined, to execute same preprocssing code as for MRS data
-			% that needs to be coil combined, e.g. MRS raw data (.dat)
+            % Move "raw" MRS data - either MRS DICOM (.IMA) or MRS extended DICOM (.dcm) 
+			% or MRS raw data (.dat) that were acquired with only one coil element - 
+			% to coil combined "cc" data to execute same preprocssing code as for MRS data
+			% that needed to be coil combined, e.g. MRS raw data (.dat) acquired with
+			% multiple coil elements
             out_cc		= out_raw;
             out_noproc	= op_averaging(out_cc);
             if with_water
@@ -976,7 +962,7 @@ switch seqType
                 out_ref_Quant_cc		= out_ref_Quant_raw;		    
 			    out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
 			end		% End of if with_ref
-		end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
+		end		% End of if ~(out_raw.flags.addedrcvrs) && (out_raw.dims.coils ~= 0)
 		
 
 		%% Block average spectra to improve SNR of data prior to processing, if desired
@@ -1126,24 +1112,7 @@ switch seqType
 		% data is spectrum or water signal
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain 
-		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-% 		switch dataType
-% 			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
-% 				% MR spectrum is provided together without or with unsuppressed water 
-% 				% signal and/or with reference scans
-% 				ppmmin_fix		= 1.6;
-% 				%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
-% 				ppmmaxarray_fix = [2.4,2.85,3.35,4.2,4.4,5.2];
-% 				%iamax			= 6;
-% 			case {'water', 'water_ref'}
-% 				% MR spectrum is water signal itself without or with reference scans
-% 				ppmmin_fix		= 4.2;
-% 				ppmmaxarray_fix	= [5.5 5.5 5.2];
-% 				%iamax			= 6;
-% 			
-% 			otherwise
-% 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
-% 		end		% End of switch dataType
+
 		% Determine # of initial values for ppmmax
 		noVals_ppmmax_fix		= length(ppmmaxarray_fix);
 
@@ -2030,7 +1999,6 @@ switch seqType
 			
 			% FLAG: Modified
 			% Write info about coil combination into report depending on MRS data type
-            %if ~(isIMA && isIMA_w)
 			if ~(isIMA && isIMA_w) && (out_raw.dims.coils ~= 0)
 			    fprintf(fid2,'\n\n<h2>Results of multi-coil combination:</h2>');
 			    %fprintf(fid2,'\n<img src= " %s%scoilReconFig.jpg " width="800" height="400"></body>', outDirString, reportFigDirStr);
@@ -2039,7 +2007,6 @@ switch seqType
 			else
 				fprintf(fid2,'\n\n<h2>Multi-coil combination was not performed, since MRS DICOM data already coil combined.</h2>');
 				fprintf(fid2,'\n\n<p> </p>');
-			%end		% End of  if ~(isIMA && isIMA_w)
 			end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
 
 			% Indicate in report, if averaging of blocks of averages was performed prior
@@ -2096,7 +2063,7 @@ switch seqType
 			fprintf(fid2,'\n<img src= " %s " width="800" height="400"><img src= " %s " width="800" height="400">', fullfile('./figs/','finalSpecFig.jpg'), fullfile('./figs/','finalSpecFig_narrow.jpg'));
 			fclose(fid2);
 			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		end
+		end		% En dof if reportSwitch == 1
 		
 
 	case 'SPECIAL'
