@@ -815,8 +815,10 @@ switch seqType
 			    
 		    % Combine coil channels before and after signal averaging for comparison and
 		    % plotting
-			%[out_cc,fid_pre,spec_pre,ph,sig]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
-			[out_cc,fid_pre,spec_pre,coilcombos]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+			% Not clear why next statement with coilcombos as output to be an input down
+			% below was used
+			%[out_cc,fid_pre,spec_pre,coilcombos]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+			[out_cc,fid_pre,spec_pre,ph,sig]		= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
 			%[out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(op_averaging(out_raw),nPos_cc,'w',coilcombos);
             out_raw_av								= op_averaging(out_raw);
 		    [out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(out_raw_av,nPos_cc,'w',coilcombos);
