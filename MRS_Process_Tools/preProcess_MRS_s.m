@@ -233,17 +233,20 @@ end
 
 % Ensure that input and output directory strings end with file separator, i.e. '/' or '\'
 % (Windows handles the Unix '/' just fine)
+% Input directory for MRS data
 if( ~strcmp( dirString(end), filesep ) )
 	dirString	= [dirString, filesep];
 end
 
 % FLAG: Modified
+% Input directory for water signals
 if(~isempty(dirString_w))
     if( ~strcmp( dirString_w(end), filesep ) )
         dirString_w	= [dirString_w, filesep];
     end
 end
 
+% Output directory for processed MRS data
 if( ~strcmp( outDirString(end), filesep ) )
 	outDirString	= [outDirString, filesep];
 end
@@ -258,10 +261,16 @@ end
 switch fileExt
 	case 'dat'
 		% MRS raw data (.dat)
+		if isempty(filename)
+			error('%s: Error: Filename for MRS raw data (.dat) %s is empty!\n\n', sFunctionName, filename);
+		end
 		[sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
 		[sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
 	case 'IMA'
 		% MRS DICOM data (.IMA)
+		if isempty(dirString)
+			error('%s: Error: Directory name for MRS DICOM data (.IMA) %s is empty!\n\n', sFunctionName, dirString);
+		end
 		%dirParts	= regexp(dirString, filesep, 'split');
 		dirParts	= strsplit(dirString, filesep);
 		nameSpec	= dirParts{end-1};
@@ -278,6 +287,9 @@ switch fileExt
 	case 'dcm'
 		% MRS extended DICOM data (.dcm)
 		% CODE STILL NEEDS TO BE TESTED AND VERIFIED FOR MRS EXTENDED DICOM DATA
+		if isempty(dirString)
+			error('%s: Error: Directory name for extended MRS DICOM data (.dcm) %s is empty!\n\n', sFunctionName, dirString);
+		end
 		dirParts	= strsplit(dirString, filesep);
 		nameSpec	= dirParts{end-1};
 		if isempty(dirString_w)
@@ -388,16 +400,27 @@ switch dataType
 	case 'mrs_w'
 		% MR spectrum is provided together with unsuppressed water signal
 		% FLAG: Modified
-		% Check on filename or directory name depending on MRS data type
-        if(isIMA_w)
-            if isempty(dirString_w)
-                error('%s: Error: Directory name for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
-            end
-        else
-            if isempty(filename_w)
-                error('%s: Error: Filename for unsuppressed water signal %s is empty!\n\n', sFunctionName, filename_w);
-            end
-        end
+		% Check on filename or directory name depending on file extension of MRS data
+		switch fileExt
+			case 'dat'
+				% MRS raw data (.dat)
+				if isempty(filename_w)
+					error('%s: Error: Filename for unsuppressed water signal %s (.dat) is empty!\n\n', sFunctionName, filename_w);
+				end
+			case 'IMA'
+				% MRS DICOM data (.IMA)
+				if isempty(dirString_w)
+					error('%s: Error: Directory name for unsuppressed water signal (.IMA) %s is empty!\n\n', sFunctionName, dirString_w);
+				end
+			case 'dcm'
+				% MRS extended DICOM data (.dcm)
+				if isempty(dirString_w)
+					error('%s: Error: Directory name for unsuppressed water signal %s (.dcm) is empty!\n\n', sFunctionName, dirString_w);
+				end
+
+			otherwise
+				error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
+		end			% End of switch fileExt
 		%disp('Data is MR spectrum with additional unsuppressed water signal ...');
 		fprintf('%s:\tData is MR spectrum with additional unsuppressed water signal ...\n\n', sFunctionName);
 		with_water				= true;
@@ -411,15 +434,27 @@ switch dataType
 		% scans
 		% FLAG: Modified
 		% Check on filename or directory name depending on MRS data type
-        if(isIMA_w)
-            if isempty(dirString_w)
-                error('%s: Error: Directory name for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
-            end
-        else
-            if isempty(filename_w)
-                error('%s: Error: Filename for unsuppressed water signal %s is empty!\n\n', sFunctionName, filename_w);
-            end
-		end
+        % Check on filename or directory name depending on file extension of MRS data
+		switch fileExt
+			case 'dat'
+				% MRS raw data (.dat)
+				if isempty(filename_w)
+					error('%s: Error: Filename for unsuppressed water signal %s (.dat) is empty!\n\n', sFunctionName, filename_w);
+				end
+			case 'IMA'
+				% MRS DICOM data (.IMA)
+				if isempty(dirString_w)
+					error('%s: Error: Directory name for unsuppressed water signal (.IMA) %s is empty!\n\n', sFunctionName, dirString_w);
+				end
+			case 'dcm'
+				% MRS extended DICOM data (.dcm)
+				if isempty(dirString_w)
+					error('%s: Error: Directory name for unsuppressed water signal %s (.dcm) is empty!\n\n', sFunctionName, dirString_w);
+				end
+
+			otherwise
+				error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
+		end			% End of switch fileExt
 		%disp('Data is MR spectrum with additional unsuppressed water signal and with reference scans ...');
 		fprintf('%s:\tData is MR spectrum with additional unsuppressed water signal and with reference scans ...\n\n', sFunctionName);
 		with_water				= true;
