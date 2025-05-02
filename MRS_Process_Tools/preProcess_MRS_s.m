@@ -248,10 +248,68 @@ if( ~strcmp( outDirString(end), filesep ) )
 	outDirString	= [outDirString, filesep];
 end
 
+% Obtain different parts of input filenames or of input directories depending on file
+% extension of MRS data
+% For MRS DICOM data (.IMA or .dcm)), derive filenames for spectrum and water signal from
+% corresponding sub-directory names, i.e. even if only one MRS DICOM file per case exists,
+% it has to be stored in a sub-directory
+% Obtain names of sub-directories from splitting corresponding paths into cell arrays
+% (first and last cell of cell array are empty, if directory is of from "/home/.../test/')
+switch fileExt
+	case 'dat'
+		% MRS raw data (.dat)
+		[sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
+		[sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
+	case 'IMA'
+		% MRS DICOM data (.IMA)
+		%dirParts	= regexp(dirString, filesep, 'split');
+		dirParts	= strsplit(dirString, filesep);
+		nameSpec	= dirParts{end-1};
+		%nameSpec	= dirParts{length(dirParts)-1};
+		if isempty(dirString_w)
+			dirParts_w	= '';
+			name_w		= 'waterSignal';
+		else
+			%dirParts_w	= regexp(dirString_w, filesep, 'split');
+			dirParts_w	= strsplit(dirString_w, filesep);
+			name_w		= dirParts_w{end-1};
+			%name_w		= dirParts_w{length(dirParts_w)-1};
+		end		% End of if isempty(dirString_w)
+	case 'dcm'
+		% MRS extended DICOM data (.dcm)
+		% CODE STILL NEEDS TO BE TESTED AND VERIFIED FOR MRS EXTENDED DICOM DATA
+		dirParts	= strsplit(dirString, filesep);
+		nameSpec	= dirParts{end-1};
+		if isempty(dirString_w)
+			dirParts_w	= '';
+			name_w		= 'waterSignal';
+		else
+			dirParts_w	= strsplit(dirString_w, filesep);
+			name_w		= dirParts_w{end-1};
+		end		% End of if isempty(dirString_w)
 
-% Obtain different parts of input filenames
-[sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
-[sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
+	otherwise
+		error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
+end			% End of switch fileExt
+
+% Make a new directory for the output report and figures each, if not already existent,
+% and if desired
+if reportSwitch == 1
+	%mkdir([outDirString nameSpec '/report']);
+	%mkdir([outDirString nameSpec '/report/figs']);
+    reportDirStr		= [nameSpec '_report/'];
+    reportFigDirStr		= [nameSpec '_report/figs/'];	
+	if ~exist([outDirString reportDirStr], 'dir' )
+		mkdir([outDirString reportDirStr]);
+	end
+	if ~exist( [outDirString reportFigDirStr], 'dir' )
+		mkdir([outDirString reportFigDirStr]);
+	end
+end
+
+
+
+
 
 % Determine flags to indicate whether MRS data and water unsuppressed data (if provided) 
 % are in DICOM format (.IMA) or not
@@ -272,121 +330,6 @@ switch fileExt
 	otherwise
 		error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
 end			% End of switch fileExt
-
-% % Obtain different parts of input filenames
-% % FLAG: Modified
-% % Set flags to indicate whether MRS data is in DICOM format (.IMA) or not
-% [sPathStrSpec,nameSpec,extSpec] 	= fileparts(filename);
-% if strcmp(extSpec, '.dat')
-%     isIMA = 0;
-% else
-%     isIMA = 1;
-% end
-% 
-% [sPathStr_w,name_w, ext_w] 			= fileparts(filename_w);
-% if strcmp(ext_w, '.dat')
-% 	isIMA_w = 0;
-% else
-% 	if isempty(dirString_w)
-% 		isIMA_w = 0;
-% 	else
-% 		isIMA_w = 1;
-% 	end
-% end
-
-% FLAG: Modified
-% % Derive filenames for spectrum and water signal from either input filename of report
-% % file or from current date and time
-% % (for MRS DICOM data, since filenames are empty, since directories are provided instead)
-% if filename_r ~= ""
-% 	nameSpec	= filename_r;
-% 	name_w		= [filename_r '_w'];
-% else
-% 	if nameSpec == ""
-% 		strDate		= datestr(datetime(now, 'ConvertFrom', 'datenum'));
-% 		strDate		= strrep(strDate, ' ', '_');
-% 		strDate		= strrep(strDate, ':', '-');
-% 		nameSpec	= strDate;
-% 	end
-% 	if name_w == ""
-% 		strDate		= datestr(datetime(now, 'ConvertFrom', 'datenum'));
-% 		strDate		= strrep(strDate, ' ', '_');
-% 		strDate		= strrep(strDate, ':', '-');
-% 		name_w		= [strDate '_w'];
-% 	end
-% end
-
-% For MRS DICOM data (.IMA)), derive filenames for spectrum and water signal from
-% corresponding sub-directory names
-% Obtain names of sub-directories from splitting corresponding paths into cell arrays
-% (first and last cell of cell array are empty, if directory is of from "/home/.../test/')
-if isIMA
-	%dirParts	= regexp(dirString, filesep, 'split');
-	dirParts	= strsplit(dirString, filesep);
-	nameSpec	= dirParts{end-1};
-	%nameSpec	= dirParts{length(dirParts)-1};
-end
-
-if isIMA_w
-	if isempty(dirString_w)
-		dirParts_w	= '';
-		name_w		= 'waterSignal';
-	else
-		%dirParts_w	= regexp(dirString_w, filesep, 'split');
-		dirParts_w	= strsplit(dirString_w, filesep);
-		name_w		= dirParts_w{end-1};
-		%name_w		= dirParts_w{length(dirParts_w)-1};	
-	end		% End of if isempty(dirString_w)
-	% if isempty(dirString_w)
-	% 	error('%s: Error: Name of directory for unsuppressed water signal %s is empty!\n\n', sFunctionName, dirString_w);
-	% else
-	% 	%dirParts_w	= regexp(dirString_w, filesep, 'split');
-	% 	dirParts_w	= strsplit(dirString_w, filesep);
-	% 	name_w		= dirParts_w{end-1};
-	% 	%name_w		= dirParts_w{length(dirParts_w)-1};	
-	% end
-end		% End of if isIMA_w
-
-% Make a new directory for the output report and figures each, if not already existent,
-% and if desired
-if reportSwitch == 1
-	%mkdir([outDirString nameSpec '/report']);
-	%mkdir([outDirString nameSpec '/report/figs']);
-    reportDirStr		= [nameSpec '_report/'];
-    reportFigDirStr		= [nameSpec '_report/figs/'];	
-	if ~exist([outDirString reportDirStr], 'dir' )
-		mkdir([outDirString reportDirStr]);
-	end
-	if ~exist( [outDirString reportFigDirStr], 'dir' )
-		mkdir([outDirString reportFigDirStr]);
-	end
-end
-
-
-% % Create filenames for saving of processed output depending on sequence type
-% if( strcmp(seqType, 'MEGA-PRESS') )
-% 	% Assuming that MEGA-PRESS editing is usually performed without OVS
-% 	% Assuming that no bad average removal is applied for any of the water signals
-% 	outFileName				= [nameSpec, sprintf('_%.1f', noSD)];
-% 	outFileName_w			= [name_w, '_w', sprintf('_%.1f', noSD)];
-% 	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('_%.1f', noSD)];
-% 	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('_%.1f', noSD)];
-% else
-% 	% Water signals and/or MR spectra were acquired with or without OVS
-% 	% Assuming that water reference signals for ECC are always acquired in same way as 
-% 	% the MR spectrum,i.e. if OVS is automatically turned on (as it is for dkd_sLaser), 
-% 	% then water reference signals for ECC are acquired with OVS ('wOVS'); 
-% 	% Assuming that water reference signals for quantification are always acquired without
-% 	% OVS ('woutOVS') to avoid MT effects
-% 	% Assuming that no bad average removal is applied for any of the water signals
-% 	outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', noSD)];
-% 	outFileName_w			= [name_w, '_w', '_', strOVS];
-% 	outFileName_ref_ECC		= [nameSpec, '_ref_ECC', sprintf('%d', 8), '_', strOVS];
-% 	outFileName_ref_Quant	= [nameSpec, '_ref_Quant', sprintf('%d', 8), '_', 'woutOVS'];
-% 	%outFileName_w			= [name_w, '_w', '_', strOVS, sprintf('_%.1f', noSD)];
-% 	%outFileName_ref_ECC		= [nameSpec, '_ref_ECC', '_', strOVS, sprintf('_%.1f', noSD)];
-% 	%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', noSD)];
-% end
 
 
 %% Set parameters for figure display
