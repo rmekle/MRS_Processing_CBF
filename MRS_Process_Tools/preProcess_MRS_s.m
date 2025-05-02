@@ -139,7 +139,6 @@
 function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,fileExt,options)
 
 % Parse arguments
-% FLAG: Modified
 arguments
     dirString       {mustBeText}
     outDirString    {mustBeText}
@@ -238,7 +237,6 @@ if( ~strcmp( dirString(end), filesep ) )
 	dirString	= [dirString, filesep];
 end
 
-% FLAG: Modified
 % Input directory for water signals
 if(~isempty(dirString_w))
     if( ~strcmp( dirString_w(end), filesep ) )
@@ -399,7 +397,6 @@ switch dataType
 		out_ref_Quant_noproc	= struct([]);
 	case 'mrs_w'
 		% MR spectrum is provided together with unsuppressed water signal
-		% FLAG: Modified
 		% Check on filename or directory name depending on file extension of MRS data
 		switch fileExt
 			case 'dat'
@@ -432,7 +429,6 @@ switch dataType
 	case 'mrs_w_ref'
 		% MR spectrum is provided together with unsuppressed water signal and reference
 		% scans
-		% FLAG: Modified
 		% Check on filename or directory name depending on MRS data type
         % Check on filename or directory name depending on file extension of MRS data
 		switch fileExt
@@ -516,7 +512,6 @@ fprintf('\n\n');
 
 % Read in the 'main' MRS data together with possibly existing reference scans and, 
 % if available, the additional unsuppressed water signal
-% FLAG: Modified
 % Select data loading function depending on file extension of MRS data
 %out_raw				= io_loadspec_twix([dirString filename]);
 switch fileExt
@@ -753,9 +748,7 @@ switch seqType
 		%outFileName_ref_Quant	= [nameSpec, '_ref_Quant', '_', strOVS, sprintf('_%.1f', noSD)];
 
 		
-		%% Combine signals from different coil elements, if required
-        % FLAG: Modified
-        
+		%% Combine signals from different coil elements, if required        
 		% Check whether signals from different coil elements were already combined on the
 		% scanner, which is usually the case for MRS DICOM (.IMA) MRS extended DICOM
 		% (.dcm) files, and whether signals from multiple coil elements exist
@@ -763,6 +756,9 @@ switch seqType
 		% zero, since coil dimension does not exist; 
 		% Thus, perform coil combination, if MRS data is not DICOM and index for coil
 		% dimension is non-zero
+		% Init parameter indicating whther coil combination was performed during
+		% processing of MRS data
+		bProcessed_CoilCombination		= 0;
 		if ~(out_raw.flags.addedrcvrs) && (out_raw.dims.coils ~= 0)
 		    % First step should be to combine coil channels. For this find the coil phases 
 		    % from water unsuppressed data, if available; otherwise from the MR spectra
@@ -808,7 +804,7 @@ switch seqType
 			    %[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,ph_ref_Quant,sig_ref_Quant]	= ...
 				[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,coilcombos_ref_Quant]	= ...
 				    op_addrcvrs(out_ref_Quant_raw,nPos_cc_ref_Quant,'w',coilcombos_ref_Quant);
-		    end		% End of if with_ref		
+		    end		% End of if with_ref && ~isIMA		
 		    if with_water && ~isIMA_w
 			    % Obtain coil phases and amplitudes from unsuppressed water signal
 			    %coilcombos		= op_getcoilcombos(out_w_raw,1);
@@ -816,7 +812,7 @@ switch seqType
 			    % Combine water scans using respective coil phases
 			    %[out_w_cc,fid_w_pre,spec_w_pre,ph_w,sig_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
 				[out_w_cc,fid_w_pre,spec_w_pre,coilcombos_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
-            end			% % End of if with_water
+            end			% % End of if with_water && ~isIMA_w
 		    
 		    % Obtain coil phases and amplitudes from (averaged) MR spectra
 		    %coilcombos_mrs	= op_getcoilcombos(op_averaging(out_raw),1);
@@ -834,7 +830,7 @@ switch seqType
 			    else
 				    coilcombos	= coilcombos_mrs;
 			    end			% % End of if with_water
-		    end		% End of if with_ref
+		    end		% End of  if with_ref && ~isIMA
 			    
 		    % Combine coil channels before and after signal averaging for comparison and
 		    % plotting
@@ -842,7 +838,7 @@ switch seqType
 		        %[out_cc,fid_pre,spec_pre,ph,sig]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
 				[out_cc,fid_pre,spec_pre,coilcombos]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
 		        [out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(op_averaging(out_raw),nPos_cc,'w',coilcombos);   
-            end
+			end		% End of if ~isIMA
             out_raw_av							= op_averaging(out_raw);
 		    
 		    % Generate unprocessed spectrum or spectra, respectively
@@ -852,7 +848,7 @@ switch seqType
                 out_cc				= out_raw;
                 out_noproc			= op_averaging(out_cc);
                 spec_av_pre			= out_noproc.specs;
-            end
+			end		% End of if ~isIMA
             
             if with_ref
                 if ~isIMA
@@ -863,8 +859,8 @@ switch seqType
                     out_ref_Quant_cc		= out_ref_Quant_raw;
 			        out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
 			        out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
-                end
-            end
+				end		% End of if ~isIMA
+			end		% End of if with_ref
 
 		    if with_water
                 if ~isIMA_w
@@ -873,8 +869,11 @@ switch seqType
                     out_w_cc		= out_w_raw;
                     out_w_noproc	= op_averaging(out_w_cc);
                     spec_w_pre		= out_w_raw.specs;
-                end
-		    end
+				end		% End of if ~isIMA_w
+			end		% End of if with_water
+			% Set parameter indication that coil combination was performed during
+			% processing of MRS data
+			bProcessed_CoilCombination	= 1;
     
 		    % Generate plots showing coil channels before and after phase alignment
 		    % Only display figure(s), if selected
@@ -942,7 +941,7 @@ switch seqType
 				    saveas(h2,[outDirString reportFigDirStr 'w_coilReconFig'],'fig');
 			    end
 			    close(h2);
-		    end
+			end		% End of if with_water
 		    close(h1);
         else
             % Move "raw" MRS data - either MRS DICOM (.IMA) or MRS extended DICOM (.dcm) 
@@ -1705,34 +1704,6 @@ switch seqType
 		% Close selected figure(s)
 		%close(h_figTmp1);
 		
-		%h=figure('visible','off');
-		%plot(out.ppm,real(out.specs),'linewidth',2);xlim([0.2 5.2]);
-		%xlabel('Frequency (ppm)','FontSize',10);
-		%ylabel('Amplitude(a.u.)','FontSize',10);
-		
-% 		% Set (additional) figure parameters
-% 		% Set plotting resolution and properties of axes depending on data type
-% 		resolution		= 600;
-% 		%if( strcmp(dataType, 'mrs_w') || strcmp(dataType, 'mrs') )
-% 		switch dataType
-% 			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
-% 				% MR spectrum is provided together without or with unsuppressed water
-% 				% signal and/or with reference scans
-% 				xLimValues1		= [0.0 5.5];
-% 				xLimValues2		= [0.2 4.2];
-% 				xTickValues2	= [0.5:0.5:4.0];
-% 				strTitle_mrs	= sprintf('Preprocessed MR Spectrum');
-% 			case {'water', 'water_ref'}
-% 				% MR spectrum is water signal itself without or with reference scans,
-% 				xLimValues1		= [3.3 5.9];
-% 				xLimValues2		= [4.2 5.1];
-% 				xTickValues2	= [4.2:0.2:5.0];
-% 				strTitle_mrs	= sprintf('Preprocessed Water Spectrum');
-% 				
-% 			otherwise
-% 				error('%s: Unknown MRS dataType = %s!', sFunctionName, dataType);
-% 		end		% End of switch dataType
-		
 		% Plot spectra
 		h_mrs			= figure('visible','on');
 		plot(out.ppm,real(out.specs),'linewidth',1.5);xlim(xLimValues1);
@@ -1997,17 +1968,22 @@ switch seqType
 			fprintf(fid2,'\n<p>DATE: %s </p>',date);
 			fprintf(fid2,'\n\n<p> </p>');
 			
-			% FLAG: Modified
-			% Write info about coil combination into report depending on MRS data type
-			if ~(isIMA && isIMA_w) && (out_raw.dims.coils ~= 0)
+			% Write info about coil combination into report
+			if bProcessed_CoilCombination
 			    fprintf(fid2,'\n\n<h2>Results of multi-coil combination:</h2>');
 			    %fprintf(fid2,'\n<img src= " %s%scoilReconFig.jpg " width="800" height="400"></body>', outDirString, reportFigDirStr);
 			    fprintf(fid2,'\n<img src= " %s " width="800" height="400"></body>', fullfile('./figs/', 'coilReconFig.jpg'));
 			    fprintf(fid2,'\n\n<p> </p>');
 			else
-				fprintf(fid2,'\n\n<h2>Multi-coil combination was not performed, since MRS DICOM data already coil combined.</h2>');
+				% Coil combination was not performed during processing of MRS data
+				% No coil dimension in the loaded MRS data
+				if out_raw.dims.coils == 0
+					fprintf(fid2,'\n\n<h2>Multi-coil combination was not performed for file extension %s, since MRS data potentially acquired with a single coil element (out_raw.dims.coils = %d).</h2>', fileExt, out_raw.dims.coils);
+				else
+				fprintf(fid2,'\n\n<h2>Multi-coil combination was not performed, since MRS (DICOM) data already coil combined on scanner.</h2>');
+				end		% End of if out_raw.dims.coils == 0
 				fprintf(fid2,'\n\n<p> </p>');
-			end		% End of if ~(isIMA && isIMA_w) && (out_raw.dims.coils == 0)
+			end		% End of if bProcessed_CoilCombination (out_raw.dims.coils ~= 0)
 
 			% Indicate in report, if averaging of blocks of averages was performed prior
 			% to processing
