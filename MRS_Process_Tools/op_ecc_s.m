@@ -66,11 +66,11 @@ if nDims_fidm == 2 && nDims_fidw == 2
 	% of extracted FIDs
 	% ECC and DC correction for metabolite FIDs
 	%fidm_ECC	= eddyCor2(fidw,fidm);
-	fidm_ECC	= eddyCor2(fidw,fidm,fileExt);
+	fidm_ECC	= eddyCor2_s(fidw,fidm,fileExt);
 	% ECC and DC correction for accompanying water signal FIDs
 	% (use water signal itself for this correction)
 	%fidw_ECC	= eddyCor2(fidw,fidw);
-	fidw_ECC	= eddyCor2(fidw,fidw,fileExt);
+	fidw_ECC	= eddyCor2_s(fidw,fidw,fileExt);
 else
 	% NOT YET!
 	error('%s: ECC not yet implemented for dimension of FIDs nDims_fidm = %d!', sFunctionName, nDims_fidm);
