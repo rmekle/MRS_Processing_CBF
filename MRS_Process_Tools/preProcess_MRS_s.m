@@ -318,30 +318,6 @@ if reportSwitch == 1
 end
 
 
-
-
-
-% Determine flags to indicate whether MRS data and water unsuppressed data (if provided) 
-% are in DICOM format (.IMA) or not
-switch fileExt
-	case 'dat'
-		% MRS raw data (.dat)
-		isIMA		= 0;
-		isIMA_w		= 0;
-	case 'IMA'
-		% MRS DICOM data (.IMA)
-		isIMA		= 1;
-		isIMA_w		= 1;
-	case 'dcm'
-		% MRS extended DICOM data (.dcm)
-		isIMA		= 0;
-		isIMA_w		= 0;
-
-	otherwise
-		error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt);
-end			% End of switch fileExt
-
-
 %% Set parameters for figure display
 % h		= figure('position', [left bottom width height]);
 fig_left	= 20;
@@ -610,7 +586,6 @@ switch seqType
 		% data (.dat on Siemens)
 		% Leftshift MR spectrum and, if existent, also the unsuppressed water signal
 		if isSVSdkd_seq
-			%leftshift	= 3;
 			out_raw		= op_leftshift(out_raw, leftshift);
 			if with_water
 				out_w_raw		= op_leftshift(out_w_raw, leftshift_w);
@@ -697,9 +672,9 @@ switch seqType
 				out_ref_Quant_raw	= op_leftshift(out_ref_Quant_raw, leftshift);
 				
 			else
-				warning('%s: Reference scans option for sequence "%s" not yet implemented!\nReference scans will NOT be processed!', sFunctionName, out_raw.seq);
+				warning('%s: Reference scans option for sequence "%s" not yet implemented!\nReference scans will NOT be processed!\n\n', sFunctionName, out_raw.seq);
 				% Create empty output structs for reference scans and set boolean
-				% parameter with_ref to false to avaoid error messages and to enable 
+				% parameter with_ref to false to avoid error messages and to enable 
 				% processing of the MR spectrum or water signal itself
 				out_ref_ECC				= struct([]);
 				out_ref_ECC_noproc		= struct([]);
@@ -793,36 +768,40 @@ switch seqType
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		    
 		    % Obtain all possible coil phases from existing types of data
-		    if with_ref && ~isIMA
-			    % Obtain coil phases and amplitudes from reference scans for ECC and for Quant
-			    coilcombos_ref_ECC		= op_getcoilcombos(out_ref_ECC_raw,nPos_cc_w,'w');
-			    coilcombos_ref_Quant	= op_getcoilcombos(out_ref_Quant_raw,nPos_cc_w,'w');
-			    % Combine reference scans using respective coil phases
-			    %[out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,ph_ref_ECC,sig_ref_ECC]			= ...
-				[out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,coilcombos_ref_ECC]			= ...
-				    op_addrcvrs(out_ref_ECC_raw,nPos_cc_ref_ECC,'w',coilcombos_ref_ECC);
-			    %[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,ph_ref_Quant,sig_ref_Quant]	= ...
-				[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,coilcombos_ref_Quant]	= ...
-				    op_addrcvrs(out_ref_Quant_raw,nPos_cc_ref_Quant,'w',coilcombos_ref_Quant);
-		    end		% End of if with_ref && ~isIMA		
-		    if with_water && ~isIMA_w
+		    if with_ref
+				if isSVSdkd_seq
+					% Obtain coil phases and amplitudes from reference scans for ECC and for Quant
+					coilcombos_ref_ECC		= op_getcoilcombos(out_ref_ECC_raw,nPos_cc_w,'w');
+					coilcombos_ref_Quant	= op_getcoilcombos(out_ref_Quant_raw,nPos_cc_w,'w');
+					% Combine reference scans using respective coil phases
+					%[out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,ph_ref_ECC,sig_ref_ECC]			= ...
+					[out_ref_ECC_cc,fid_ref_ECC_pre,spec_ref_ECC_pre,coilcombos_ref_ECC]			= ...
+						op_addrcvrs(out_ref_ECC_raw,nPos_cc_ref_ECC,'w',coilcombos_ref_ECC);
+					%[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,ph_ref_Quant,sig_ref_Quant]	= ...
+					[out_ref_Quant_cc,fid_ref_Quant_pre,spec_ref_Quant_pre,coilcombos_ref_Quant]	= ...
+						op_addrcvrs(out_ref_Quant_raw,nPos_cc_ref_Quant,'w',coilcombos_ref_Quant);
+				else
+					% Reference scans other than from svs_dkd_sLASER
+					warning('%s: Reference scans option for sequence "%s" not yet implemented!\nCheck on selected weights for coil combination!\n\n', sFunctionName, out_raw.seq);
+				end		% End of if isSVSdkd_seq
+		    end		% End of if with_ref
+		    if with_water
 			    % Obtain coil phases and amplitudes from unsuppressed water signal
 			    %coilcombos		= op_getcoilcombos(out_w_raw,1);
 			    coilcombos_w	= op_getcoilcombos(out_w_raw,nPos_cc_w,'w');
 			    % Combine water scans using respective coil phases
 			    %[out_w_cc,fid_w_pre,spec_w_pre,ph_w,sig_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
 				[out_w_cc,fid_w_pre,spec_w_pre,coilcombos_w]	= op_addrcvrs(out_w_raw,nPos_cc_w,'w',coilcombos_w);
-            end			% % End of if with_water && ~isIMA_w
+            end			% End of if with_water
 		    
 		    % Obtain coil phases and amplitudes from (averaged) MR spectra
 		    %coilcombos_mrs	= op_getcoilcombos(op_averaging(out_raw),1);
-            if ~isIMA
-		        coilcombos_mrs	= op_getcoilcombos(op_averaging(out_raw),nPos_cc,'w');
-            end
-
-		    % Select coil phases and amplitudes for coil combination of MR spectra depending
-		    % on available signals
-		    if with_ref && ~isIMA
+			coilcombos_mrs	= op_getcoilcombos(op_averaging(out_raw),nPos_cc,'w');
+        
+		    % Select coil phases and amplitudes for coil combination of MR spectra
+			% depending on available signals
+			% (code below should work, even if other than dkd reference scans exist)
+		    if (with_ref) && (isSVSdkd_seq)
 			    coilcombos	= coilcombos_ref_ECC;
 		    else
 			    if with_water
@@ -830,48 +809,30 @@ switch seqType
 			    else
 				    coilcombos	= coilcombos_mrs;
 			    end			% % End of if with_water
-		    end		% End of  if with_ref && ~isIMA
+		    end		% End of if (with_ref) && (isSVSdkd_seq)
 			    
 		    % Combine coil channels before and after signal averaging for comparison and
 		    % plotting
-            if ~isIMA
-		        %[out_cc,fid_pre,spec_pre,ph,sig]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
-				[out_cc,fid_pre,spec_pre,coilcombos]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
-		        [out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(op_averaging(out_raw),nPos_cc,'w',coilcombos);   
-			end		% End of if ~isIMA
-            out_raw_av							= op_averaging(out_raw);
-		    
-		    % Generate unprocessed spectrum or spectra, respectively
-            if ~isIMA
-		        out_noproc			= op_averaging(out_cc);
-            else
-                out_cc				= out_raw;
-                out_noproc			= op_averaging(out_cc);
-                spec_av_pre			= out_noproc.specs;
-			end		% End of if ~isIMA
-            
-            if with_ref
-                if ~isIMA
-			        out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
-			        out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
-                else
-                    out_ref_ECC_cc			= out_ref_ECC_raw;
-                    out_ref_Quant_cc		= out_ref_Quant_raw;
-			        out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
-			        out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
-				end		% End of if ~isIMA
-			end		% End of if with_ref
+			%[out_cc,fid_pre,spec_pre,ph,sig]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+			[out_cc,fid_pre,spec_pre,coilcombos]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+			%[out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(op_averaging(out_raw),nPos_cc,'w',coilcombos);
+            out_raw_av								= op_averaging(out_raw);
+		    [out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(out_raw_av,nPos_cc,'w',coilcombos);
 
+		    % Generate unprocessed spectrum or spectra, respectively
+			% MRS data
+			out_noproc			= op_averaging(out_cc);             
+			% Reference scans
+			if with_ref
+				out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
+				out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
+			end		% End of if with_ref
+			% Water signals
 		    if with_water
-                if ~isIMA_w
-			        out_w_noproc	= op_averaging(out_w_cc);
-                else
-                    out_w_cc		= out_w_raw;
-                    out_w_noproc	= op_averaging(out_w_cc);
-                    spec_w_pre		= out_w_raw.specs;
-				end		% End of if ~isIMA_w
+				out_w_noproc	= op_averaging(out_w_cc);
 			end		% End of if with_water
-			% Set parameter indication that coil combination was performed during
+
+			% Set parameter to indicate that coil combination was performed during
 			% processing of MRS data
 			bProcessed_CoilCombination	= 1;
     
@@ -883,7 +844,6 @@ switch seqType
 			    h1	= figure('visible','off');
 		    end
 		    subplot(1,2,1);
-		    %plot(out_raw_av.ppm,real(out_raw_av.specs(:,:,1)));xlim([1 5]);
 			plot(out_raw_av.ppm,real(out_raw_av.specs(:,:,1)));xlim(xLimValues1);
 		    set(gca,'FontSize',8);
 		    set(gca,'XDir','reverse');
@@ -892,7 +852,6 @@ switch seqType
 		    title('Before correction','FontSize',12);
 		    box off;
 		    subplot(1,2,2);
-		    %plot(out_raw_av.ppm,real(spec_av_pre(:,:,1)));xlim([1 5]);
 			plot(out_raw_av.ppm,real(spec_av_pre(:,:,1)));xlim(xLimValues1);
 		    set(gca,'FontSize',12);
 		    set(gca,'XDir','reverse');
@@ -949,18 +908,21 @@ switch seqType
 			% to coil combined "cc" data to execute same preprocssing code as for MRS data
 			% that needed to be coil combined, e.g. MRS raw data (.dat) acquired with
 			% multiple coil elements
+			% MRS data
             out_cc		= out_raw;
             out_noproc	= op_averaging(out_cc);
-            if with_water
-                out_w_cc				= out_w_raw;
-                out_w_noproc			= op_averaging(out_w_cc);
-			end		% End of if with_water
-            if with_ref
-                out_ref_ECC_cc			= out_ref_ECC_raw;
+			% Reference scans
+			if with_ref
+				out_ref_ECC_cc			= out_ref_ECC_raw;
 				out_ref_ECC_noproc		= op_averaging(out_ref_ECC_cc);
-                out_ref_Quant_cc		= out_ref_Quant_raw;		    
-			    out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
+				out_ref_Quant_cc		= out_ref_Quant_raw;
+				out_ref_Quant_noproc	= op_averaging(out_ref_Quant_cc);
 			end		% End of if with_ref
+			% Water signals
+			if with_water
+				out_w_cc				= out_w_raw;
+				out_w_noproc			= op_averaging(out_w_cc);
+			end		% End of if with_water
 		end		% End of if ~(out_raw.flags.addedrcvrs) && (out_raw.dims.coils ~= 0)
 		
 
