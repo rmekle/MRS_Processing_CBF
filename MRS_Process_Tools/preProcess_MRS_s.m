@@ -669,8 +669,7 @@ switch seqType
 				
 				% Leftshift FIDs of all reference scans by specific # of points
 				out_ref_ECC_raw		= op_leftshift(out_ref_ECC_raw, leftshift);
-				out_ref_Quant_raw	= op_leftshift(out_ref_Quant_raw, leftshift);
-				
+				out_ref_Quant_raw	= op_leftshift(out_ref_Quant_raw, leftshift);				
 			else
 				warning('%s: Reference scans option for sequence "%s" not yet implemented!\nReference scans will NOT be processed!\n\n', sFunctionName, out_raw.seq);
 				% Create empty output structs for reference scans and set boolean
@@ -735,10 +734,13 @@ switch seqType
 		% processing of MRS data
 		bProcessed_CoilCombination		= 0;
 		if ~(out_raw.flags.addedrcvrs) && (out_raw.dims.coils ~= 0)
-		    % First step should be to combine coil channels. For this find the coil phases 
-		    % from water unsuppressed data, if available; otherwise from the MR spectra
-		    % Arguments referring to the nPos_ccth point of the FID and weighting of channels 
-		    % based on maximum signal ('w') are ignored, when coilcombos are provided as input
+		    % For coil combination, determine the corresponding coil weights and phases 
+			% from reference scans, if available or 
+			% from water unsuppressed data, if available; 
+			% otherwise from the MR spectra themselves
+		    % Arguments referring to the nPos_ccth point of the FID and weighting of 
+			% channels based on maximum signal ('w') are ignored, when coil weights and
+			% phases ('coilcombos') are provided as input to the coil combination routine
 		    nPos_cc				= 1;
 		    nPos_cc_w			= 1;
 		    nPos_cc_ref_ECC		= 1;
@@ -849,7 +851,7 @@ switch seqType
 		    set(gca,'XDir','reverse');
 		    xlabel('Frequency (ppm)','FontSize',10);
 		    ylabel('Amplitude (a.u.)','FontSize',10);
-		    title('Before correction','FontSize',12);
+		    title('Before correction of coil phases','FontSize',12);
 		    box off;
 		    subplot(1,2,2);
 			plot(out_raw_av.ppm,real(spec_av_pre(:,:,1)));xlim(xLimValues1);
@@ -857,7 +859,7 @@ switch seqType
 		    set(gca,'XDir','reverse');
 		    xlabel('Frequency (ppm)','FontSize',10);
 		    ylabel('Amplitude(a.u.)','FontSize',10);
-		    title('After correction','FontSize',12);
+		    title('After correction of coil phases','FontSize',12);
 		    box off;
 		    set(h1,'PaperUnits','centimeters');
 		    set(h1,'PaperPosition',[0 0 20 10]);
