@@ -92,7 +92,8 @@ strWaterQuant			= '_ref_Quant';		% '_ref_Quant'; % '_ref_ECC';	% '_w'; %'';
 bCopyIntoExcel			= 1;
 bTestOutput				= 0;
 
-% Check(s) on parameter settings
+
+%% Check(s) on parameter settings
 % % For (MEGA-PRESS) difference spectra, usually water scaling cannot be used
 % if strcmp(strAnalysisData, 'MRS_diff') && strcmp(charWaterScaling, 'Yes')
 % 	error('%s: ERROR: Difference spectra set to be analyzed with water scaling: strAnalysisData = %s\t charwaterScaling = %s!\n', sFunctionName, strAnalysisData, charWaterScaling);
