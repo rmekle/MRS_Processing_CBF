@@ -68,7 +68,7 @@ if bAutoPhase_In
 	outputFileName_Add_2	= '_phasedZO';
 end
 
-% Select directory  and other options depending on sequence type and study
+% Select directory and other options depending on sequence type and study
 % Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
 % of output filename, if results are saved to file
 switch seqType_MRS_In
