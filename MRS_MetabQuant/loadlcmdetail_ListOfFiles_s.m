@@ -1,10 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% measure_MRS_ListOfFiles_SNR_LW_s.m
+% loadlcmdetail_ListOfFiles_s.m
 %
-%% Script to measure SNR and Linewidth (LW) in list of files of MR spectroscopy (MRS) data
+%% Script to load detailed output from LCModel metabolite quantification for list of files
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2024, 2025
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2025
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -15,14 +15,73 @@
 
 
 %% Set string for name of routine and display blank lines for enhanced output visibility 
-sFunctionName		= 'measure_MRS_ListOfFiles_SNR_LW_s';
-% sMsg_newLines		= sprintf('\n\n');
-% sMsg_newLine		= sprintf('\n');
-% disp(sMsg_newLines);
+sFunctionName		= 'loadlcmdetail_ListOfFiles_s';
 fprintf('\n\n');
 
 
-%% Init parameters for measuring SNR and Linewidth (LW) in list of files of MRS data
+%% Init input parameters for loading detailed output from LCModel metabolite quantification for list of files
+% Obtain parameter settings for preprocessing from initialization routine
+%configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
+configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
+[sParamsMRS_struct]		= initParams_MRS_s(configSel);
+
+% Extract parameter settings from parameter struct
+filename_In				= sParamsMRS_struct.filename;
+filename_w_In			= sParamsMRS_struct.filename_w;
+strStudy_MRS			= sParamsMRS_struct.strStudy_MRS;
+seqType_MRS				= sParamsMRS_struct.seqType_MRS;
+strVOI_MRS				= sParamsMRS_struct.strVOI_MRS;
+fileExt_MRS				= sParamsMRS_struct.fileExt_MRS;
+dataType_MRS			= sParamsMRS_struct.dataType_MRS;
+signals_MRS				= sParamsMRS_struct.signals_MRS;
+strOVS_In				= sParamsMRS_struct.strOVS;
+strOVS_w_In				= sParamsMRS_struct.strOVS_w;
+leftshift_In			= sParamsMRS_struct.leftshift;
+avgBlockSize_In			= sParamsMRS_struct.avgBlockSize;
+
+% Info about processing tool(s) mainly used
+strProcessTool_In		= sParamsMRS_struct.strProcessTool;
+
+% Parameters for removal of bad averages
+rmbadav_In				= sParamsMRS_struct.rmbadav;
+noSD_In					= sParamsMRS_struct.noSD;
+%digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+
+% Parameters for spectral registration (aligning of averages/frequency and phase drift
+% correction) performed in either frequency or time domain
+strSpecReg_In			= sParamsMRS_struct.strSpecReg;	% To distinguish settings for spectral registration
+driftCorr_In			= sParamsMRS_struct.driftCorr;
+iterin_In				= sParamsMRS_struct.iterin;
+aaDomain_In				= sParamsMRS_struct.aaDomain;
+tmaxin_In				= sParamsMRS_struct.tmaxin;
+bTmaxset_In				= sParamsMRS_struct.bTmaxset;
+ppmOption				= sParamsMRS_struct.ppmOption;
+medin_In				= sParamsMRS_struct.medin;
+alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
+% Obtain parameters for drift correction depending on type of data, i.e. whether MRS
+% data is spectrum or water signal
+% NOTE: Check whether aligning of averages in frequency domain works, if the MR
+% spectrum is water signal itself; if not, simply align averages in time domain
+ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix;
+ppmmaxarray_fix_In		= sParamsMRS_struct.ppmmaxarray_fix;
+
+
+% Additional parameter settings
+bECC_In					= sParamsMRS_struct.bECC;
+bPhaseCorrFreqShift_In	= sParamsMRS_struct.bPhaseCorrFreqShift;
+strMinUserIn_In			= sParamsMRS_struct.strMinUserIn;
+plotSwitch_In			= sParamsMRS_struct.plotSwitch;
+reportSwitch_In			= sParamsMRS_struct.reportSwitch;
+bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
+
+
+
+% % Display correlation matrix for all metabolites
+% fullFilename = '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/3T_SBA_C_0012_20210401_meas_MID00174_FID96489_svs_slaser_dkd_PCG_TE23_WS128_wOVS_3.2_processed_lcm.print';
+% [metabs,corrMatrix]=io_loadlcmdetail(fullFilename);
+% figure, image(corrMatrix,'CDataMapping','scaled'), colorbar; set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
+
+
 % Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
 % of original MRS data
 strStudy				= '3T_TGA';  	% 'Test'; '3T_Trauma'; '3T_TGA';
@@ -68,7 +127,7 @@ if bAutoPhase_In
 	outputFileName_Add_2	= '_phasedZO';
 end
 
-% Select directory  and other options depending on sequence type and study
+% Select directory and other options depending on sequence type and study
 % Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
 % of output filename, if results are saved to file
 switch seqType_MRS_In
