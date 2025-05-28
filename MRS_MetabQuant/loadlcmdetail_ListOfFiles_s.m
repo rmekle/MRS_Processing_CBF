@@ -10,6 +10,7 @@
 
 %% Clear all variables from workspace and close all figures
 % clear all;
+% clearvars;
 % close all;
 
 
@@ -153,7 +154,7 @@ bSaveResults			= 1;
 % dirString_In			= fullfile(dirString_In_Base, dirString_In_AddOn_1, dirString_In_AddOn_2);
 % %outDirString_In			= [dirString_In, outDirString_AddOn_1];
 % outDirString_In			= fullfile(dirString_In, outDirString_AddOn_1);
-dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
 outDirString_In			= dirString_In;
 
 
@@ -180,60 +181,48 @@ noEntriesListing		= length( structFileListing );
 
 
 %% Load detailed LCM output for all MRS data files and extract selected information
-% % Allocate arrays to store MRS data, measurement values, and zero order phases applied
-% % prior to measurements
-% data_MRS		= cell(noEntriesListing, 1);
-% SNR				= zeros(noEntriesListing, 1);
-% FWHM			= zeros(noEntriesListing, 1);
-% phase0			= zeros(noEntriesListing, 1);
+% Load detailed LCM output (correlation matrix) for first MRS data file, if existent, to
+% obtain size information
+if noEntriesListing == 0
+	error('%s: No files for acSearchString = %s found in directory %s!\n\n', sFunctionName, acSearchString, dirString_In);
+else
+	fprintf('%s: %d files for acSearchString = %s found in directory %s!\n\n', sFunctionName, noEntriesListing, acSearchString, dirString_In);
+end % End of if noEntriesListing == 0
+filename_detailedLCM_In		= structFileListing(1).name;
+[metabs, corrMatrix]		= io_loadlcmdetail(fullfile(dirString_In, filename_detailedLCM_In));
 
-% Load detailed 
+% Allocate arrays for detailed outputLCM output (correlation coefficients) for all MRS 
+% data files
+sz_corrMatrix	= size(corrMatrix);
+noMetabs		= length(metabs);
+metabs_all		= cell(noMetabs, noEntriesListing);
+corrMatrix_all	= zeros([sz_corrMatrix noEntriesListing]);
 
+% Insert detailed LCM output for first MRS data file into corresponding arrays
+if ~ismatrix(corrMatrix)
+	error('%s: Ndims of corrMatrix of first detailed LCM output file = %d ~= 2!!\n\n', sFunctionName, ndims(corrMatrix));
+end		% End of if ndims(corrMatrix) ~= 2
+metabs_all(:, 1)			= metabs;
+corrMatrix_all(:, :, 1)		= corrMatrix;
 
-
-% Measure desired quantities for each case (spectrum)
-% Select size for stepping through indices, i.e. list of files 
-% depending on data type, i.e. how many different signals
-% (spectra and/or water signals) are included
-indexStart		= 1;
+% Load detailed LCM output (correlation coefficients) for remaining MRS data files into
+% corresponding arrays
+indexStart		= 2;
 indexStep		= 1;
 for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
-	filename_MRS_In			= structFileListing(ind).name;
-	fprintf('\n\n');
-	if indexStep == 2
-		filename_w_In		= structFileListing(ind+1).name;
-		fprintf('ind = %d\t\t%s\t%s\n\n', ind, filename_MRS_In, filename_w_In);
-	else	% No water file
-		fprintf('ind = %d\t\t%s\n\n', ind, filename_MRS_In);
-	end
-	[data_MRS{ind}, SNR(ind), FWHM(ind), phase0(ind), info]	= measure_MRS_SNR_LW_FIDA_s(dirString_In, ...
-		filename_MRS_In, filename_w_In, dataFormat_MRS_In, signal_ppmRange_In, noise_ppmRange_In, ...
-		LWpeak_ppmRange_In, zp_factor_In, outDirString_In, dataType_MRS_In, bAutoPhase_In, bOutFile_In, ...
-		plotswitch_In, seqType_MRS_In, procParams_In, Bo_field_In, spectralWidth_In, TE_In, TR_In);
+	filename_detailedLCM_In		= structFileListing(ind).name;
+	%fprintf('\n\n');
+	fprintf('ind = %d\t\t%s\n\n', ind, filename_detailedLCM_In);
+	[metabs_all(:, ind), corrMatrix(:, :, ind)]		= io_loadlcmdetail(fullfile(dirString_In, filename_detailedLCM_In));
 end		% End of or ind=indexStart : indexStep : noEntriesListing
 fprintf('\n\n');
 
 
-% %% Include info about data files and results into one cell array
-% % Create cell arrays with info line (header), all MRS data filenames, and combine them
-% % with results into new cell array
-% % Dimensions of cell arrays have to match for that				% N = noEntriesListing
-% cellInfoLine		= {'MRS Data File' 'SNR' 'FWHM / Hz' 'Phase0 LW_Peak / deg'};	% Yields 1x4 cell array
-% cellDataFileNames	= {structFileListing(:).name}';						% Yields Nx1 cell array	
-% cellData			= [cellDataFileNames num2cell([SNR FWHM phase0])];	% Yields Nx4 cell array
-% cellInfoAndData		= [cellInfoLine; cellData];							% Yields (N+1)x4 cell array
+%% Calculate statistics of aggregate detailed LCM output (correlation coefficients)
+nDims_corrMatrix_all	= ndims(corrMatrix_all);
+corrMatrix_mean			= mean(corrMatrix_all, nDims_corrMatrix_all);
+corrMatrix_std			= std(corrMatrix_all, 0, nDims_corrMatrix_all);
 
-
-% %% Save results from SNR and LW measurements to file, if selected
-% % Check whether output directory already exists; if not, create it
-% if not(isfolder(outDirString_In))
-% 	%sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
-% 	%disp(sMsg);
-% 	fprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
-% 	if ~mkdir(outDirString_In)
-% 		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outDirString_In);
-% 	end
-% end		% End of if not(isfolder(outDirString_In))
 % if bSaveResults
 % 	% Create output filename for results depending on selected naming option:
 % 	%		Name of (input) subfolder chosen to best describe the MRS data
@@ -268,9 +257,9 @@ dt		= char(datetime('now', 'Format', 'yyyyMMdd_HH_mm_ss'));
 % Save workspace into output directory (optional with user input)
 % (Extension".mat" in filename explicitly required, so that Matlab can correctly load 
 % workspace file with a "." in its filename)
-%strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS_In, '_', dataType_MRS_In, '_', dt];
+%strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS_In, '_', dataType_MRS, '_', dt];
 %strSavedWorkspaceFileNameFull	= [outDirString_In, strSavedWorkspaceFileName, '.mat'];
-strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS_In, '_', dataType_MRS_In, '_', dt, '.mat'];
+strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dataType_MRS, '_', dt, '.mat'];
 strSavedWorkspaceFileNameFull	= fullfile(outDirString_In, strSavedWorkspaceFileName);
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
 strSaveWorkspace	= 'y';
