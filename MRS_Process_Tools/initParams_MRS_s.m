@@ -46,14 +46,14 @@ switch config
 		%paramsMRS_struct.dirString_Out			= '';
 		%paramsMRS_struct.filename				= '';
 		%paramsMRS_struct.filename_w				= '';
-		paramsMRS_struct.strStudy_MRS			= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
+		paramsMRS_struct.strStudy_MRS			= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-		paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+		paramsMRS_struct.strVOI_MRS				= 'PCG';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 		paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
-		paramsMRS_struct.dataType_MRS			= 'mrs_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
+		paramsMRS_struct.dataType_MRS			= 'mrs_w_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 		paramsMRS_struct.signals_MRS			= 'Spectra';	% 'MMs';	% 'Spectra';
 		paramsMRS_struct.strOVS					= 'wOVS';		% 'wOVS';	% 'woutOVS';
-		paramsMRS_struct.strOVS_w				= 'wOVS';	% 'wOVS';	% 'woutOVS';
+		paramsMRS_struct.strOVS_w				= 'woutOVS';	% 'wOVS';	% 'woutOVS';
 		paramsMRS_struct.leftshift				= 3;			% 3;	% 2;	% 0;	% 1;
 		paramsMRS_struct.avgBlockSize			= 0;			% 0;	2;		4;		8;		16;
 		
@@ -222,7 +222,7 @@ switch config
 		paramsMRS_struct.reportSwitch				= 0;
 		paramsMRS_struct.bPrep_MetabQuant			= 1;
 
-		case 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC'
+	case 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC'
 		% MR spectra in DICOM (.IMA) format processed using spectral registration (SR1)
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
