@@ -206,7 +206,7 @@ indexStep		= 1;
 for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 	filename_detailedLCM_In		= structFileListing(ind).name;
 	%fprintf('\n\n');
-	fprintf('ind = %d\t\t%s\n\n', ind, filename_detailedLCM_In);
+	fprintf('ind = %3d\t\t%s\n\n', ind, filename_detailedLCM_In);
 	[metabs_all(:, ind), corrMatrix_all(:, :, ind)]		= io_loadlcmdetail(fullfile(dirString_In, filename_detailedLCM_In));
 end		% End of or ind=indexStart : indexStep : noEntriesListing
 fprintf('\n\n');
@@ -220,19 +220,26 @@ corrMatrix_abs_mean		= mean(abs(corrMatrix_all), nDims_corrMatrix_all);
 corrMatrix_max			= max(corrMatrix_all, [], nDims_corrMatrix_all);
 corrMatrix_min			= min(corrMatrix_all, [], nDims_corrMatrix_all);
 
-% Display mean and standard deviation of all correlation matrices for all metabolites
+% Display statistics of all correlation matrices for all metabolites
 % fullFilename = '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/3T_SBA_C_0012_20210401_meas_MID00174_FID96489_svs_slaser_dkd_PCG_TE23_WS128_wOVS_3.2_processed_lcm.print';
 % [metabs,corrMatrix]=io_loadlcmdetail(fullFilename);
 % figure, image(corrMatrix,'CDataMapping','scaled'), colorbar; set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, image(corrMatrix_mean,'CDataMapping','scaled'), colorbar;
-set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
+%figure, image(corrMatrix_mean,'CDataMapping','scaled'), colorbar;
+%set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
 figure, imagesc(corrMatrix_mean), colorbar; 
+title(sprintf('%s %s, Correlation Matrix Mean', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, image(corrMatrix_abs_mean,'CDataMapping','scaled'), colorbar; 
+figure, imagesc(corrMatrix_std), colorbar;
+title(sprintf('%s %s, Correlation Matrix Std', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, image(corrMatrix_max,'CDataMapping','scaled'), colorbar; 
+figure, imagesc(corrMatrix_abs_mean), colorbar;
+title(sprintf('%s %s, Abs(Correlation Matrix) Mean', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, image(corrMatrix_min,'CDataMapping','scaled'), colorbar; 
+figure, imagesc(corrMatrix_max), colorbar;
+title(sprintf('%s %s, Correlation Matrix Max', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
+set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
+figure, imagesc(corrMatrix_min), colorbar;
+title(sprintf('%s %s, Correlation Matrix Min', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
 
 % if bSaveResults
