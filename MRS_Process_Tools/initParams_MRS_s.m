@@ -314,4 +314,28 @@ switch config
 		error('%s: ERROR: Unknown configuration %s!', sFunctionName, config);
 end		% End of switch config
 
+
+%% Check(s) on parameter settings
+% For studies '3T_Trauma' and ''3T_SBAM', water signals for the HC and the PCG have been
+% acquired with different OVS settings (by accident), so adjust for this automatically
+%fprintf('\n\n');
+if strcmp(paramsMRS_struct.seqType_MRS, 'sLASER')
+	switch paramsMRS_struct.strStudy_MRS
+		case {'3T_Trauma', '3T_SBAM'}
+			switch paramsMRS_struct.strVOI_MRS
+				case 'HC'
+					paramsMRS_struct.strOVS_w		= 'wOVS';
+				case 'PCG'
+					paramsMRS_struct.strOVS_w		= 'woutOVS';
+
+				otherwise
+					error('%s: ERROR: Unknown VOI %s for study %s!\n', sFunctionName, paramsMRS_struct.strVOI_MRS, paramsMRS_struct.strStudy_MRS);
+			end			% End of switch strVOI_MRS
+
+		otherwise
+			fprintf('%s: Settings for OVS not adjusted for strStudy_MRS = %s and strVOI_MRS = %s!\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS);
+	end				% End of switch strVOI_MRS
+end		% End of if strcmp(paramsMRS_struct.seqType_MRS, 'sLASER')
+fprintf('%s: strStudy_MRS = %s\t strVOI_MRS = %s\n\n\tSettings for OVS are strOVS = %s\t and\t strOVS_w = %s\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS, paramsMRS_struct.strOVS, paramsMRS_struct.strOVS_w);
+
 end		% End of function
