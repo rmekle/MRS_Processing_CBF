@@ -333,9 +333,9 @@ if strcmp(paramsMRS_struct.seqType_MRS, 'sLASER')
 			end			% End of switch strVOI_MRS
 
 		otherwise
-			fprintf('%s: Settings for OVS not adjusted for strStudy_MRS = %s and strVOI_MRS = %s!\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS);
+			fprintf('%s: Settings (in (paramsMRS_struct) for OVS not adjusted for strStudy_MRS = %s and strVOI_MRS = %s!\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS);
 	end				% End of switch strVOI_MRS
 end		% End of if strcmp(paramsMRS_struct.seqType_MRS, 'sLASER')
-fprintf('%s: strStudy_MRS = %s\t strVOI_MRS = %s\n\n\tSettings for OVS are strOVS = %s\t and\t strOVS_w = %s\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS, paramsMRS_struct.strOVS, paramsMRS_struct.strOVS_w);
+fprintf('%s: strStudy_MRS = %s\t strVOI_MRS = %s\n\n\tSettings (in paramsMRS_struct) for OVS are strOVS = %s\t and\t strOVS_w = %s\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS, paramsMRS_struct.strOVS, paramsMRS_struct.strOVS_w);
 
 end		% End of function
