@@ -86,73 +86,75 @@ bSaveResults			= 1;
 
 
 %% Select input and output directories and filename options
-outDirString_AddOn_1	= '';
-%outDirString_In			= [dirString_In, outDirString_AddOn_1];
-outputFileName_Add_1	= '';
-outputFileName_Add_2	= '';
-
-% Select directory and other options depending on sequence type and study
-% Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
-% of output filename, if results are saved to file
-switch seqType_MRS_In
-	case 'sLASER'
-		switch strStudy
-			case 'Test'
-				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/';
-				dirString_In_AddOn_1	= 'Z_Test_Data';
-				dirString_In_AddOn_2	= 'Test_MRS_SNR_LW';
-				outNamingOption			= 2;
-			case '3T_Trauma'
-				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
-				switch fileExtension
-					case 'dat'
-						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
-					case 'IMA'
-						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
-
-					otherwise
-						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-				end			% End of switch fileExtension
-				dirString_In_AddOn_2	= [strVOI, '_LCModel_Data_MRS_only'];
-				outNamingOption			= 1;
-			case '3T_TGA'
-				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA';
-				switch fileExtension
-					case 'dat'
-						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
-						% .dat svs_sLaser_dkd_LW scans
-						dirString_In_AddOn_1	= ['MRS_TGA_00_All_RawData_dat_Files_LW_HC'];
-						dirString_In_AddOn_2	= '';
-						outNamingOption			= 1;
-						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
-						% Init MRS parameters for specific signals chosen for SNR and FWHM
-						% measurements that are needed to process these signals
-						[procParams_In]			= initParams_MRS_s('config_Study_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC');
-					case 'IMA'
-						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
-						% .IMA svs_sLaser_dkd_LW scans
-						dirString_In_AddOn_1	= ['MRS_TGA_00_All_DICOM_IMA_Files_LW_HC'];
-						dirString_In_AddOn_2	= '';
-						outNamingOption			= 1;
-						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
-
-					otherwise
-						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
-				end			% End of switch fileExtension
-				%outNamingOption			= 1;
-
-			otherwise
-				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
-		end				% End of switch strStudy
-
-	otherwise
-		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS_In);
-end		% End of switch seqType_MRS_In
-% Complete name of input and output directory
-%dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep, dirString_In_AddOn_2, filesep];
-dirString_In			= fullfile(dirString_In_Base, dirString_In_AddOn_1, dirString_In_AddOn_2);
-%outDirString_In			= [dirString_In, outDirString_AddOn_1];
-outDirString_In			= fullfile(dirString_In, outDirString_AddOn_1);
+% outDirString_AddOn_1	= '';
+% %outDirString_In			= [dirString_In, outDirString_AddOn_1];
+% outputFileName_Add_1	= '';
+% outputFileName_Add_2	= '';
+% 
+% % Select directory and other options depending on sequence type and study
+% % Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
+% % of output filename, if results are saved to file
+% switch seqType_MRS_In
+% 	case 'sLASER'
+% 		switch strStudy
+% 			case 'Test'
+% 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/';
+% 				dirString_In_AddOn_1	= 'Z_Test_Data';
+% 				dirString_In_AddOn_2	= 'Test_MRS_SNR_LW';
+% 				outNamingOption			= 2;
+% 			case '3T_Trauma'
+% 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+% 				switch fileExtension
+% 					case 'dat'
+% 						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
+% 					case 'IMA'
+% 						dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
+% 
+% 					otherwise
+% 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+% 				end			% End of switch fileExtension
+% 				dirString_In_AddOn_2	= [strVOI, '_LCModel_Data_MRS_only'];
+% 				outNamingOption			= 1;
+% 			case '3T_TGA'
+% 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA';
+% 				switch fileExtension
+% 					case 'dat'
+% 						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls3_SR1'];
+% 						% .dat svs_sLaser_dkd_LW scans
+% 						dirString_In_AddOn_1	= ['MRS_TGA_00_All_RawData_dat_Files_LW_HC'];
+% 						dirString_In_AddOn_2	= '';
+% 						outNamingOption			= 1;
+% 						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
+% 						% Init MRS parameters for specific signals chosen for SNR and FWHM
+% 						% measurements that are needed to process these signals
+% 						[procParams_In]			= initParams_MRS_s('config_Study_sLASER_VOI_dat_water_lsN_SDx_y_SR1_ECC');
+% 					case 'IMA'
+% 						%dirString_In_AddOn_1	= [strVOI, '_', fileExtension, '_FID-A_SD_3_2_ECCref_ls1_SR1'];
+% 						% .IMA svs_sLaser_dkd_LW scans
+% 						dirString_In_AddOn_1	= ['MRS_TGA_00_All_DICOM_IMA_Files_LW_HC'];
+% 						dirString_In_AddOn_2	= '';
+% 						outNamingOption			= 1;
+% 						outDirString_AddOn_1	= [dirString_In_AddOn_1, '_SNR_LW'];
+% 
+% 					otherwise
+% 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExtension);
+% 				end			% End of switch fileExtension
+% 				%outNamingOption			= 1;
+% 
+% 			otherwise
+% 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+% 		end				% End of switch strStudy
+% 
+% 	otherwise
+% 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS_In);
+% end		% End of switch seqType_MRS_In
+% % Complete name of input and output directory
+% %dirString_In			= [dirString_In_Base, dirString_In_AddOn_1, filesep, dirString_In_AddOn_2, filesep];
+% dirString_In			= fullfile(dirString_In_Base, dirString_In_AddOn_1, dirString_In_AddOn_2);
+% %outDirString_In			= [dirString_In, outDirString_AddOn_1];
+% outDirString_In			= fullfile(dirString_In, outDirString_AddOn_1);
+dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/';
+outDirString_In			= dirString_In;
 
 
 %% Obtain information about the list of files for detailed LCModel output
@@ -177,13 +179,17 @@ structFileListing		= dir([dirString_In, filesep, acSearchString]);
 noEntriesListing		= length( structFileListing );
 
 
-%% Measure SNR and LW (FWHM) for all MRS data files
-% Allocate arrays to store MRS data, measurement values, and zero order phases applied
-% prior to measurements
-data_MRS		= cell(noEntriesListing, 1);
-SNR				= zeros(noEntriesListing, 1);
-FWHM			= zeros(noEntriesListing, 1);
-phase0			= zeros(noEntriesListing, 1);
+%% Load detailed LCM output for all MRS data files and extract selected information
+% % Allocate arrays to store MRS data, measurement values, and zero order phases applied
+% % prior to measurements
+% data_MRS		= cell(noEntriesListing, 1);
+% SNR				= zeros(noEntriesListing, 1);
+% FWHM			= zeros(noEntriesListing, 1);
+% phase0			= zeros(noEntriesListing, 1);
+
+% Load detailed 
+
+
 
 % Measure desired quantities for each case (spectrum)
 % Select size for stepping through indices, i.e. list of files 
@@ -191,17 +197,6 @@ phase0			= zeros(noEntriesListing, 1);
 % (spectra and/or water signals) are included
 indexStart		= 1;
 indexStep		= 1;
-switch dataType_MRS_In
-	case {'mrs_w', 'mrs_w_ref'}
-		% Spectra and water signals in list of files/directories
-		indexStep		= 2;
-	case {'mrs', 'mrs_ref', 'water', 'water_ref'}
-		% Only spectra or only water signals in list of files/directories
-		indexStep		= 1;
-
-	otherwise
-		error('%s: Unknown MRS dataType_MRS_In = %s!', sFunctionName, dataType_MRS_In);
-end		% End of switch dataType_MRS_In
 for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 	filename_MRS_In			= structFileListing(ind).name;
 	fprintf('\n\n');
@@ -219,49 +214,49 @@ end		% End of or ind=indexStart : indexStep : noEntriesListing
 fprintf('\n\n');
 
 
-%% Include info about data files and results into one cell array
-% Create cell arrays with info line (header), all MRS data filenames, and combine them
-% with results into new cell array
-% Dimensions of cell arrays have to match for that				% N = noEntriesListing
-cellInfoLine		= {'MRS Data File' 'SNR' 'FWHM / Hz' 'Phase0 LW_Peak / deg'};	% Yields 1x4 cell array
-cellDataFileNames	= {structFileListing(:).name}';						% Yields Nx1 cell array	
-cellData			= [cellDataFileNames num2cell([SNR FWHM phase0])];	% Yields Nx4 cell array
-cellInfoAndData		= [cellInfoLine; cellData];							% Yields (N+1)x4 cell array
+% %% Include info about data files and results into one cell array
+% % Create cell arrays with info line (header), all MRS data filenames, and combine them
+% % with results into new cell array
+% % Dimensions of cell arrays have to match for that				% N = noEntriesListing
+% cellInfoLine		= {'MRS Data File' 'SNR' 'FWHM / Hz' 'Phase0 LW_Peak / deg'};	% Yields 1x4 cell array
+% cellDataFileNames	= {structFileListing(:).name}';						% Yields Nx1 cell array	
+% cellData			= [cellDataFileNames num2cell([SNR FWHM phase0])];	% Yields Nx4 cell array
+% cellInfoAndData		= [cellInfoLine; cellData];							% Yields (N+1)x4 cell array
 
 
-%% Save results from SNR and LW measurements to file, if selected
-% Check whether output directory already exists; if not, create it
-if not(isfolder(outDirString_In))
-	%sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
-	%disp(sMsg);
-	fprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
-	if ~mkdir(outDirString_In)
-		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outDirString_In);
-	end
-end		% End of if not(isfolder(outDirString_In))
-if bSaveResults
-	% Create output filename for results depending on selected naming option:
-	%		Name of (input) subfolder chosen to best describe the MRS data
-	%		User input
-	switch outNamingOption
-		case 1
-			outFileName_Base	= dirString_In_AddOn_1;
-		case 2
-			outFileName_Base	= dirString_In_AddOn_2;
-		case 9
-			outFileName_Base	= input('\n\nPlease enter the base of the output filename: ', "s");
-
-		otherwise
-			error('%s: Unknown outNamingOption = %d!', sFunctionName, outNamingOption);
-	end		% End of switch namingOption
-	outFileName		= [outFileName_Base, outputFileName_Add_1, outputFileName_Add_2, acOutFileType];
-
-	% Write cell array with info and results from SNR and LW measurements to file 
-	% File type depends on chosen file extension: .xls is speradsheet and .txt is textfile
-	fprintf('Saving results for SNR and LW measurenents to file ...\n\n');
-	writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
-		'WriteMode', 'inplace', 'AutoFitWidth', 1, 'Range', strRangeSel)
-end		% End of if bSaveResults
+% %% Save results from SNR and LW measurements to file, if selected
+% % Check whether output directory already exists; if not, create it
+% if not(isfolder(outDirString_In))
+% 	%sMsg = sprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
+% 	%disp(sMsg);
+% 	fprintf('%s: Creating output directory %s ...\n', sFunctionName, outDirString_In);
+% 	if ~mkdir(outDirString_In)
+% 		error('%s: Could not create (mkdir) output directory %s!\n', sFunctionName, outDirString_In);
+% 	end
+% end		% End of if not(isfolder(outDirString_In))
+% if bSaveResults
+% 	% Create output filename for results depending on selected naming option:
+% 	%		Name of (input) subfolder chosen to best describe the MRS data
+% 	%		User input
+% 	switch outNamingOption
+% 		case 1
+% 			outFileName_Base	= dirString_In_AddOn_1;
+% 		case 2
+% 			outFileName_Base	= dirString_In_AddOn_2;
+% 		case 9
+% 			outFileName_Base	= input('\n\nPlease enter the base of the output filename: ', "s");
+% 
+% 		otherwise
+% 			error('%s: Unknown outNamingOption = %d!', sFunctionName, outNamingOption);
+% 	end		% End of switch namingOption
+% 	outFileName		= [outFileName_Base, outputFileName_Add_1, outputFileName_Add_2, acOutFileType];
+% 
+% 	% Write cell array with info and results from SNR and LW measurements to file 
+% 	% File type depends on chosen file extension: .xls is speradsheet and .txt is textfile
+% 	fprintf('Saving results for SNR and LW measurenents to file ...\n\n');
+% 	writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
+% 		'WriteMode', 'inplace', 'AutoFitWidth', 1, 'Range', strRangeSel)
+% end		% End of if bSaveResults
 
 
 %% Save variables of workspace to file
