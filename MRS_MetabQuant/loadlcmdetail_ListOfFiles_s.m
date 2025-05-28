@@ -75,57 +75,21 @@ reportSwitch_In			= sParamsMRS_struct.reportSwitch;
 bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 
 
-
 % % Display correlation matrix for all metabolites
 % fullFilename = '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/3T_SBA_C_0012_20210401_meas_MID00174_FID96489_svs_slaser_dkd_PCG_TE23_WS128_wOVS_3.2_processed_lcm.print';
 % [metabs,corrMatrix]=io_loadlcmdetail(fullFilename);
 % figure, image(corrMatrix,'CDataMapping','scaled'), colorbar; set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
 
 
-% Parameters to select sequence, study, volume-of-interest (VOI)/voxel, and file extension
-% of original MRS data
-strStudy				= '3T_TGA';  	% 'Test'; '3T_Trauma'; '3T_TGA';
-seqType_MRS_In			= 'sLASER';
-strVOI					= 'HC'; 	% 'PCG'; 'HC'; 'Pons'; 'CB'; 'PFC'; 'PCC';
-fileExtension           = 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
-
-% Parameters for saving of results to file
-% Select range (here first field) in Excel to write cell array of results to
+%% Additional parameter settings
 bSaveResults			= 1;
-outNamingOption			= 1;
-%outputFileName_Add_1	= '_SNR_FWHM';
-acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
-strRangeSel				= 'A4';		% 'A4';
 
 
-%% Additional parameters
-filename_MRS_In			= '';
-filename_w_In			= '';
-dataFormat_MRS_In		= 'IMA';			% 'lcmRAW';
-signal_ppmRange_In		= [3.7, 5.7];		% [1.8, 2.2];	[3.7, 5.7];	[4.2, 5.2];
-noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
-LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];	[3.7, 5.7];	[4.2, 5.2];
-zp_factor_In			= 8;
-dataType_MRS_In			= 'water';
-bAutoPhase_In			= 1;
-bOutFile_In				= 0;
-plotswitch_In			= 0;
-procParams_In			= struct([]);
-Bo_field_In				= [];
-spectralWidth_In		= [];
-TE_In					= [];
-TR_In					= [];
-
-% Output directory and filename options
+%% Select input and output directories and filename options
 outDirString_AddOn_1	= '';
 %outDirString_In			= [dirString_In, outDirString_AddOn_1];
-outputFileName_Add_1	= sprintf('_SNR_%.1f_%.1f_%.1f_%.1f_FWHM_%.2f_%.2f', ...
-	signal_ppmRange_In(1), signal_ppmRange_In(2), noise_ppmRange_In(1), noise_ppmRange_In(2), ...
-	LWpeak_ppmRange_In(1), LWpeak_ppmRange_In(2));
+outputFileName_Add_1	= '';
 outputFileName_Add_2	= '';
-if bAutoPhase_In
-	outputFileName_Add_2	= '_phasedZO';
-end
 
 % Select directory and other options depending on sequence type and study
 % Use base directory and directory AddOns (e.g. subfolder names) to allow flexible choice
@@ -191,7 +155,7 @@ dirString_In			= fullfile(dirString_In_Base, dirString_In_AddOn_1, dirString_In_
 outDirString_In			= fullfile(dirString_In, outDirString_AddOn_1);
 
 
-%% Obtain information about the list of files for (preprocessed) MR spectra
+%% Obtain information about the list of files for detailed LCModel output
 % (assuming that all files are included in the same directory)
 % (On Linux, file list in Matlab also includes the two directories "." and "..", which
 % means that the actual # of files in the directory is (# of entries in list - 2;
@@ -200,33 +164,11 @@ outDirString_In			= fullfile(dirString_In, outDirString_AddOn_1);
 %cd(dirString_In);
 
 
-% Select file extension to search for depending on format of MRS data
-% (again, here assuming that all MRS data files are in same directory)
-% Then determine filenames and # of files for all corresponding MRS data files
-switch dataFormat_MRS_In
-    case 'dat'
-		acSearchString			= '*.dat';
-        %structFileListing		= dir([dirString_In, '*.dat']);
-        %noEntriesListing		= length( structFileListing );
-        %noDataFiles				= noEntriesListing - 2
-	case 'DICOM'
-		acSearchString			= '*.dcm';
-    case 'IMA'
-		acSearchString			= '*.IMA';
-        %structFileListingAll	= dir(dirString_In);
-        %subDir					= [structFileListingAll(:).isdir];
-        %structFileListing		= structFileListingAll(subDir);
-        % Remove the two directories '.' and '..'
-        %structFileListing		= structFileListing(~ismember({structFileListing(:).name},{'.','..'}));
-        %noEntriesListing		= length(structFileListing);
-	case 'rda'
-		acSearchString			= '*.rda';
-	case 'lcmRAW'
-		acSearchString			= '*.RAW';
+% Select file extension to search for depending on selected LCModel output
+% (again, here assuming that all LCModel outputfiles are in same directory)
+% Then determine filenames and # of files for all corresponding LCModel output files
+acSearchString			= '*.print';
 
-    otherwise
-        error('%s: ERROR: Unknown dataFormat_MRS_In %s!', sFunctionName, dataFormat_MRS_In);
-end
 % NOTE: File separator at end of directory name is required so that searching for 
 %		specific files works properly when using the subsequent notation; multiple file
 %		separators at end do not cause an error
