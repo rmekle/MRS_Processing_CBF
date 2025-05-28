@@ -226,45 +226,57 @@ corrMatrix_min			= min(corrMatrix_all, [], nDims_corrMatrix_all);
 % figure, image(corrMatrix,'CDataMapping','scaled'), colorbar; set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
 %figure, image(corrMatrix_mean,'CDataMapping','scaled'), colorbar;
 %set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, imagesc(corrMatrix_mean), colorbar; 
+resolution	= 600;
+noFigures	= 5;
+h_figs		= gobjects(noFigures, 1);
+indFig		= 1;
+
+% Mean of correlation matrices
+h_figs(indFig)	= figure; imagesc(corrMatrix_mean), colorbar; 
 title(sprintf('%s %s, Correlation Matrix Mean', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, imagesc(corrMatrix_std), colorbar;
+indFig			= indFig+1;
+
+% Standard deviation (std) of correlation matrices
+h_figs(indFig)		= figure; imagesc(corrMatrix_std), colorbar;
 title(sprintf('%s %s, Correlation Matrix Std', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, imagesc(corrMatrix_abs_mean), colorbar;
+indFig			= indFig+1;
+
+% Mean of absolute values of correlation matrices
+h_figs(indFig)		= figure; imagesc(corrMatrix_abs_mean), colorbar;
 title(sprintf('%s %s, Abs(Correlation Matrix) Mean', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, imagesc(corrMatrix_max), colorbar;
+indFig			= indFig+1;
+
+% Maximum of correlation matrices
+h_figs(indFig)		= figure; imagesc(corrMatrix_max), colorbar;
 title(sprintf('%s %s, Correlation Matrix Max', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
-figure, imagesc(corrMatrix_min), colorbar;
+indFig			= indFig+1;
+
+% Minimum of correlation matrices
+h_figs(indFig)		= figure; imagesc(corrMatrix_min), colorbar;
 title(sprintf('%s %s, Correlation Matrix Min', strStudy_MRS, strVOI_MRS), 'Interpreter', 'none')
 set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
 
-% if bSaveResults
-% 	% Create output filename for results depending on selected naming option:
-% 	%		Name of (input) subfolder chosen to best describe the MRS data
-% 	%		User input
-% 	switch outNamingOption
-% 		case 1
-% 			outFileName_Base	= dirString_In_AddOn_1;
-% 		case 2
-% 			outFileName_Base	= dirString_In_AddOn_2;
-% 		case 9
-% 			outFileName_Base	= input('\n\nPlease enter the base of the output filename: ', "s");
-% 
-% 		otherwise
-% 			error('%s: Unknown outNamingOption = %d!', sFunctionName, outNamingOption);
-% 	end		% End of switch namingOption
-% 	outFileName		= [outFileName_Base, outputFileName_Add_1, outputFileName_Add_2, acOutFileType];
-% 
-% 	% Write cell array with info and results from SNR and LW measurements to file 
-% 	% File type depends on chosen file extension: .xls is speradsheet and .txt is textfile
-% 	fprintf('Saving results for SNR and LW measurenents to file ...\n\n');
-% 	writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
-% 		'WriteMode', 'inplace', 'AutoFitWidth', 1, 'Range', strRangeSel)
-% end		% End of if bSaveResults
+% Save figures as .fig and .png files, if selected
+% Select common output filename for figures and cell array of specific additions for each
+% figure
+outFileName			= sprintf('%s_%s_%s_LCM_CorrelationCoeffs_', strStudy_MRS, seqType_MRS, strVOI_MRS);
+cellFigName_add		= {'Mean', 'Std', 'Mean_Abs', 'Max', 'Min'};
+if bSaveResults
+	for indFig=1 : 1 : noFigures
+		strFigName_add	= cellFigName_add{indFig};
+		figureName_fig	= [outFileName, strFigName_add, '.fig'];
+		figureName_png	= [outFileName, strFigName_add, '.png'];
+		saveFigure_s(h_figs(indFig), outDirString_In, figureName_fig, 'fig', resolution);
+		saveFigure_s(h_figs(indFig), outDirString_In, figureName_png, 'png', resolution);
+	end		% End of for i=1 : 1 : noFigures
+end		% End of if bSaveResults
+% Clear figure handles/graphics objects from workspace to avoid warning, when saving
+% workspace
+clear h_figs;
 
 
 %% Save variables of workspace to file
