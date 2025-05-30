@@ -148,6 +148,54 @@ bSaveResults			= 1;
 % dirString_In			= fullfile(dirString_In_Base, dirString_In_AddOn_1, dirString_In_AddOn_2);
 % %outDirString_In			= [dirString_In, outDirString_AddOn_1];
 % outDirString_In			= fullfile(dirString_In, outDirString_AddOn_1);
+
+% Select input directory based on sequence, study, VOI (voxel), and other information
+switch seqType_MRS
+	case 'sLASER'
+		switch strStudy_MRS
+			case '3T_Trauma'
+				switch strVOI_MRS
+					case 'HC'
+						switch fileExt_MRS
+							case 'dat'
+								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/HC_dat_FID-A_SD_3_2_ECCref_ls3_SR1/HC_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
+							case 'IMA'
+								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/HC_IMA_FID-A_SD_3_2_ECCref_ls1_SR1/HC_LCM_Out_HC_ref_Quant_Con8/LCM_print_Sel/';
+
+							otherwise
+								error('%s: ERROR: Unknown fileExt_MRS %s!', sFunctionName, error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy););
+						end			% End of switch fileExt_MRS
+					case 'PCG'
+						switch fileExt_MRS
+							case 'dat'
+								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
+							case 'IMA'
+								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_IMA_FID-A_SD_3_2_ECCref_ls1_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
+
+							otherwise
+								error('%s: ERROR: Unknown fileExt_MRS %s!', sFunctionName, error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy););
+						end			% End of switch fileExt_MRS
+
+					otherwise
+						error('%s: ERROR: Unknown VOI %s for study %s for analyzing detailed LCM ooutput (correlation)!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
+				end			% End of switch strVOI_MRS
+			case '3T_SBAM'
+				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+			case '3T_TGA'
+				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+			case '7T_KCL'
+				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+
+			otherwise
+				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
+		end				% End of switch strStudy
+	case 'MEGA-PRESS'
+		error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+
+	otherwise
+		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
+end		% End of switch seqType_MRS
+
 dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
 outDirString_In			= dirString_In;
 
