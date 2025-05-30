@@ -290,7 +290,7 @@ corrMatrix_min_metabSel1			= corrMatrix_min(indMetabSel1, :)
 corrMatrix_Below1_max_metabSel1		= corrMatrix_Below1_max(indMetabSel1, :);
 [corrMatrix_metabSel1_min, corr_min_metabSel1_ind]			= min(corrMatrix_min_metabSel1);
 % Exclude (Glu+Gln) for maximum correlation with either Gln or Glu
-if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
+if strcmp(metabSel1, 'Gln') || strcmp(metabSel1, 'Glu')
 	[corrMatrix_Below1_metabSel1_max, corr_max_metabSel1_ind]	= max(corrMatrix_Below1_max_metabSel1(setdiff(1:end, indMetabGlu_Gln)));
 else
 	[corrMatrix_Below1_metabSel1_max, corr_max_metabSel1_ind]	= max(corrMatrix_Below1_max_metabSel1);
