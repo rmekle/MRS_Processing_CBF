@@ -77,7 +77,7 @@ bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 
 
 %% Additional parameter settings
-bSaveResults			= 1;
+bSaveResults			= 0;
 
 
 %% Select input and output directories and filename options
@@ -163,7 +163,7 @@ switch seqType_MRS
 								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/HC_IMA_FID-A_SD_3_2_ECCref_ls1_SR1/HC_LCM_Out_HC_ref_Quant_Con8/LCM_print_Sel/';
 
 							otherwise
-								error('%s: ERROR: Unknown fileExt_MRS %s!', sFunctionName, error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy););
+								error('%s: ERROR: Unknown fileExt_MRS %s!', sFunctionName, fileExt_MRS);
 						end			% End of switch fileExt_MRS
 					case 'PCG'
 						switch fileExt_MRS
@@ -173,30 +173,29 @@ switch seqType_MRS
 								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_IMA_FID-A_SD_3_2_ECCref_ls1_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
 
 							otherwise
-								error('%s: ERROR: Unknown fileExt_MRS %s!', sFunctionName, error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy););
+								error('%s: ERROR: Unknown fileExt_MRS %s!', sFunctionName, fileExt_MRS);
 						end			% End of switch fileExt_MRS
 
 					otherwise
 						error('%s: ERROR: Unknown VOI %s for study %s for analyzing detailed LCM ooutput (correlation)!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
 				end			% End of switch strVOI_MRS
 			case '3T_SBAM'
-				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 			case '3T_TGA'
-				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 			case '7T_KCL'
-				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy
 	case 'MEGA-PRESS'
-		error('%s: Not yet for seqType_MRS %s, strStudy_MRS %, strVOI_MRS = %, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+		error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end		% End of switch seqType_MRS
-
-dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
+% Select output directory
 outDirString_In			= dirString_In;
 
 
@@ -256,19 +255,56 @@ for ind=indexStart : indexStep : noEntriesListing	% noEntriesListing	% 2  % 1
 	%fprintf('\n\n');
 	fprintf('ind = %3d\t\t%s\n\n', ind, filename_detailedLCM_In);
 	[metabs_all(:, ind), corrMatrix_all(:, :, ind)]		= io_loadlcmdetail(fullfile(dirString_In, filename_detailedLCM_In));
-end		% End of or ind=indexStart : indexStep : noEntriesListing
+end		% End of or ind=indexStart : indexStep : noEntrieAspsListing
 fprintf('\n\n');
 
 
 %% Calculate statistics of aggregate detailed LCM output (correlation coefficients)
-nDims_corrMatrix_all	= ndims(corrMatrix_all);
-corrMatrix_mean			= mean(corrMatrix_all, nDims_corrMatrix_all);
-corrMatrix_std			= std(corrMatrix_all, 0, nDims_corrMatrix_all);
-corrMatrix_abs_mean		= mean(abs(corrMatrix_all), nDims_corrMatrix_all);
-corrMatrix_max			= max(corrMatrix_all, [], nDims_corrMatrix_all);
-corrMatrix_min			= min(corrMatrix_all, [], nDims_corrMatrix_all);
+nDims_corrMatrix_all		= ndims(corrMatrix_all);
+corrMatrix_mean				= mean(corrMatrix_all, nDims_corrMatrix_all);
+corrMatrix_std				= std(corrMatrix_all, 0, nDims_corrMatrix_all);
+corrMatrix_abs_mean			= mean(abs(corrMatrix_all), nDims_corrMatrix_all);
+corrMatrix_max				= max(corrMatrix_all, [], nDims_corrMatrix_all);
+corrMatrix_min				= min(corrMatrix_all, [], nDims_corrMatrix_all);
+corrMatrix_all_Below1		= corrMatrix_all.*(corrMatrix_all < 1);
+corrMatrix_Below1_max		= max(corrMatrix_all_Below1, [], nDims_corrMatrix_all);
 
-% Display statistics of all correlation matrices for all metabolites
+% Extract specific inforamtion from all correlation coefficients
+% Minimum correlation coefficient
+% Maximum correlation coefficient below 1.0
+corrMatrix_all_min			= min_array_s(corrMatrix_all);
+corrMatrix_all_Below1_max	= max_array_s(corrMatrix_all_Below1);
+
+% Asp and Gln frequently are moderately correlated with other metabolites for short TE MRS
+% at 3T
+% Asp
+metabSel1							= 'Asp';
+indMetabSel1						= find(strcmp(metabs, metabSel1));
+corrMatrix_mean_metabSel1			= corrMatrix_mean(indMetabSel1, :)
+corrMatrix_max_metabSel1			= corrMatrix_max(indMetabSel1, :)
+corrMatrix_min_metabSel1			= corrMatrix_min(indMetabSel1, :)
+corrMatrix_Below1_max_metabSel1		= corrMatrix_Below1_max(indMetabSel1, :);
+[corrMatrix_metabSel1_min, corr_min_metabSel1_ind]			= min(corrMatrix_min_metabSel1);
+[corrMatrix_Below1_metabSel1_max, corr_max_metabSel1_ind]	= max(corrMatrix_Below1_max_metabSel1);
+
+% Gln
+metabSel2							= 'Gln';
+indMetabSel2						= find(strcmp(metabs, metabSel2));
+corrMatrix_mean_metabSel2			= corrMatrix_mean(indMetabSel2, :)
+corrMatrix_max_metabSel2			= corrMatrix_max(indMetabSel2, :)
+corrMatrix_min_metabSel2			= corrMatrix_min(indMetabSel2, :)
+corrMatrix_min_metabSel1			= corrMatrix_min(indMetabSel1, :)
+corrMatrix_Below1_max_metabSel2		= corrMatrix_Below1_max(indMetabSel2, :);
+[corrMatrix_min_metabSel2_min, corr_min_metabSel2_ind]		= min(corrMatrix_min_metabSel2);
+[corrMatrix_Below1_metabSel2_max, corr_max_metabSel2_ind]	= max(corrMatrix_Below1_max_metabSel2);
+
+% Display info
+fprintf('\n\nCorrelation Coefficients from Detailed LCM Ouput for\n');
+fprintf('seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s:\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+fprintf('corrMatrix_all_min = %.3f\tcorrMatrix_all_Below1_max  = %.3f\n\n', corrMatrix_all_min, corrMatrix_all_Below1_max);
+
+
+%% Display statistics of all correlation matrices for all metabolites
 % fullFilename = '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/3T_SBA_C_0012_20210401_meas_MID00174_FID96489_svs_slaser_dkd_PCG_TE23_WS128_wOVS_3.2_processed_lcm.print';
 % [metabs,corrMatrix]=io_loadlcmdetail(fullFilename);
 % figure, image(corrMatrix,'CDataMapping','scaled'), colorbar; set(gca, 'XTick', [1:length(metabs)], 'XTickLabel', metabs, 'YTick', [1:length(metabs)], 'YTickLabel', metabs);
@@ -341,7 +377,7 @@ dt		= char(datetime('now', 'Format', 'yyyyMMdd_HH_mm_ss'));
 strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dataType_MRS, '_', dt, '.mat'];
 strSavedWorkspaceFileNameFull	= fullfile(outDirString_In, strSavedWorkspaceFileName);
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
-strSaveWorkspace	= 'y';
+strSaveWorkspace	= 'n';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
 	save(strSavedWorkspaceFileNameFull);
 end
