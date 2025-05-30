@@ -180,17 +180,17 @@ switch seqType_MRS
 						error('%s: ERROR: Unknown VOI %s for study %s for analyzing detailed LCM ooutput (correlation)!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
 				end			% End of switch strVOI_MRS
 			case '3T_SBAM'
-				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+				error('%s: Not yet for seqType_MRS = %s, strStudy_MRS = %s, strVOI_MRS = %s, and fileExt_MRS = %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 			case '3T_TGA'
-				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+				error('%s: Not yet for seqType_MRS = %s, strStudy_MRS = %s, strVOI_MRS = %s, and fileExt_MRS = %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 			case '7T_KCL'
-				error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+				error('%s: Not yet for seqType_MRS = %s, strStudy_MRS = %s, strVOI_MRS = %s, and fileExt_MRS = %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy
 	case 'MEGA-PRESS'
-		error('%s: Not yet for seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+		error('%s: Not yet for seqType_MRS = %s, strStudy_MRS = %s, strVOI_MRS = %s, and fileExt_MRS = %s!\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 
 	otherwise
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
@@ -277,7 +277,11 @@ corrMatrix_all_Below1_max	= max_array_s(corrMatrix_all_Below1);
 
 % Asp and Gln frequently are moderately correlated with other metabolites for short TE MRS
 % at 3T
-% Asp
+% Obtain index of combined Glu+Gln
+metabGlu_Gln						= 'Glu+Gln';
+indMetabGlu_Gln						= find(strcmp(metabs, metabGlu_Gln));
+
+% Metabolite Selected 1
 metabSel1							= 'Asp';
 indMetabSel1						= find(strcmp(metabs, metabSel1));
 corrMatrix_mean_metabSel1			= corrMatrix_mean(indMetabSel1, :)
@@ -285,24 +289,40 @@ corrMatrix_max_metabSel1			= corrMatrix_max(indMetabSel1, :)
 corrMatrix_min_metabSel1			= corrMatrix_min(indMetabSel1, :)
 corrMatrix_Below1_max_metabSel1		= corrMatrix_Below1_max(indMetabSel1, :);
 [corrMatrix_metabSel1_min, corr_min_metabSel1_ind]			= min(corrMatrix_min_metabSel1);
-[corrMatrix_Below1_metabSel1_max, corr_max_metabSel1_ind]	= max(corrMatrix_Below1_max_metabSel1);
+% Exclude (Glu+Gln) for maximum correlation with either Gln or Glu
+if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
+	[corrMatrix_Below1_metabSel1_max, corr_max_metabSel1_ind]	= max(corrMatrix_Below1_max_metabSel1(setdiff(1:end, indMetabGlu_Gln)));
+else
+	[corrMatrix_Below1_metabSel1_max, corr_max_metabSel1_ind]	= max(corrMatrix_Below1_max_metabSel1);
+end		% End of if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
 
-% Gln
+% Metabolite Selected 2
 metabSel2							= 'Gln';
 indMetabSel2						= find(strcmp(metabs, metabSel2));
 corrMatrix_mean_metabSel2			= corrMatrix_mean(indMetabSel2, :)
 corrMatrix_max_metabSel2			= corrMatrix_max(indMetabSel2, :)
 corrMatrix_min_metabSel2			= corrMatrix_min(indMetabSel2, :)
-corrMatrix_min_metabSel1			= corrMatrix_min(indMetabSel1, :)
 corrMatrix_Below1_max_metabSel2		= corrMatrix_Below1_max(indMetabSel2, :);
-[corrMatrix_min_metabSel2_min, corr_min_metabSel2_ind]		= min(corrMatrix_min_metabSel2);
-[corrMatrix_Below1_metabSel2_max, corr_max_metabSel2_ind]	= max(corrMatrix_Below1_max_metabSel2);
+[corrMatrix_metabSel2_min, corr_min_metabSel2_ind]			= min(corrMatrix_min_metabSel2);
+% Exclude (Glu+Gln) for maximum correlation with either Gln or Glu
+if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
+	[corrMatrix_Below1_metabSel2_max, corr_max_metabSel2_ind]	= max(corrMatrix_Below1_max_metabSel2(setdiff(1:end, indMetabGlu_Gln)));
+else
+	[corrMatrix_Below1_metabSel2_max, corr_max_metabSel2_ind]	= max(corrMatrix_Below1_max_metabSel2);
+end		% End of if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
 
 % Display info
 fprintf('\n\nCorrelation Coefficients from Detailed LCM Ouput for\n');
-fprintf('seqType_MRS %s, strStudy_MRS %s, strVOI_MRS = %s, and fileExt_MRS %s:\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
-fprintf('corrMatrix_all_min = %.3f\tcorrMatrix_all_Below1_max  = %.3f\n\n', corrMatrix_all_min, corrMatrix_all_Below1_max);
-
+fprintf('seqType_MRS = %s, strStudy_MRS = %s, strVOI_MRS = %s, and fileExt_MRS = %s:\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
+fprintf('corrMatrix_all_min = %.3f\tcorrMatrix_all_Below1_max  = %.3f\n\n\n', corrMatrix_all_min, corrMatrix_all_Below1_max);
+fprintf('For metabolite %s\n', metabSel1);
+fprintf('corrMatrix_metabSel1_min = %.3f\twith %s\n', corrMatrix_metabSel1_min, metabs{corr_min_metabSel1_ind});
+fprintf('corrMatrix_Below1_metabSel1_max = %.3f\twith %s\n', corrMatrix_Below1_metabSel1_max, metabs{corr_max_metabSel1_ind});
+fprintf('\n\n');
+fprintf('For metabolite %s\n', metabSel2);
+fprintf('corrMatrix_metabSel2_min = %.3f\twith %s\n', corrMatrix_metabSel2_min, metabs{corr_min_metabSel2_ind});
+fprintf('corrMatrix_Below1_metabSel2_max = %.3f\twith %s\n', corrMatrix_Below1_metabSel2_max, metabs{corr_max_metabSel2_ind});
+fprintf('\n\n');
 
 %% Display statistics of all correlation matrices for all metabolites
 % fullFilename = '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/3T_SBA_C_0012_20210401_meas_MID00174_FID96489_svs_slaser_dkd_PCG_TE23_WS128_wOVS_3.2_processed_lcm.print';
