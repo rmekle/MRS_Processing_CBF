@@ -158,7 +158,7 @@ switch seqType_MRS
 					case 'HC'
 						switch fileExt_MRS
 							case 'dat'
-								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/HC_dat_FID-A_SD_3_2_ECCref_ls3_SR1/HC_LCM_Out_PCG_ref_Quant_Con8/LCM_print_Sel/';
+								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/HC_dat_FID-A_SD_3_2_ECCref_ls3_SR1/HC_LCM_Out_HC_ref_Quant_Con8/LCM_print_Sel/';
 							case 'IMA'
 								dirString_In			= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/HC_IMA_FID-A_SD_3_2_ECCref_ls1_SR1/HC_LCM_Out_HC_ref_Quant_Con8/LCM_print_Sel/';
 
