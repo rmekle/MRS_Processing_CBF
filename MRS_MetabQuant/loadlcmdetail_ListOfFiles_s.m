@@ -77,7 +77,8 @@ bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 
 
 %% Additional parameter settings
-bSaveResults			= 1;
+bSaveResults			= 0;	% 1;	% 0;
+strSaveWorkspace		= 'n';	% 'y';	% 'n';
 
 
 %% Select input and output directories and filename options
@@ -397,7 +398,7 @@ dt		= char(datetime('now', 'Format', 'yyyyMMdd_HH_mm_ss'));
 strSavedWorkspaceFileName		= ['workspace_', sFunctionName, '_', seqType_MRS, '_', dataType_MRS, '_', dt, '.mat'];
 strSavedWorkspaceFileNameFull	= fullfile(outDirString_In, strSavedWorkspaceFileName);
 %strSaveWorkspace	= input('Would you like to save all variables of the workspace to file?  ', 's');
-strSaveWorkspace	= 'y';
+%strSaveWorkspace	= 'y';
 if strcmp(strSaveWorkspace,'y') || strcmp(strSaveWorkspace,'Y')
 	save(strSavedWorkspaceFileNameFull);
 end
