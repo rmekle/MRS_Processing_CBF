@@ -77,8 +77,8 @@ bPrep_MetabQuant		= sParamsMRS_struct.bPrep_MetabQuant;
 
 
 %% Additional parameter settings
-bSaveResults			= 0;	% 1;	% 0;
-strSaveWorkspace		= 'n';	% 'y';	% 'n';
+bSaveResults			= 1;	% 1;	% 0;
+strSaveWorkspace		= 'y';	% 'y';	% 'n';
 
 
 %% Select input and output directories and filename options
