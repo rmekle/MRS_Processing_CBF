@@ -296,7 +296,7 @@ corrMatrix_Below1_mean_metabSel1	= corrMatrix_Below1_mean(indMetabSel1, :);
 [corrMatrix_metabSel1_min, corr_min_metabSel1_ind]			= min(corrMatrix_min_metabSel1);
 metabMinCorr_metabSel1				= metabs{corr_min_metabSel1_ind};
 % Obtain the corresponding maximum and mean correlation coefficient for the resulting
-% metabolite, i.e. for the metabolite for which the correlation coefficent was minimum
+% metabolite, i.e. for the metabolite, for which the correlation coefficent was minimum
 maxCorr_metabSel1_metabMinCorr		= corrMatrix_max_metabSel1(corr_min_metabSel1_ind);
 meanCorr_metabSel1_metabMinCorr		= corrMatrix_mean_metabSel1(corr_min_metabSel1_ind);
 
@@ -309,7 +309,7 @@ else
 end		% End of if strcmp(metabSel1, 'Gln') || strcmp(metabSel1, 'Glu')
 metabMaxCorr_metabSel1				= metabs{corr_max_metabSel1_ind};
 % Obtain the corresponding minimum and mean correlation coefficient for the resulting
-% metabolite, i.e. for the metabolite for which the correlation coefficent was maximum
+% metabolite, i.e. for the metabolite, for which the correlation coefficent was maximum
 minCorr_metabSel1_metabMaxCorr		= corrMatrix_min_metabSel1(corr_max_metabSel1_ind);
 meanCorr_metabSel1_metabMaxCorr		= corrMatrix_mean_metabSel1(corr_max_metabSel1_ind);
 
@@ -335,7 +335,7 @@ corrMatrix_Below1_mean_metabSel2	= corrMatrix_Below1_mean(indMetabSel2, :);
 [corrMatrix_metabSel2_min, corr_min_metabSel2_ind]			= min(corrMatrix_min_metabSel2);
 metabMinCorr_metabSel2				= metabs{corr_min_metabSel2_ind};
 % Obtain the corresponding maximum and mean correlation coefficient for the resulting
-% metabolite, i.e. for the metabolite for which the correlation coefficent was minimum
+% metabolite, i.e. for the metabolite, for which the correlation coefficent was minimum
 maxCorr_metabSel2_metabMinCorr		= corrMatrix_max_metabSel2(corr_min_metabSel2_ind);
 meanCorr_metabSel2_metabMinCorr		= corrMatrix_mean_metabSel2(corr_min_metabSel2_ind);
 
@@ -348,7 +348,7 @@ else
 end		% End of if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
 metabMaxCorr_metabSel2				= metabs{corr_max_metabSel2_ind};
 % Obtain the corresponding minimum and mean correlation coefficient for the resulting
-% metabolite, i.e. for the metabolite for which the correlation coefficent was maximum
+% metabolite, i.e. for the metabolite, for which the correlation coefficent was maximum
 minCorr_metabSel2_metabMaxCorr		= corrMatrix_min_metabSel2(corr_max_metabSel2_ind);
 meanCorr_metabSel2_metabMaxCorr		= corrMatrix_mean_metabSel2(corr_max_metabSel2_ind);
 
@@ -361,7 +361,8 @@ else
 	[corrMatrix_mean_metabSel2_max, meanCorr_max_metablSel2_ind]	= max(corrMatrix_Below1_mean_metabSel2);
 end		% End of if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
 
-% Display info
+
+%% Display info
 fprintf('\n\nCorrelation Coefficients from Detailed LCM Ouput for\n');
 fprintf('seqType_MRS = %s, strStudy_MRS = %s, strVOI_MRS = %s, and fileExt_MRS = %s:\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 fprintf('corrMatrix_all_min = %.3f\tcorrMatrix_all_Below1_max  = %.3f\n\n\n\n', corrMatrix_all_min, corrMatrix_all_Below1_max);
@@ -385,6 +386,7 @@ fprintf('Mean: \tmeanCorr_metabSel2_metabMaxCorr = %.3f  \twith %s\n\n', meanCor
 fprintf('Minimum mean correlation = %.3f \twith %s\n', corrMatrix_mean_metabSel2_min, metabs{meanCorr_min_metablSel2_ind});
 fprintf('Maximum mean correlation = %.3f \twith %s\n', corrMatrix_mean_metabSel2_max, metabs{meanCorr_max_metablSel2_ind});
 fprintf('\n\n\n');
+
 
 %% Display statistics of all correlation matrices for all metabolites
 % fullFilename = '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_Analysis/PCG_dat_FID-A_SD_3_2_ECCref_ls3_SR1/PCG_LCM_Out_PCG_ref_Quant_Con8/3T_SBA_C_0012_20210401_meas_MID00174_FID96489_svs_slaser_dkd_PCG_TE23_WS128_wOVS_3.2_processed_lcm.print';
