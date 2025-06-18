@@ -235,7 +235,7 @@ if(strcmp(bSegmentImages, 'Yes'))
 	% computing toolbox; if it is installed and if it works, Matlab should automatically 
 	% then use all available CPUs for parallel processing of the tasks
 	%for ind=indexStart : indexStep : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
-	parfor ind=indexStart_NIFTI : indexStep_NIFTI : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
+	parfor ind=indexStart_NIfTI : indexStep_NIfTI : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
 		% Select file from list of NIfTI files and obtain parts of filename
 		inputFileNameSeg				= structFileListing_NIfTI(ind).name;
 		[filepathSeg,nameSeg,extSeg]	= fileparts(inputFileNameSeg);
