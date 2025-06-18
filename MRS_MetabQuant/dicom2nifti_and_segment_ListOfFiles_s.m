@@ -26,7 +26,7 @@ fprintf('\n\n');
 inputDir				= '';
 command					= '';
 status					= 0;
-bProcessNewFiles		= 0;
+bProcessNewFiles		= 1;
 bConvert_dcm2nii		= 'No';			% 'Yes';		% 'No';
 bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
@@ -105,12 +105,20 @@ switch seqType_MRS
 		error('%s: ERROR: Unknown sequence type %s!', sFunctionName, seqType_MRS);
 end
 
-% Adjust directory names, if only new (newly acquired) data should be processed
-if bProcessNewFiles
-	dirData_DICOM		= [dirData_DICOM, '_New'];
-	outputDir_NIfTI		= [outputDir_NIfTI, '_New'];
-	outputDir_Seg		= [outputDir_Seg, '_New'];
+% Adjust indices for for loops, if only new (newly acquired) data should be processed
+if ~bProcessNewFiles
+	% Start at beginning of data
+	indAdd			= 0;
+else
+	% To only process new data
+	indAdd			= 21;
+	% Adjust directory names, if only new (newly acquired) data should be processed
+	%dirData_DICOM		= [dirData_DICOM, '_New'];
+	%outputDir_NIfTI		= [outputDir_NIfTI, '_New'];
+	%outputDir_Seg		= [outputDir_Seg, '_New'];
 end
+indexStart				= 3 + indAdd;	% To skip entries for directories "." and ".."
+indexStart_NIfTI		= 1 + indAdd;	% To possibly skip entries for specific files
 dirData_DICOM			= [dirData_DICOM, filesep];
 outputDir_NIfTI			= [outputDir_NIfTI, filesep];
 dirData_NIfTI			= outputDir_NIfTI;
@@ -166,7 +174,7 @@ noDataEntries_DICOM			= noEntriesListing_DICOM - 2;
 % and place all output NIfTI files into same directory
 % (Note that here the counter for the for loop has to include all entries up to the last
 % index!)
-indexStart		= 3;	% To skip entries for directories "." and ".."
+%indexStart		= 3;	% To skip entries for directories "." and ".."
 indexStep		= 1;	% Optionally adjustable step size
 %disp(sMsg_newLines);
 fprintf('\n\n');
@@ -217,8 +225,8 @@ noEntriesListing_NIfTI		= length( structFileListing_NIfTI );
 
 % Segment each NIfTI brain imaging dataset into tissues WM, GM, and CSF, if desired
 % using routines from FSL as system calls 
-indexStart		= 1;	% To possibly skip entries for specific files
-indexStep		= 1;	% Optionally adjustable step size
+%indexStart_NIfTI		= 1;	% To possibly skip entries for specific files
+indexStep_NIfTI			= 1;	% Optionally adjustable step size
 %disp(sMsg_newLines);
 fprintf('\n\n');
 if(strcmp(bSegmentImages, 'Yes'))
@@ -227,7 +235,7 @@ if(strcmp(bSegmentImages, 'Yes'))
 	% computing toolbox; if it is installed and if it works, Matlab should automatically 
 	% then use all available CPUs for parallel processing of the tasks
 	%for ind=indexStart : indexStep : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
-	parfor ind=indexStart : indexStep : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
+	parfor ind=indexStart_NIFTI : indexStep_NIFTI : noEntriesListing_NIfTI		% noEntriesListing_NIfTI	% 1		% 2
 		% Select file from list of NIfTI files and obtain parts of filename
 		inputFileNameSeg				= structFileListing_NIfTI(ind).name;
 		[filepathSeg,nameSeg,extSeg]	= fileparts(inputFileNameSeg);
@@ -268,7 +276,7 @@ if(strcmp(bSegmentImages, 'Yes'))
 			error('%s: Error segmenting file %s!\n\n%s', sFunctionName, betFileNameFull, cmdout);
 		end		
 		
-	end		% End of for ind=indexStart : indexStep : noEntriesListing_NIfTI
+	end		% End of for ind=indexStart_NIfTI : indexStep_NIfTI : noEntriesListing_NIfTI
 else
 	fprintf('%s: No segmentation of images!\n', sFunctionName);
 end		% End of if(strcmp(bSegmentImages, 'Yes'))
