@@ -28,9 +28,10 @@ sFunctionName		= 'rename_files_MRS_DICOM_s';
 					% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_PCG/';	% 'MRS_Trauma_00_All_DICOM_IMA_Files_MRS_HC/';
 parentDir_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/';
 %parentDir_AddOn		= 'MRS_TGA_00_All_DICOM_IMA_Files_SUM_MRS_HC/';
-parentDir_AddOn		= 'MRS_TGA_00_All_DICOM_IMA_Files_LW_HC/';
+parentDir_AddOn		= 'MRS_TGA_00_All_DICOM_IMA_Files_LW_HC_Folders/';
 %parentDir_AddOn		= 'TGA_Test/';	
 parentDir			= [parentDir_Base, parentDir_AddOn];
+destDir				= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_DICOM_IMA_Files_LW_HC/';
 
 % % Select start and end pattern for substring extraction
 % startPat		= 'MRS_Trauma_';
@@ -52,9 +53,13 @@ list_subfolders_name	= {list_subfolders.name};
 
 % Loop over all subfolders
 % For each subfolder, rename MRS data file in subfolder with name of subfolder
+% Start at selected subfolder when renaming only new data
 %newChr		= cell(1);
 newName		= '';
-for iFolder = 1:1:numel(list_subfolders_name)
+indAdd		= 37;
+indStart	= 1 + indAdd;
+indStep		= 1;
+for iFolder = indStart:indStep:numel(list_subfolders_name)
 % 	% Extract desired substring from name of subfolder
 % 	newChr		= extractBetween(list_subfolders_name{iFolder}, startPat, endPat);
 % 	if isempty(newChr)
@@ -70,9 +75,10 @@ for iFolder = 1:1:numel(list_subfolders_name)
 	% (e.g. if a DICOM MRS sum file should be renamed)
 	% New name for DICOM MRS file is its subfoldername with the extension .IMA
 	newName						= [list_subfolders_name{iFolder}, '.IMA'];
-	[status,msg]	= movefile( fullfile(subDir, list_subfolders_sub_name{1}), fullfile(subDir, newName) );
+	%[status,msg]	= movefile( fullfile(subDir, list_subfolders_sub_name{1}), fullfile(subDir, newName) );
+	[status,msg]	= copyfile( fullfile(subDir, list_subfolders_sub_name{1}), fullfile(destDir, newName) );
 	if status ~= 1
-		error('%s: Error moving/renaming file %s!\n\n%s', sFunctionName, list_subfolders_sub_name{iSub}, msg);
+		error('%s: Error copying/renaming file %s!\n\n%s', sFunctionName, list_subfolders_sub_name{iSub}, msg);
 	end
 
-end		% End of for iFolder = 1:1:numel(list_subfolders_name)
+end		% End of for iFolder = indStart:indStep:numel(list_subfolders_name)
