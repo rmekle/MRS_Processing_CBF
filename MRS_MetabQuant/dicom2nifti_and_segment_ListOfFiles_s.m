@@ -94,7 +94,7 @@ switch seqType_MRS
 				% Set parameters for brain extraction and segmentation depending on voxel location
 				% T1w images in 3T_TGA study have different resolution compared to 3T_SBA 
 				% and 3T_SBAM studies				
-				coordCenterOfBrain		= [96 115 170];		% [96 115 170];	[96 120 170];	[90 115 150];
+				coordCenterOfBrain		= [96 115 170];		% [96 115 170];	[96 120 170];	[90 115 150];	[87 115 180];	
 				fractIntensThresh		= 0.3;
 
 			otherwise
