@@ -116,7 +116,7 @@ else
 	%dirData_DICOM		= [dirData_DICOM, '_New'];
 	%outputDir_NIfTI		= [outputDir_NIfTI, '_New'];
 	%outputDir_Seg		= [outputDir_Seg, '_New'];
-end
+end		% End of if ~bProcessNewFiles
 indexStart				= 3 + indAdd;	% To skip entries for directories "." and ".."
 indexStart_NIfTI		= 1 + indAdd;	% To possibly skip entries for specific files
 dirData_DICOM			= [dirData_DICOM, filesep];
