@@ -10,6 +10,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Clear all variables from workspace and close all figures
+% clearvars;
 % clear all;
 % close all;
 
@@ -25,7 +26,7 @@ fprintf('\n\n');
 %% Init input parameters
 command					= '';
 status					= 0;
-bProcessNewFiles		= 0;
+bProcessNewFiles		= 1;
 noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
@@ -160,14 +161,21 @@ switch seqType
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy
-		
-		% Add option for processing new data files by appending '_New' to all directory names
-		if bProcessNewFiles
-			dirData_MRS				= [dirData_MRS, '_New'];
-			dirData_NIfTI			= [dirData_NIfTI, '_New'];
-			dirData_Seg_Base		= [dirData_Seg_Base, '_New'];
-			outputDir_PVCorr_Base	= [outputDir_PVCorr_Base, '_New'];
-		end		% End of if bProcessNewFiles
+
+		% Adjust indices for for loops, if only new (newly acquired) data should be processed
+		if ~bProcessNewFiles
+			% Start at beginning of data
+			indAdd			= 0;
+		else
+			% To only process new data
+			indAdd			= 37;
+			% Adjust directory names, if only new (newly acquired) data should be processed
+			%dirData_MRS			= [dirData_MRS, '_New'];
+			%dirData_NIfTI			= [dirData_NIfTI, '_New'];
+			%dirData_Seg_Base		= [dirData_Seg_Base, '_New'];
+			%outputDir_PVCorr_Base	= [outputDir_PVCorr_Base, '_New'];
+		end		% End of if ~bProcessNewFiles
+		indexStart				= 1 + indAdd;	% To choose starting file from list
 
 		% Finalize name of input and output directories for partial volume coefficients
 		if ~isempty(strPVCorr)
@@ -262,7 +270,7 @@ noEntriesListing_Seg		= length( structFileListing_Seg );
 % Output: overlap of spect.rda's voxel with each compartment.nii.
 % Options -w and -l exclude each other in the sense that the highlight files to be created
 % for displying using option '-l' are not created when using option '-w'
-indexStart		= 1;	
+%indexStart		= 1;	
 indexStep		= 1;	% Optionally adjustable step size
 %disp(sMsg_newLines);
 fprintf('\n\n');
