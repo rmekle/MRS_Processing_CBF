@@ -48,7 +48,7 @@ noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
 LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];	[3.7, 5.7];	[4.2, 5.2];
 zp_factor_In			= 8;
 dataType_MRS_In			= 'water';
-bAutoPhase_In			= 1;
+bAutoPhase_In			= 0;
 bOutFile_In				= 0;
 plotswitch_In			= 0;
 procParams_In			= struct([]);
@@ -256,7 +256,8 @@ if bSaveResults
 	outFileName		= [outFileName_Base, outputFileName_Add_1, outputFileName_Add_2, acOutFileType];
 
 	% Write cell array with info and results from SNR and LW measurements to file 
-	% File type depends on chosen file extension: .xls is speradsheet and .txt is textfile
+	% File type depends on chosen file extension: .xlsx is Excel spreadsheet and .txt is
+	% text file
 	fprintf('Saving results for SNR and LW measurenents to file ...\n\n');
 	writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
 		'WriteMode', 'inplace', 'AutoFitWidth', 1, 'Range', strRangeSel)
