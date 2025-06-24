@@ -36,7 +36,27 @@ bSaveResults			= 1;
 outNamingOption			= 1;
 %outputFileName_Add_1	= '_SNR_FWHM';
 acOutFileType			= '.xlsx';		% '.xlsx';	'.txt';
-strRangeSel				= 'A4';		% 'A4';
+bProcessNewFiles		= 1;
+nRangeStart				= 4;
+%strRangeSel				= 'A4';		% 'A4';
+
+% Adjust indices for for loops and range in Excel sheet, if only new (newly acquired) data
+% should be processed
+if ~bProcessNewFiles
+	% Start at beginning of data and close to top of Excel sheet
+	indAdd				= 0;
+	strRangeSel			= ['A' num2str(nRangeStart)];	% 'A4';
+	bAutoFitWidth		= 1;
+else
+	% To only process new data
+	% +1 for original info line in cell array and then Excel sheet
+	% Assume that width of columns has been adjusted before to fit fields of info line
+	indAdd				= 37;
+	strRangeSel			= ['A' num2str(nRangeStart+indAdd+1)];
+	bAutoFitWidth		= 0;
+end		% End of if ~bProcessNewFiles
+% Starting index for for loop for list list of MRS data files
+indexStart		= 1 + indAdd;
 
 
 %% Additional parameters
@@ -48,7 +68,7 @@ noise_ppmRange_In		= [-3.0, -1.0];		% [-3.0, -1.0];
 LWpeak_ppmRange_In		= [3.7, 5.7];		% [2.9, 3.1];	[3.7, 5.7];	[4.2, 5.2];
 zp_factor_In			= 8;
 dataType_MRS_In			= 'water';
-bAutoPhase_In			= 0;
+bAutoPhase_In			= 1;
 bOutFile_In				= 0;
 plotswitch_In			= 0;
 procParams_In			= struct([]);
@@ -188,7 +208,8 @@ phase0			= zeros(noEntriesListing, 1);
 % Select size for stepping through indices, i.e. list of files 
 % depending on data type, i.e. how many different signals
 % (spectra and/or water signals) are included
-indexStart		= 1;
+% For newly processed data, starting index is adjusted (see above)
+%indexStart		= 1;
 indexStep		= 1;
 switch dataType_MRS_In
 	case {'mrs_w', 'mrs_w_ref'}
@@ -221,11 +242,14 @@ fprintf('\n\n');
 %% Include info about data files and results into one cell array
 % Create cell arrays with info line (header), all MRS data filenames, and combine them
 % with results into new cell array
-% Dimensions of cell arrays have to match for that				% N = noEntriesListing
+% Dimensions of cell arrays have to match for that
+% Use only selected indices for newly processed data
+% N = length(indSelect);
+indSelect			= [indexStart:1:noEntriesListing];
 cellInfoLine		= {'MRS Data File' 'SNR' 'FWHM / Hz' 'Phase0 LW_Peak / deg'};	% Yields 1x4 cell array
-cellDataFileNames	= {structFileListing(:).name}';						% Yields Nx1 cell array	
-cellData			= [cellDataFileNames num2cell([SNR FWHM phase0])];	% Yields Nx4 cell array
-cellInfoAndData		= [cellInfoLine; cellData];							% Yields (N+1)x4 cell array
+cellDataFileNames	= {structFileListing(indSelect).name}';							% Yields Nx1 cell array	
+cellData			= [cellDataFileNames num2cell([SNR(indSelect) FWHM(indSelect) phase0(indSelect)])]; % Yields Nx4 cell array
+cellInfoAndData		= [cellInfoLine; cellData];										% Yields (N+1)x4 cell array
 
 
 %% Save results from SNR and LW measurements to file, if selected
@@ -259,8 +283,16 @@ if bSaveResults
 	% File type depends on chosen file extension: .xlsx is Excel spreadsheet and .txt is
 	% text file
 	fprintf('Saving results for SNR and LW measurenents to file ...\n\n');
-	writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
-		'WriteMode', 'inplace', 'AutoFitWidth', 1, 'Range', strRangeSel)
+	if ~bProcessNewFiles
+		% All MRS data, thus cell array with info and results
+		writecell( cellInfoAndData, fullfile(outDirString_In, outFileName), ...
+			'WriteMode', 'inplace', 'AutoFitWidth', bAutoFitWidth, 'Range', strRangeSel);
+	else
+		% Only newly processed MRS data, thus append cell array only with info results
+		writecell( cellData, fullfile(outDirString_In, outFileName), ...
+			'WriteMode', 'inplace', 'AutoFitWidth', bAutoFitWidth, 'Range', strRangeSel);
+		%'WriteMode', 'append', 'AutoFitWidth', 1);
+	end		% End of if ~bProcessNewFiles
 end		% End of if bSaveResults
 
 
