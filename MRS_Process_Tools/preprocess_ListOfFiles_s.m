@@ -25,6 +25,11 @@ fprintf('\n\n');
 configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
+% Set addition to starting index into list of files to be preprocessed; 
+% indexAdd				= 0;	% To start with first file in list of files
+% indexAdd				= n;	% To start with (n+1)th file in list of files
+indexAdd				= 37;
+
 % Extract parameter settings from parameter struct
 filename_In				= sParamsMRS_struct.filename;
 filename_w_In			= sParamsMRS_struct.filename_w;
@@ -463,7 +468,7 @@ switch seqType_MRS
 		% Select size for stepping through indices, i.e. list of files (.dat) or list of
 		% directoried (.IMA), depending on data type, i.e. how many different signals 
 		% (spectra and/or water signals) are included
-		indexStart		= 1;
+		indexStart		= 1 + indexAdd;
 		indexStep		= 2;	% Default for sLASER spectrum with one water signal
 		switch dataType_MRS
 			case {'mrs_w', 'mrs_w_ref'}
