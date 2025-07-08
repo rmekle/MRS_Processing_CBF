@@ -73,9 +73,9 @@
 %					removal of bad averages should be performed or not. Default is 'y'.
 % noSD		   = (Optional) ['StandardDeviation'] # of standard deviations for bad average
 %					removal. Default value is 3.2.
-% strSpecReg   = (Optional) ['SpectralRegistrationID'] Character array that specifies ID,
-%					i.e. name, of spectral registration (drift correction) that might be 
-%					performed to distinguish results. Default is 'SR00'.
+% strFreqPhaseCorr = (Optional) ['FreqPhaseCorrectionID'] Character array that specifies 
+%					ID, i.e. name of frequency and phase (drift) correction technique that
+%					might be performed; used to distinguish results. Default is 'SR00'.
 % driftCorr	   = (Optional) ['DriftCorrection'] Character array that specifies whether 
 %					spectral registration (drift correction) should be performed or not. 
 %					Default is 'y'.
@@ -131,7 +131,7 @@
 % out_ref_Quant_noproc	= Water reference signal(s) for Quant without preprocessing
 %
 %
-% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2021, 2022, 2023, 2024;
+% Ralf Mekle, Charite Universitätsmedizin Berlin, Germany, 2021, 2022, 2023, 2024, 2025;
 % Ivo Opitz, Charite Universitätsmedizin Berlin, Germany, 2022;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -156,7 +156,7 @@ arguments
 	options.avgBlockSize			(1,1) {mustBeNonnegative}   = 0
 	options.RemoveBadAverages		{mustBeMember(options.RemoveBadAverages,{'y', 'Y', 'n', 'N'})} = 'y'
     options.noStandardDeviation     (1,1) double				= 3.2
-	options.SpectralRegistrationID	{mustBeText} = 'SR00'
+	options.FreqPhaseCorrectionID	{mustBeText} = 'SR00'
 	options.DriftCorrection			{mustBeMember(options.DriftCorrection,{'y', 'Y', 'n', 'N'})} = 'y'
 	options.Iterations				(1,1) {mustBeNumeric}   = 20
     options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
@@ -187,8 +187,8 @@ end
 	end
 	avgBlockSize			= options.avgBlockSize;
 	rmbadav					= options.RemoveBadAverages;
-    noSD						= options.noStandardDeviation;
-	strSpecReg				= options.SpectralRegistrationID;
+    noSD					= options.noStandardDeviation;
+	strFreqPhaseCorr		= options.FreqPhaseCorrectionID;
 	driftCorr				= options.DriftCorrection;
 	iterin					= options.Iterations;
     aaDomain				= options.aaDomain;
@@ -700,7 +700,7 @@ switch seqType
 		% Include information about # of standard deviations for removal of bad averages
 		% and about spectral registration
 		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', noSD)];
-		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', noSD), '_', strSpecReg];
+		%outFileName				= [nameSpec, '_', strOVS, sprintf('_%.1f', noSD), '_', strFreqPhaseCorr];
 		digits_SD				= [fix(noSD) round(abs(noSD-fix(noSD))*10)];
 		if strcmpi(rmbadav, 'y')	% Case-insensitive strcmp
 			strAdd_1		= sprintf('%d_%d', digits_SD(1), digits_SD(2));
@@ -708,7 +708,7 @@ switch seqType
 			strAdd_1		= 'NoRM';
 		end		% End of if strcmpi(rmbadav, 'y')
 		if strcmpi(driftCorr, 'y')	% Case-insensitive strcmp
-			strAdd_2		= strSpecReg;
+			strAdd_2		= strFreqPhaseCorr;
 		else
 			strAdd_2		= 'NoSR';
 		end		% End of if strcmpi(driftCorr, 'y')
