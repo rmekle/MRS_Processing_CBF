@@ -317,6 +317,103 @@ switch config
 		paramsMRS_struct.reportSwitch			= 1;
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
 
+	case 'config_Test_seqType_VOI_ext_MRS_lsN_SDx_y_FreqPhaseCorr_bECC'
+		% Test configuration
+		% MR spectra in format fileExt processed using frequency and phase correction
+		%paramsMRS_struct.dirString_In			= '';
+		%paramsMRS_struct.dirString_Out			= '';
+		%paramsMRS_struct.filename				= '';
+		%paramsMRS_struct.filename_w				= '';
+		paramsMRS_struct.strStudy_MRS			= '3T_Test';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
+		paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+		paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+		paramsMRS_struct.fileExt_MRS			= 'IMA';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+		paramsMRS_struct.dataType_MRS			= 'mrs_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
+		paramsMRS_struct.signals_MRS			= 'Spectra';	% 'MMs';	% 'Spectra';
+		paramsMRS_struct.strOVS					= 'wOVS';		% 'wOVS';	% 'woutOVS';
+		paramsMRS_struct.strOVS_w				= 'wOVS';	% 'wOVS';	% 'woutOVS';
+		paramsMRS_struct.leftshift				= 1;			% 3;	% 2;	% 0;	% 1;
+		paramsMRS_struct.avgBlockSize			= 0;			% 0;	2;		4;		8;		16;
+		
+		% Info about processing tool(s) mainly used
+		paramsMRS_struct.strProcessTool			= 'FID-A';
+
+		% Parameters for removal of bad averages
+		paramsMRS_struct.rmbadav				= 'y';			% 'y';		'n';
+		paramsMRS_struct.noSD					= 3.0;			% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
+		%paramsMRS_struct.digits_noSD_In		= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+
+		% Parameters for aligning of averages/frequency and phase drift correction using
+		% one of the following techniques:
+		%	Spectral registration	performed in either frequency or time domain or
+		%	Cross-Correlation		performed in frequency domain
+		%paramsMRS_struct.strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
+		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';	
+		paramsMRS_struct.driftCorr				= 'y';		% 'y';		'n';
+		paramsMRS_struct.iterin					= 20;
+		paramsMRS_struct.aaDomain				= 'f';		% 'f';		't';
+		paramsMRS_struct.tmaxin					= 0.2;		% 0.2;		0.1;
+		paramsMRS_struct.bTmaxset				= 1;
+		paramsMRS_struct.ppmOption				= 1;
+		paramsMRS_struct.medin					= 'y';		% 'y';	'n';	'a';	'ref';
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
+		% Set parameters for drift correction depending on type of data, i.e. whether MRS
+		% data is spectrum or water signal
+		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
+		% spectrum is water signal itself; if not, simply align averages in time domain
+		switch paramsMRS_struct.dataType_MRS
+			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+				% MR spectrum is provided together without or with unsuppressed water
+				% signal and/or with reference scans
+				%ppmmin_fix		= 1.6;		% 1.6;		1.8;
+				%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+				%ppmmaxarray_fix	= [2.4,2.85,3.35,4.2,4.4,5.2];
+				switch paramsMRS_struct.ppmOption
+					case 1
+						% For MR spectra
+						paramsMRS_struct.ppmmin_fix			= 1.6;		% 1.6;		1.8;
+						paramsMRS_struct.ppmmaxarray_fix	= [2.4,2.85,3.35,4.2,4.4,5.2];
+					case 2
+						% For MR spectra
+						paramsMRS_struct.ppmmin_fix			= 1.6;
+						paramsMRS_struct.ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+					case 3
+						% For MR spectra using settings for water signals
+						paramsMRS_struct.ppmmin_fix			= 4.2;
+						paramsMRS_struct.ppmmaxarray_fix	= [5.5 5.5 5.2];
+					case 4
+						% Wide range to always include water resonance
+						paramsMRS_struct.ppmmin_fix			= 1.6;
+						paramsMRS_struct.ppmmaxarray_fix	= [5.5 5.5 5.2];
+					case 5
+						% For MMs signals
+						paramsMRS_struct.ppmmin_fix			= 0.2;
+						paramsMRS_struct.ppmmaxarray_fix	= [3.35,4.2,4.4];
+					case 6
+						% For MMs signals
+						paramsMRS_struct.ppmmin_fix			= 0.2;
+						paramsMRS_struct.pmmaxarray_fix_In	= [3.35,4.0,4.1];
+
+					otherwise
+						error('%s: Unknown ppmOption = %d!', sFunctionName, paramsMRS_struct.ppmOption);
+				end			% End of switch paramsMRS_struct.ppmOption
+			case {'water', 'water_ref'}
+				% MR spectrum is water signal itself without or with reference scans
+				paramsMRS_struct.ppmmin_fix			= 4.2;
+				paramsMRS_struct.ppmmaxarray_fix	= [5.5 5.5 5.2];
+
+			otherwise
+				error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, paramsMRS_struct.dataType_MRS);
+		end		% End of switch paramsMRS_struct.dataType_MRS
+
+		% Additional parameter settings
+		paramsMRS_struct.bECC					= 1;
+		paramsMRS_struct.bPhaseCorrFreqShift	= 0;
+		paramsMRS_struct.strMinUserIn			= 'y';
+		paramsMRS_struct.plotSwitch				= 0;
+		paramsMRS_struct.reportSwitch			= 1;
+		paramsMRS_struct.bPrep_MetabQuant		= 1;
+
 	otherwise
 		error('%s: ERROR: Unknown configuration %s!', sFunctionName, config);
 end		% End of switch config
