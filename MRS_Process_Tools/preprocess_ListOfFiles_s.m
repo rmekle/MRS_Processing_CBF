@@ -52,7 +52,8 @@ rmbadav_In				= sParamsMRS_struct.rmbadav;
 noSD_In					= sParamsMRS_struct.noSD;
 %digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
-% Parameters for aligning of averages/frequency and phase drift correction that can be 
+% Parameters for aligning of averages/frequency and phase drift correction using
+% one of the following techniques:
 %	Spectral registration	performed in either frequency or time domain or
 %	Cross-Correlation		performed in frequency domain 
 % strFreqPhaseCorr_In is used to distinguish settings for frequency and phase correction
