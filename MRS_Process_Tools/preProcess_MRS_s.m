@@ -104,8 +104,8 @@
 % bECC 		   = (Optional) ['ECC'] Boolean that specifies whether eddy current correction
 %					 (ECC) should be performed or not. Default is 0.
 % bPhaseCorrFreqShift = (Optional) ['PhaseFrequencyCorrection'] Boolean that specifies 
-%					whether phase correction and frequency shifting should be performed 
-%					or not. Default is 0.
+%					whether (automatic) phase correction and frequency shifting should be 
+%					performed or not. Default is 0.
 % strMinUserIn = (Optional) ['MinimizeUserInput'] String that specifies whether user 
 %					input/interaction should be minimized or not; 'y' or 'Y' lead to 
 %					minimization, 'n' or 'N' do not. Default is 'y'.
