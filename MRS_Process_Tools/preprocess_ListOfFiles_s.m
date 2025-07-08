@@ -55,8 +55,8 @@ noSD_In					= sParamsMRS_struct.noSD;
 % Parameters for aligning of averages/frequency and phase drift correction that can be 
 %	Spectral registration	performed in either frequency or time domain or
 %	Cross-Correlation		performed in frequency domain 
-%strSpecReg_In			= sParamsMRS_struct.strSpecReg;	% To distinguish settings for spectral registration
 % strFreqPhaseCorr_In is used to distinguish settings for frequency and phase correction
+%strSpecReg_In			= sParamsMRS_struct.strSpecReg;	% To distinguish settings for spectral registration
 strFreqPhaseCorr_In		= sParamsMRS_struct.strFreqPhaseCorr;	
 driftCorr_In			= sParamsMRS_struct.driftCorr;
 iterin_In				= sParamsMRS_struct.iterin;
