@@ -157,9 +157,11 @@ switch config
 		paramsMRS_struct.rmbadav				= 'y';
 		paramsMRS_struct.noSD					= 3.0;
 
-		% Parameters for spectral registration (aligning of averages/frequency and phase 
-		% drift correction) performed in either frequency or time domain
-		paramsMRS_struct.strSpecReg				= 'SR1';
+		% Parameters for aligning of averages/frequency and phase drift correction using
+		% one of the following techniques:
+		%	Spectral registration	performed in either frequency or time domain or
+		%	Cross-Correlation		performed in frequency domain
+		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';	
 		paramsMRS_struct.driftCorr				= 'y';
 		paramsMRS_struct.iterin					= 20;
 		paramsMRS_struct.aaDomain				= 'f';
@@ -245,9 +247,11 @@ switch config
 		paramsMRS_struct.rmbadav				= 'y';
 		paramsMRS_struct.noSD					= 3.0;
 
-		% Parameters for spectral registration (aligning of averages/frequency and phase 
-		% drift correction) performed in either frequency or time domain
-		paramsMRS_struct.strSpecReg				= 'SR1';
+		% Parameters for aligning of averages/frequency and phase drift correction using
+		% one of the following techniques:
+		%	Spectral registration	performed in either frequency or time domain or
+		%	Cross-Correlation		performed in frequency domain
+		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';	
 		paramsMRS_struct.driftCorr				= 'y';
 		paramsMRS_struct.iterin					= 20;
 		paramsMRS_struct.aaDomain				= 'f';
