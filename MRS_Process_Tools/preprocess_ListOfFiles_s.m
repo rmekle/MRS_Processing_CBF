@@ -22,13 +22,13 @@ fprintf('\n\n');
 
 %% Init input parameters for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
+configSel				= 'config_Test_seqType_VOI_ext_MRS_lsN_SDx_y_FreqPhaseCorr_bECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
 % Set addition to starting index into list of files to be preprocessed; 
 % indexAdd				= 0;	% To start with first file in list of files
 % indexAdd				= n;	% To start with (n+1)th file in list of files
-indexAdd				= 37;
+indexAdd				= 0;
 
 % Extract parameter settings from parameter struct
 filename_In				= sParamsMRS_struct.filename;
