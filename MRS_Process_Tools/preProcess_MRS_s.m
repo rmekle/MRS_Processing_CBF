@@ -1109,8 +1109,11 @@ switch seqType
 				out_ref_ECC_aa		= op_alignAverages(out_ref_ECC_cc,0.2,'n'); 
 				out_ref_Quant_aa	= op_alignAverages(out_ref_Quant_cc,0.2,'n'); 
 			end
+			% Initialize random number generator to get same results each time for tmax, 
+			% ppmmin, and ppmmax
+			rng('default');
 			sat			= 'n';
-			out_rm2		= out_rm;
+			out_rm2		= out_rm;			
 			while sat=='n' || sat=='N'
 				fsPoly		= 100;
 				phsPoly		= 1000;
@@ -1151,7 +1154,7 @@ switch seqType
 							% Perform alignment of averages in time domain
 							% either using a given value for tmax or let tmax be
 							% calculated in op_AlignAverages (which also requires that
-							% median alignemnt of averages is set in op_AlignAverages)
+							% median alignment of averages is set in op_AlignAverages)
 							if bTmaxSet == 1
 								% Use given tmax
 								%[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
@@ -1183,6 +1186,28 @@ switch seqType
 					iter			= iter+1;
 				end		% End of while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
 				
+				% For automatic batch processing set satisfaction variable to 'y' to end
+				% while loop; then the following conditioned statements are never executed
+				sat='y';
+				if sat=='n'
+					iter		= 0;
+					p1			= 100;
+					fscum		= zeros(out_rm.sz(2:end));
+					phscum		= zeros(out_rm.sz(2:end));
+					out_rm2		= out_rm;
+					% Not used
+					%fs2cum		= zeros(out_cc.sz(2:end));
+					%phs2cum		= zeros(out_cc.sz(2:end));
+					%out_cc2		= out_cc;
+				end
+				% Calculate total frequency and phase drifts 
+				% as mean of (maximum - minimum) (like in all FID-A example scripts)
+				% as sum of frequency and phase drifts (= net drifts)
+				totalFreqDrift		= mean(max(fscum)-min(fscum));
+				totalPhaseDrift		= mean(max(phscum)-min(phscum));
+				totalFreqDrift_net	= sum(fscum);
+				totalPhaseDrift_net	= sum(phscum);
+
 				% Only display figure(s), if selected
 				if plotSwitch == 1
 					h5	= figure('position',[fig_left fig_bottom fig_width fig_height]);
@@ -1274,25 +1299,12 @@ switch seqType
 					saveas(h7,[outDirString reportFigDirStr 'phaseDriftFig'],'jpg');
 					saveas(h7,[outDirString reportFigDirStr 'phaseDriftFig'],'fig');
 				end
+				% Close figures for aligning averages/frequency and phase correction
 				close(h7);
 				close(h6);
 				close(h5);
 				close(h5_2);
-				
-				sat='y';
-				if sat=='n'
-					iter		= 0;
-					p1			= 100;
-					fscum		= zeros(out_rm.sz(2:end));
-					phscum		= zeros(out_rm.sz(2:end));
-					fs2cum		= zeros(out_cc.sz(2:end));
-					phs2cum		= zeros(out_cc.sz(2:end));
-					out_rm2		= out_rm;
-					out_cc2		= out_cc;
-				end
-				totalFreqDrift		= mean(max(fscum)-min(fscum));
-				totalPhaseDrift		= mean(max(phscum)-min(phscum));
-				close all
+				%close all
 			end		% End of while sat=='n' || sat=='N'
 			
 			% Now average the aligned averages
@@ -1909,6 +1921,8 @@ switch seqType
 			% Adjust directory information and name report according to each case
 			% Use relative paths from directory of html report to figure files, so that html
 			% report can be opened on any computer/browser
+			% Define tab string, since multiple tabs and white spaces are ignored by html
+			tabStr			= '&nbsp;&nbsp;&nbsp;&nbsp;';
 			%fid2			= fopen(fullfile(outDirString, reportDirStr, 'report.html'),'w+');
 			fid2			= fopen(fullfile(outDirString, reportDirStr, [outFileName '_report' '.html']),'w+');
 			fprintf(fid2,'<!DOCTYPE html>');
@@ -1985,8 +1999,8 @@ switch seqType
 			% actually performed, i.e. it was selected and dimension of averages existed
 			if (driftCorr=='y' || driftCorr=='Y') && out_rm.dims.averages > 0
 				fprintf(fid2,'\n\n<h2>Results of spectral registration:</h2>');
-				fprintf(fid2,'\n<p>Total frequency drift was: \t%5.6f </p>',max(totalFreqDrift));
-				fprintf(fid2,'\n<p>Total phase drift was: \t%5.6f </p>',max(totalPhaseDrift));
+				fprintf(fid2,'\n<p>Total frequency drift = max(mean(max-min)) was: \t%5.6f %s%s%s Net frequency drift = sum(freq. drifts) = %5.6f</p>',max(totalFreqDrift),tabStr,tabStr,tabStr,totalFreqDrift_net);
+				fprintf(fid2,'\n<p>Total phase drift = max(mean(max-min)) was: \t%5.6f %s%s%s Net phase drift = sum(phase drifts) = %5.6f</p>',max(totalPhaseDrift),tabStr,tabStr,tabStr,totalPhaseDrift_net);
 				%fprintf(fid2,'\n<img src= " %s%salignAvgs_prePostFig.jpg " width="800" height="600">', outDirString, reportFigDirStr);
 				%fprintf(fid2,'\n<img src= " %s " width="800" height="600">', fullfile('./figs/','alignAvgs_prePostFig.jpg'));
 				fprintf(fid2,'\n<img src= " %s " width="800" height="600"><img src= " %s " width="800" height="600">', fullfile('./figs/','alignAvgs_prePostFig.jpg'), fullfile('./figs/','alignAvgs_prePostFig_Limits_2.jpg'));
