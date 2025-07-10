@@ -1101,112 +1101,123 @@ switch seqType
 			phs			= 0;
 		else
 			% Perform drift correction (alignment of averages)
-			if with_water
-				%out_w_aa		= op_alignAverages(out_w_cc,tmaxin,'n');
-				out_w_aa			= op_alignAverages(out_w_cc,0.2,'n');
-			end
-			if with_ref
-				out_ref_ECC_aa		= op_alignAverages(out_ref_ECC_cc,0.2,'n'); 
-				out_ref_Quant_aa	= op_alignAverages(out_ref_Quant_cc,0.2,'n'); 
-			end
-			% Initialize random number generator to get same results each time for tmax, 
-			% ppmmin, and ppmmax
-			rng('default');
-			sat			= 'n';
-			out_rm2		= out_rm;			
-			while sat=='n' || sat=='N'
-				fsPoly		= 100;
-				phsPoly		= 1000;
-				fscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
-				phscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
-				iter		= 1;
-				while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
-					fprintf(1, 'Drift correction by aligning averages: iteration iter = %d\n', iter);
-					%iter			= iter+1
-					close all
-					%tmax			= 0.25+0.03*randn(1);
-					%ppmmin			= 1.6+0.1*randn(1);
-					%ppmmaxarray	= [3.5+0.1*randn(1,2),4+0.1*randn(1,3),5.5+0.1*randn(1,1)];
-					%ppmmax			= ppmmaxarray(randi(6,1));
-					%tmax			= tmaxin+0.03*randn(1);	 % From run_pressProc_auto.m
-					tmax			= tmaxin+0.04*randn(1);  % From run_specialProc_auto.m
-					ppmmin			= ppmmin_fix+0.1*randn(1);
-					switch noVals_ppmmax_fix
-						case 3
-							% Generate array of ppmmax values using random number variations
-							ppmmaxarray		= [ppmmaxarray_fix(1)+0.1*randn(1,2),ppmmaxarray_fix(2)+0.1*randn(1,3),ppmmaxarray_fix(3)+0.1*randn(1,1)];
-						case 6
-							% Generate array of ppmmax values using given values
-							ppmmaxarray		= ppmmaxarray_fix;
-
-						otherwise
-							error('%s: No option for noVals_ppmmax_fix = %d!', sFunctionName, noVals_ppmmax_fix);
-					end		% End of switch noVals_ppmmax_fix
-					% Select value for ppmmax used in this iteration
-					iamax			= length(ppmmaxarray);
-					ppmmax			= ppmmaxarray(randi(iamax,1));
-					fprintf('\n');
-					fprintf('ppmmaxarray = [%s]\n', join(string(ppmmaxarray), ' '));
-					fprintf('ppmmin = %f \t ppmmax = %f\n\n\n', ppmmin, ppmmax);					
-					
-					switch aaDomain
-						case 't'
-							% Perform alignment of averages in time domain
-							% either using a given value for tmax or let tmax be
-							% calculated in op_AlignAverages (which also requires that
-							% median alignment of averages is set in op_AlignAverages)
-							if bTmaxSet == 1
-								% Use given tmax
-								%[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
-								[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,medin);
-							else
-								[out_aa,fs,phs]		= op_alignAverages(out_rm2);
-							end
-						case 'f'
-							% Perform alignment of averages in frequency domain
-							%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
-							[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,medin);
-
-						otherwise
-							error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
+			% either using spectral registration or
+			% cross-correlation
+			switch strFreqPhaseCorr
+				case {'SR1', 'SR2', 'SR3', 'SR4'}
+					fprintf('Aligning of averages aka frequency and phase drift correction using spectral registration ...\n\n');
+					if with_water
+						%out_w_aa		= op_alignAverages(out_w_cc,tmaxin,'n');
+						out_w_aa			= op_alignAverages(out_w_cc,0.2,'n');
 					end
-					
-					fsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',fs,1)
-					phsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',phs,1)
-					%iter
-					%disp( sprintf('Aligning averages iteration %d', iter) );
-					%fprintf(1, 'Aligning averages iteration %d\n', iter);
-					
-					fscum		= fscum+fs;
-					phscum		= phscum+phs;
-					
-					if driftCorr=='y' || driftCorr=='Y'
-						out_rm2		= out_aa;
+					if with_ref
+						out_ref_ECC_aa		= op_alignAverages(out_ref_ECC_cc,0.2,'n');
+						out_ref_Quant_aa	= op_alignAverages(out_ref_Quant_cc,0.2,'n');
 					end
-					iter			= iter+1;
-				end		% End of while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
-				
-				% For automatic batch processing set satisfaction variable to 'y' to end
-				% while loop; then the following conditioned statements are never executed
-				sat='y';
-				if sat=='n'
-					iter		= 0;
-					p1			= 100;
-					fscum		= zeros(out_rm.sz(2:end));
-					phscum		= zeros(out_rm.sz(2:end));
+					% Initialize random number generator to get same results each time for tmax,
+					% ppmmin, and ppmmax
+					rng('default');
+					sat			= 'n';
 					out_rm2		= out_rm;
-					% Not used
-					%fs2cum		= zeros(out_cc.sz(2:end));
-					%phs2cum		= zeros(out_cc.sz(2:end));
-					%out_cc2		= out_cc;
-				end
-				% Calculate total frequency and phase drifts 
-				% as mean of (maximum - minimum) (like in all FID-A example scripts)
-				% as sum of frequency and phase drifts (= net drifts)
-				totalFreqDrift		= mean(max(fscum)-min(fscum));
-				totalPhaseDrift		= mean(max(phscum)-min(phscum));
-				totalFreqDrift_net	= sum(fscum);
-				totalPhaseDrift_net	= sum(phscum);
+					while sat=='n' || sat=='N'
+						fsPoly		= 100;
+						phsPoly		= 1000;
+						fscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
+						phscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
+						iter		= 1;
+						while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
+							fprintf(1, 'Drift correction by aligning averages: iteration iter = %d\n', iter);
+							%iter			= iter+1
+							close all
+							%tmax			= 0.25+0.03*randn(1);
+							%ppmmin			= 1.6+0.1*randn(1);
+							%ppmmaxarray	= [3.5+0.1*randn(1,2),4+0.1*randn(1,3),5.5+0.1*randn(1,1)];
+							%ppmmax			= ppmmaxarray(randi(6,1));
+							%tmax			= tmaxin+0.03*randn(1);	 % From run_pressProc_auto.m
+							tmax			= tmaxin+0.04*randn(1);  % From run_specialProc_auto.m
+							ppmmin			= ppmmin_fix+0.1*randn(1);
+							switch noVals_ppmmax_fix
+								case 3
+									% Generate array of ppmmax values using random number variations
+									ppmmaxarray		= [ppmmaxarray_fix(1)+0.1*randn(1,2),ppmmaxarray_fix(2)+0.1*randn(1,3),ppmmaxarray_fix(3)+0.1*randn(1,1)];
+								case 6
+									% Generate array of ppmmax values using given values
+									ppmmaxarray		= ppmmaxarray_fix;
+
+								otherwise
+									error('%s: No option for noVals_ppmmax_fix = %d!', sFunctionName, noVals_ppmmax_fix);
+							end		% End of switch noVals_ppmmax_fix
+							% Select value for ppmmax used in this iteration
+							iamax			= length(ppmmaxarray);
+							ppmmax			= ppmmaxarray(randi(iamax,1));
+							fprintf('\n');
+							fprintf('ppmmaxarray = [%s]\n', join(string(ppmmaxarray), ' '));
+							fprintf('ppmmin = %f \t ppmmax = %f\n\n\n', ppmmin, ppmmax);
+
+							switch aaDomain
+								case 't'
+									% Perform alignment of averages in time domain
+									% either using a given value for tmax or let tmax be
+									% calculated in op_AlignAverages (which also requires that
+									% median alignment of averages is set in op_AlignAverages)
+									if bTmaxSet == 1
+										% Use given tmax
+										%[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
+										[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,medin);
+									else
+										[out_aa,fs,phs]		= op_alignAverages(out_rm2);
+									end
+								case 'f'
+									% Perform alignment of averages in frequency domain
+									%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
+									[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,medin);
+
+								otherwise
+									error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
+							end
+
+							fsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',fs,1)
+							phsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',phs,1)
+							%iter
+							%disp( sprintf('Aligning averages iteration %d', iter) );
+							%fprintf(1, 'Aligning averages iteration %d\n', iter);
+
+							fscum		= fscum+fs;
+							phscum		= phscum+phs;
+
+							if driftCorr=='y' || driftCorr=='Y'
+								out_rm2		= out_aa;
+							end
+							iter			= iter+1;
+						end		% End of while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
+
+						% For automatic batch processing set satisfaction variable to 'y' to end
+						% while loop; then the following conditioned statements are never executed
+						sat='y';
+						if sat=='n'
+							iter		= 0;
+							p1			= 100;
+							fscum		= zeros(out_rm.sz(2:end));
+							phscum		= zeros(out_rm.sz(2:end));
+							out_rm2		= out_rm;
+							% Not used
+							%fs2cum		= zeros(out_cc.sz(2:end));
+							%phs2cum		= zeros(out_cc.sz(2:end));
+							%out_cc2		= out_cc;
+						end
+						% Calculate total frequency and phase drifts
+						% as mean of (maximum - minimum) (like in all FID-A example scripts)
+						% as sum of frequency and phase drifts (= net drifts)
+						totalFreqDrift		= mean(max(fscum)-min(fscum));
+						totalPhaseDrift		= mean(max(phscum)-min(phscum));
+						totalFreqDrift_net	= sum(fscum);
+						totalPhaseDrift_net	= sum(phscum);
+					case {'spectX1', 'spectX2', 'spectX3', 'spectX4'}
+						fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation ...\n\n');
+					
+					otherwise
+						error('%s: Unknown strFreqPhasecorr = %s!', sFunctionName, strFreqPhaseCorr);
+					end % End of switch strFreqPhaseCorr
 
 				% Only display figure(s), if selected
 				if plotSwitch == 1
