@@ -1,4 +1,4 @@
-function [fidCor,valOut] = spectXcorr(fid,chemicalRange, ref, filterFlag, plotFlag)
+function [fidCor, valOut] = spectXcorr(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq, xnuclOffset)
 %
 %function [fidCor,valOut] = spectXcorr(fid,chemicalRange, ref, filterFlag, plotFlag)
 % Simultaneous phase and frequency estimation using cross-correlation
@@ -7,11 +7,13 @@ function [fidCor,valOut] = spectXcorr(fid,chemicalRange, ref, filterFlag, plotFl
 % Dinesh Deelchand, CMRR, University of Minnesota
 % 24 Oct 2023, 
 % Updated 03 July 2024
+% Edits from Ralf Mekle (RM), Charite, 2025
 %
 % INPUTS:
 %     fid           - signal in time domain with dimension [np, ave]
 %     chemicalRange - chemical shift range to align spectra, default is [1.8 3.6]
-%     refSpec       - use 1st transient (='f') or mean all spectra ('m') as reference, default is 1
+%     ref			- use 1st transient (='f') or mean all spectra ('m') as reference, 
+%						default is 'f'
 %     filterFlag    - apply apodization (LB=5 and GF=0.12) to data before SC, default is off
 %     plotFlag      - plot spectra and offsets, default is 0
 %
@@ -20,7 +22,8 @@ function [fidCor,valOut] = spectXcorr(fid,chemicalRange, ref, filterFlag, plotFl
 %     valOut - vector contains estimated frequency (Hz) and phase offsets (deg)
 %
 
-global sw sfrq1H H1offset
+% RM: Global variables are replaced by additional input arguments
+%global sw sfrq1H H1offset
 
 % check for input parameters 
 if nargin < 1
