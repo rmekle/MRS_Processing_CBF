@@ -1081,8 +1081,8 @@ switch seqType
 		% Determine # of initial values for ppmmax
 		noVals_ppmmax_fix		= length(ppmmaxarray_fix);
 
-		% Do not perform drift correction, if either not selected or if dimension of 
-		% averages does not exist (index for dimension of averages = 0), 
+		% Do not perform drift correction, if either not selected or if dimension of
+		% averages does not exist (index for dimension of averages = 0),
 		% e.g. when data is already averaged
 		%driftCorr		= 'y';
 		%if driftCorr=='n' || driftCorr=='N'
@@ -1105,17 +1105,20 @@ switch seqType
 			% cross-correlation
 			switch strFreqPhaseCorr
 				case {'SR1', 'SR2', 'SR3', 'SR4'}
-					fprintf('Aligning of averages aka frequency and phase drift correction using spectral registration ...\n\n');
+					fprintf('%s: Aligning of averages aka frequency and phase drift correction using spectral registration ...\n\n', sFunctionName);
 					if with_water
+						fprintf('Aligning of averages using spectral registration for unsuppressed water signal(s) ...\n');
 						%out_w_aa		= op_alignAverages(out_w_cc,tmaxin,'n');
 						out_w_aa			= op_alignAverages(out_w_cc,0.2,'n');
 					end
 					if with_ref
+						fprintf('Aligning of averages using spectral registration for water reference signal(s) ...\n');
 						out_ref_ECC_aa		= op_alignAverages(out_ref_ECC_cc,0.2,'n');
 						out_ref_Quant_aa	= op_alignAverages(out_ref_Quant_cc,0.2,'n');
 					end
 					% Initialize random number generator to get same results each time for tmax,
 					% ppmmin, and ppmmax
+					fprintf('\nAligning of averages using spectral registration for MRS signal(s) ...\n');
 					rng('default');
 					sat			= 'n';
 					out_rm2		= out_rm;
@@ -1174,7 +1177,7 @@ switch seqType
 
 								otherwise
 									error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
-							end
+							end		% End of switch aaDomain
 
 							fsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',fs,1)
 							phsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',phs,1)
@@ -1204,120 +1207,123 @@ switch seqType
 							%fs2cum		= zeros(out_cc.sz(2:end));
 							%phs2cum		= zeros(out_cc.sz(2:end));
 							%out_cc2		= out_cc;
-						end
+						end		% End of if sat=='n'
 						% Calculate total frequency and phase drifts
-						% as mean of (maximum - minimum) (like in all FID-A example scripts)
+						% as mean of (maximum-minimum) (like in all FID-A example scripts)
 						% as sum of frequency and phase drifts (= net drifts)
 						totalFreqDrift		= mean(max(fscum)-min(fscum));
 						totalPhaseDrift		= mean(max(phscum)-min(phscum));
 						totalFreqDrift_net	= sum(fscum);
 						totalPhaseDrift_net	= sum(phscum);
-					case {'spectX1', 'spectX2', 'spectX3', 'spectX4'}
-						fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation ...\n\n');
-					
-					otherwise
-						error('%s: Unknown strFreqPhasecorr = %s!', sFunctionName, strFreqPhaseCorr);
-					end % End of switch strFreqPhaseCorr
+					end		% End of while sat=='n' || sat=='N'
+				case {'spectX1', 'spectX2', 'spectX3', 'spectX4'}
+					fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation ...\n\n');
 
-				% Only display figure(s), if selected
-				if plotSwitch == 1
-					h5	= figure('position',[fig_left fig_bottom fig_width fig_height]);
-				else
-					h5	= figure('visible','off');
-				end
-				subplot(1,2,1);
-				%plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim([1 5]);
-				plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim(xLimValues1);
-				set(gca,'FontSize',8);
-				set(gca,'XDir','reverse');
-				xlabel('Frequency (ppm)','FontSize',10);
-				ylabel('Amplitude(a.u.)','FontSize',10);
-				title('Before','FontSize',12);
-				box off;
-				subplot(1,2,2);
-				%plot(out_aa.ppm,real(out_aa.specs(:,:)));xlim([1 5]);
-				plot(out_aa.ppm,real(out_aa.specs(:,:)));xlim(xLimValues1);
-				set(gca,'FontSize',8);
-				set(gca,'XDir','reverse');
-				xlabel('Frequency (ppm)','FontSize',10);
-				ylabel('Amplitude(a.u.)','FontSize',10);
-				title('After','FontSize',12);
-				box off;
-				set(h5,'PaperUnits','centimeters');
-				set(h5,'PaperPosition',[0 0 20 15]);
-				%saveas(h5,[outDirString nameSpec '/report/figs/alignAvgs_prePostFig'],'jpg');
-				%saveas(h5,[outDirString nameSpec '/report/figs/alignAvgs_prePostFig'],'fig');
-				%saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'jpg');
-				%saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'fig');
-				%close(h5);
-				
-				% Copy figure to prepare version with different axis limits
-				% Get handles to all axes of copied figure and readjust limits on x-axis
-				% and set xTick values
-				h5_2		= copyobj(h5, groot);
-				hax5_2		= get(h5_2,'children');
-				set(hax5_2, 'XLim',xLimValues2, 'XTick',xTickValues2 );
+				otherwise
+					error('%s: Unknown strFreqPhasecorr = %s!', sFunctionName, strFreqPhaseCorr);
+			end % End of switch strFreqPhaseCorr
 
-				% Only display figure(s), if selected
-				if plotSwitch == 1
-					h6	= figure('position',[fig_left (fig_bottom+fig_dist_b) fig_width fig_height]);
-				else
-					h6	= figure('visible','off');
-				end
-				plot([1:out_aa.sz(out_aa.dims.averages)],fscum,'.-','LineWidth',2);
-				set(gca,'FontSize',8);
-				xlabel('Scan Number','FontSize',10);
-				ylabel('Frequency Drift [Hz]','FontSize',10);
-				box off;
-				legend('Frequency Drift','Location','SouthEast');
-				legend boxoff;
-				title('Estimated Frequency Drift','FontSize',12);
-				set(h6,'PaperUnits','centimeters');
-				set(h6,'PaperPosition',[0 0 10 10]);
-				%saveas(h6,[outDirString nameSpec '/report/figs/freqDriftFig'],'jpg');
-				%saveas(h6,[outDirString nameSpec '/report/figs/freqDriftFig'],'fig');
-				%saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'jpg');
-				%saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'fig');
-				%close(h6);
-			
-				% Only display figure(s), if selected
-				if plotSwitch == 1
-					h7	= figure('position',[(fig_left+fig_dist_l) fig_bottom fig_width fig_height]);
-				else
-					h7	= figure('visible','off');
-				end
-				plot([1:out_aa.sz(out_aa.dims.averages)],phscum,'.-','LineWidth',2);
-				set(gca,'FontSize',8);
-				xlabel('Scan Number','FontSize',10);
-				ylabel('Phase Drift [Deg.]','FontSize',10);
-				box off;
-				legend('Phase Drift','Location','SouthEast');
-				legend boxoff;
-				title('Estimated Phase Drift','FontSize',12);
-				set(h7,'PaperUnits','centimeters');
-				set(h7,'PaperPosition',[0 0 10 10]);
-				%saveas(h7,[outDirString nameSpec '/report/figs/phaseDriftFig'],'jpg');
-				%saveas(h7,[outDirString nameSpec '/report/figs/phaseDriftFig'],'fig');
-				
-				% Save figures, if report switch is turned ON
-				if reportSwitch == 1
-					saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'jpg');
-					saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'fig');
-					saveas(h5_2,[outDirString reportFigDirStr 'alignAvgs_prePostFig_Limits_2'],'jpg');
-					saveas(h5_2,[outDirString reportFigDirStr 'alignAvgs_prePostFig_Limits_2'],'fig');
-					saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'jpg');
-					saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'fig');
-					saveas(h7,[outDirString reportFigDirStr 'phaseDriftFig'],'jpg');
-					saveas(h7,[outDirString reportFigDirStr 'phaseDriftFig'],'fig');
-				end
-				% Close figures for aligning averages/frequency and phase correction
-				close(h7);
-				close(h6);
-				close(h5);
-				close(h5_2);
-				%close all
-			end		% End of while sat=='n' || sat=='N'
-			
+			% Only display figure(s), if selected
+			if plotSwitch == 1
+				h5	= figure('position',[fig_left fig_bottom fig_width fig_height]);
+			else
+				h5	= figure('visible','off');
+			end
+			subplot(1,2,1);
+			%plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim([1 5]);
+			plot(out_rm.ppm,real(out_rm.specs(:,:)));xlim(xLimValues1);
+			set(gca,'FontSize',8);
+			set(gca,'XDir','reverse');
+			xlabel('Frequency (ppm)','FontSize',10);
+			ylabel('Amplitude(a.u.)','FontSize',10);
+			title('Before','FontSize',12);
+			box off;
+			subplot(1,2,2);
+			%plot(out_aa.ppm,real(out_aa.specs(:,:)));xlim([1 5]);
+			plot(out_aa.ppm,real(out_aa.specs(:,:)));xlim(xLimValues1);
+			set(gca,'FontSize',8);
+			set(gca,'XDir','reverse');
+			xlabel('Frequency (ppm)','FontSize',10);
+			ylabel('Amplitude(a.u.)','FontSize',10);
+			title('After','FontSize',12);
+			box off;
+			set(h5,'PaperUnits','centimeters');
+			set(h5,'PaperPosition',[0 0 20 15]);
+			%saveas(h5,[outDirString nameSpec '/report/figs/alignAvgs_prePostFig'],'jpg');
+			%saveas(h5,[outDirString nameSpec '/report/figs/alignAvgs_prePostFig'],'fig');
+			%saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'jpg');
+			%saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'fig');
+			%close(h5);
+
+			% Copy figure to prepare version with different axis limits
+			% Get handles to all axes of copied figure and readjust limits on x-axis
+			% and set xTick values
+			h5_2		= copyobj(h5, groot);
+			hax5_2		= get(h5_2,'children');
+			set(hax5_2, 'XLim',xLimValues2, 'XTick',xTickValues2 );
+
+			% Only display figure(s), if selected
+			if plotSwitch == 1
+				h6	= figure('position',[fig_left (fig_bottom+fig_dist_b) fig_width fig_height]);
+			else
+				h6	= figure('visible','off');
+			end
+			plot([1:out_aa.sz(out_aa.dims.averages)],fscum,'.-','LineWidth',2);
+			set(gca,'FontSize',8);
+			xlabel('Scan Number','FontSize',10);
+			ylabel('Frequency Drift [Hz]','FontSize',10);
+			box off;
+			legend('Frequency Drift','Location','SouthEast');
+			legend boxoff;
+			title('Estimated Frequency Drift','FontSize',12);
+			set(h6,'PaperUnits','centimeters');
+			set(h6,'PaperPosition',[0 0 10 10]);
+			%saveas(h6,[outDirString nameSpec '/report/figs/freqDriftFig'],'jpg');
+			%saveas(h6,[outDirString nameSpec '/report/figs/freqDriftFig'],'fig');
+			%saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'jpg');
+			%saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'fig');
+			%close(h6);
+
+			% Only display figure(s), if selected
+			if plotSwitch == 1
+				h7	= figure('position',[(fig_left+fig_dist_l) fig_bottom fig_width fig_height]);
+			else
+				h7	= figure('visible','off');
+			end
+			plot([1:out_aa.sz(out_aa.dims.averages)],phscum,'.-','LineWidth',2);
+			set(gca,'FontSize',8);
+			xlabel('Scan Number','FontSize',10);
+			ylabel('Phase Drift [Deg.]','FontSize',10);
+			box off;
+			legend('Phase Drift','Location','SouthEast');
+			legend boxoff;
+			title('Estimated Phase Drift','FontSize',12);
+			set(h7,'PaperUnits','centimeters');
+			set(h7,'PaperPosition',[0 0 10 10]);
+			%saveas(h7,[outDirString nameSpec '/report/figs/phaseDriftFig'],'jpg');
+			%saveas(h7,[outDirString nameSpec '/report/figs/phaseDriftFig'],'fig');
+
+			% Save figures, if report switch is turned ON
+			if reportSwitch == 1
+				saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'jpg');
+				saveas(h5,[outDirString reportFigDirStr 'alignAvgs_prePostFig'],'fig');
+				saveas(h5_2,[outDirString reportFigDirStr 'alignAvgs_prePostFig_Limits_2'],'jpg');
+				saveas(h5_2,[outDirString reportFigDirStr 'alignAvgs_prePostFig_Limits_2'],'fig');
+				saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'jpg');
+				saveas(h6,[outDirString reportFigDirStr 'freqDriftFig'],'fig');
+				saveas(h7,[outDirString reportFigDirStr 'phaseDriftFig'],'jpg');
+				saveas(h7,[outDirString reportFigDirStr 'phaseDriftFig'],'fig');
+			end
+			% Close figures for aligning averages/frequency and phase correction
+			close(h7);
+			close(h6);
+			close(h5);
+			close(h5_2);
+			%close all
+			% If user interaction is included, then user should see display of figures
+			%sat=input('Are you satisfied with the frequency drift correction? ','s');
+			%end		% End of while sat=='n' || sat=='N'
+
 			% Now average the aligned averages
 			out_av		= op_averaging(out_aa);
 			if with_water
@@ -1325,7 +1331,7 @@ switch seqType
 			end
 			if with_ref
 				out_ref_ECC_av		= op_averaging(out_ref_ECC_aa);
-				out_ref_Quant_av	= op_averaging(out_ref_Quant_aa); 
+				out_ref_Quant_av	= op_averaging(out_ref_Quant_aa);
 			end
 		end		% End of if driftCorr=='n' || driftCorr=='N' || out_rm.dims.averages == 0
 		
