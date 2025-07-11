@@ -14,18 +14,9 @@
 % 
 % INPUTS:
 % in        = Input data structure.
-% minppm	= Minimum of frequency range (ppm).
-% maxppm	= Maximum of frequnecy range (ppm).
-% med       = Align averages to the median of the averages? ('y','n', 'a' or 
-%             'r').  If you select 'n', all averages will be aligned to a 
-%             single average.  The average chosen as the reference 
-%             average will be the one with the lowest 'unlikeness' metric 
-%             (see 'op_rmbadaverages.m').  If you select 'y', all
-%             averages will be aligned to the median of the averages.  If
-%             you select 'a', all averages will be aligned to the average
-%             of the averages.  If you select 'r', all averages will be 
-%             aligned to an externally provided reference spectrum.
-% ref       = An externally provided reference spectrum that you would like
+% minppmSC	= Minimum of frequency range (ppm).
+% maxppmSC	= Maximum of frequency range (ppm).
+% refSC     = An externally provided reference spectrum that you would like
 %             to align everything to (Required only if med = 'r').  
 %
 % OUTPUTS:
