@@ -1,11 +1,12 @@
-% op_alignAverages_fd.m
+% op_alignAverages_spectXcorr_s.m
 % Jamie Near, McGill University 2014.
+% Edits from Ralf Mekle (RM), Charite, 2025.
 % 
 % USAGE:
-% [out,fs,phs]=op_alignAverages_fd(in,minppm,maxppm,tmax,med,ref);
+% [out,fs,phs] = op_alignAverages_spectXcorr_s(in,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,X_nuclOffset);
 % 
 % DESCRIPTION:
-% Perform time-domain spectral registration using a limited range of
+% Perform frequency-domain spectral cross-correlation using a limited range of
 % frequencies to correct frequency and phase drifts.  As described in Near
 % et al.  Frequency and phase drift correction of magnetic resonance 
 % spectroscopy data by spectral registration in the time domain. Magn Reson 
@@ -15,7 +16,6 @@
 % in        = Input data structure.
 % minppm	= Minimum of frequency range (ppm).
 % maxppm	= Maximum of frequnecy range (ppm).
-% tmax      = Maximum time (s) in time domain to use for alignment.
 % med       = Align averages to the median of the averages? ('y','n', 'a' or 
 %             'r').  If you select 'n', all averages will be aligned to a 
 %             single average.  The average chosen as the reference 
@@ -33,77 +33,59 @@
 % fs        = Vector of frequency shifts (in Hz) used for alignment.
 % phs       = Vector of phase shifts (in degrees) used for alignment.
 
-function [out,fs,phs]=op_alignAverages_fd(in,minppm,maxppm,tmax,med,ref)
+function [out,fs,phs] = op_alignAverages_spectXcorr_s(in,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,X_nuclOffset)
 
+%% Set string for name of routine and display blank lines for enhanced output visibility
+sFunctionName		= 'op_alignAverages_spectXcorr_s';
+
+
+%% Check on MRS input data and input arguments
+% Check whether MRS input data have already been coil combined
 if ~in.flags.addedrcvrs
     error('ERROR:  I think it only makes sense to do this after you have combined the channels using op_addrcvrs.  ABORTING!!');
 end
 
-if nargin<6
-    ref=struct();
-    if nargin<5
-        med='y';
-    elseif (strcmp(med,'r') || strcmp(med,'R'))
-        error('ERROR:  If using the ''r'' option for input variable ''med'', then a 6th input argument must be provided');
-    end
+% Check on (missing) input arguments and assign default values
+maxNargin	= 7;
+if nargin<maxNargin
+	% Default value for 1H
+	X_nuclOffset	= 4.65;
+	if nargin<(maxNargin-1)
+		plotFlagSC = 0;
+		if nargin<(maxNargin-2)
+			filterFlagSC = 0;
+			if nargin<(maxNargin-3)
+				refSC = 'f';
+				if nargin<(maxNargin-4)
+					maxppmSC = 3.6;
+					if nargin<(maxNargin-5)
+						minppmSC = 1.8;
+						if nargin<(maxNargin-6)
+							error('%s: MRS input data missing. Aborting!', sFunctionName)
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
-parsFit=[0,0];
-
+% Determine whether MRS data contains subspectra
 if in.dims.subSpecs==0
     B=1;
 else
     B=in.sz(in.dims.subSpecs);
 end
 
-fs=zeros(in.sz(in.dims.averages),B);
-phs=zeros(in.sz(in.dims.averages),B);
-fids=zeros(in.sz(in.dims.t),1,B);
-for m=1:B
-    if med=='y' || med=='Y'
-        disp('Aligning all averages to the Average of the averages.');
-        base=op_averaging(in);
-        base=op_freqrange(base,minppm,maxppm);
-        base=[real(base.fids(base.t>=0 & base.t<tmax,m));imag(base.fids(base.t>=0 & base.t<tmax,m))];
-        ind_min=0;
-    elseif med=='n' || med=='N'
-        %First find the average that is most similar to the total average:
-        inavg=op_median(in);
-        for k=1:in.sz(in.dims.averages)
-            for l=1:B
-                metric(k,l)=sum((real(in.fids(in.t>=0 & in.t<=tmax,k,l))-(real(inavg.fids(inavg.t>=0 & inavg.t<=tmax,l)))).^2);
-            end
-        end
-        [temp,ind_min]=min(metric(:,m));
-        
-        %Now set the base function using the index of the most similar
-        %average:
-        disp(['Aligning all averages to average number ' num2str(ind_min) '.']);
-        base=op_freqrange(in,minppm,maxppm);
-        base=[real(base.fids(base.t>=0 & base.t<tmax,ind_min,m));imag(base.fids(base.t>=0 & base.t<tmax,ind_min,m))];
-        fids(:,ind_min,m)=in.fids(:,ind_min,m);
-    elseif med=='r' || med=='R'
-        disp('Aligning all averages to an externally provided reference spectrum.');
-        base=ref;
-        base=op_freqrange(base,minppm,maxppm);
-        base=[real(base.fids(base.t>=0 & base.t<tmax,m));imag(base.fids(base.t>=0 & base.t<tmax,m))];
-        ind_min=0;
-    end
-    for n=1:in.sz(in.dims.averages)
-        if n~=ind_min
-            parsGuess=parsFit;
-            %parsGuess(1)=parsGuess(1);
-            %disp(['fitting subspec number ' num2str(m) ' and average number ' num2str(n)]);
-            datarange=op_freqrange(in,minppm,maxppm);
-            start=datarange.fids(datarange.t>=0 & datarange.t<tmax,n,m);
-            parsFit=nlinfit(start,base,@op_freqPhaseShiftComplexRangeNest,parsGuess);
-            fids(:,n,m)=op_freqPhaseShiftNest(parsFit,in.fids(:,n,m));
-            fs(n,m)=parsFit(1);
-            phs(n,m)=parsFit(2);
-            %plot(in.ppm,fftshift(ifft(fids(:,1,m))),in.ppm,fftshift(ifft(fids(:,n,m))));
-        end
-    end
-end
+% Allocate arrays for frequency and phase shifts and extract FIDs in time domain for one
+% subspectrum and for all time points and all averages
+% Perform frequency and phase drift correction using spectral corss-correlation 
+fs		= zeros(in.sz(in.dims.averages),B);
+phs		= zeros(in.sz(in.dims.averages),B);
+fids	= zeros(in.sz(in.dims.t),in.dims.averages,B);
+for m=1:1:B
+    fids(:,:,m)	= in.fids(:,:,m);
+end		% End of for m=1:1:B
 
 
 %re-calculate Specs using fft
