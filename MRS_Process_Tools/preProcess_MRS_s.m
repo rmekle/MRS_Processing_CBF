@@ -1194,9 +1194,16 @@ switch seqType
 							iter			= iter+1;
 						end		% End of while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
 
-						% For automatic batch processing set satisfaction variable to 'y' to end
-						% while loop; then the following conditioned statements are never executed
-						sat='y';
+						% For automatic batch processing set satisfaction variable to 'y' 
+						% to end while loop; then the subsequent conditioned statements 
+						% are never executed
+						% If user interaction is included, then user should see display 
+						% of results from spectral registration before deciding						
+						if strcmp(strMinUserIn), 'y') 
+							sat='y';
+						else
+							sat=input('Are you satisfied with the frequency drift correction? ','s');
+						end		% End of if strcmp(strMinUserIn, 'y')
 						if sat=='n'
 							iter		= 0;
 							p1			= 100;
@@ -1320,8 +1327,6 @@ switch seqType
 			close(h5);
 			close(h5_2);
 			%close all
-			% If user interaction is included, then user should see display of figures
-			%sat=input('Are you satisfied with the frequency drift correction? ','s');
 			%end		% End of while sat=='n' || sat=='N'
 
 			% Now average the aligned averages
