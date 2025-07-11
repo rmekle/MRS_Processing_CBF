@@ -70,6 +70,8 @@ if nargin<maxNargin
 	end
 end
 
+
+%% Perform frequency and phase drift correction using spectral cross-correlation 
 % Determine whether MRS data contains subspectra
 if in.dims.subSpecs==0
     B=1;
@@ -79,18 +81,20 @@ end
 
 % Allocate arrays for frequency and phase shifts and extract FIDs in time domain for one
 % subspectrum and for all time points and all averages
-% Perform frequency and phase drift correction using spectral corss-correlation 
 fs		= zeros(in.sz(in.dims.averages),B);
 phs		= zeros(in.sz(in.dims.averages),B);
 fids	= zeros(in.sz(in.dims.t),in.dims.averages,B);
 for m=1:1:B
-    fids(:,:,m)	= in.fids(:,:,m);
+	% For each subspectrum, extract FIDs in time-domain for all averages and
+	% perform spectral cross-correlation for extracted FIDs
+    fids(:,:,m)		= in.fids(:,:,m);
+	
+
 end		% End of for m=1:1:B
 
 
 %re-calculate Specs using fft
 specs=fftshift(ifft(fids,[],in.dims.t),in.dims.t);
-
 
 %FILLING IN DATA STRUCTURE
 out=in;
@@ -101,34 +105,5 @@ out.specs=specs;
 out.flags=in.flags;
 out.flags.writtentostruct=1;
 out.flags.freqcorrected=1;
-
-    function y=op_freqPhaseShiftComplexRangeNest(pars,input)
-        f=pars(1);     %Frequency Shift [Hz]
-        p=pars(2);     %Phase Shift [deg]
-        
-        
-        dwelltime=datarange.dwelltime;
-        t=0:dwelltime:(length(input)-1)*dwelltime;
-        fid=input(:);
-        
-        shifted=addphase(fid.*exp(1i*t'*f*2*pi),p);
-        
-        y=[real(shifted);imag(shifted)];
-        %y=real(fid.*exp(-1i*t'*f*2*pi));
-        
-    end
-
-    function y=op_freqPhaseShiftNest(pars,input)
-        f=pars(1);     %Frequency Shift [Hz]
-        p=pars(2);     %Phase Shift [deg]
-        
-        
-        dwelltime=in.dwelltime;
-        t=0:dwelltime:(length(input)-1)*dwelltime;
-        fid=input(:);
-        
-        y=addphase(fid.*exp(1i*t'*f*2*pi),p);
-        %y=real(fid.*exp(-1i*t'*f*2*pi));
-        
-    end
-end
+   
+end		% End of function
