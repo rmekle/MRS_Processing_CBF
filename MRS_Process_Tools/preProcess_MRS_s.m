@@ -1104,7 +1104,7 @@ switch seqType
 			% either using spectral registration or
 			% cross-correlation
 			switch strFreqPhaseCorr
-				case {'SR1', 'SR2', 'SR3', 'SR4'}	% Spectral registration
+				case {'SR1', 'SR2', 'SR3', 'SR4'}	% Spectral registration (SR)
 					fprintf('%s: Aligning of averages aka frequency and phase drift correction using spectral registration ...\n\n', sFunctionName);
 					if with_water
 						fprintf('Aligning of averages using spectral registration for unsuppressed water signal(s) ...\n');
@@ -1224,7 +1224,7 @@ switch seqType
 						totalFreqDrift_net	= sum(fscum);
 						totalPhaseDrift_net	= sum(phscum);
 					end		% End of while sat=='n' || sat=='N'
-				case {'spectX1', 'spectX2', 'spectX3', 'spectX4'}	% Cross-correlation
+				case {'SC1', 'SC2', 'SC3', 'SC4'}	% Spectral cross-correlation (SC)
 					fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation ...\n\n');
 					if with_water
 						fprintf('Aligning of averages using cross-correlation for unsuppressed water signal(s) ...\n');
