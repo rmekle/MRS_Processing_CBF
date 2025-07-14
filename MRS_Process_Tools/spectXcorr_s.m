@@ -1,6 +1,6 @@
-function [fidCor, valOut] = spectXcorr(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq, xnuclOffset)
+function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq, XnuclOffset)
 %
-%function [fidCor,valOut] = spectXcorr(fid,chemicalRange, ref, filterFlag, plotFlag)
+%function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq, XnuclOffset)
 % Simultaneous phase and frequency estimation using cross-correlation
 % in the frequency domain.  Method is termed spectral cross-correlation or SC
 %
@@ -24,8 +24,10 @@ function [fidCor, valOut] = spectXcorr(fid, chemicalRange, ref, filterFlag, plot
 
 % RM: Global variables are replaced by additional input arguments
 %global sw sfrq1H H1offset
+sFunctionName		= 'spectXcorr_s';
 
-% check for input parameters 
+
+%% check for input parameters 
 if nargin < 1
     error('Missing input FID signal. Aborting!');
 end
@@ -42,9 +44,23 @@ end
 if nargin < 5
     plotFlag = 0;
 end
+% RM: Default values for additional input arguments
+% 3T values
+if nargin < 6
+	sw			= 2000;
+	warning('%s: Input argument spectral width (sw) not provided, set to %.1f!\n', sFunctionName, sw );
+end
+if nargin < 7
+	txfrq		= 123.23;
+	warning('%s: Input argument transmitter frequency (txfrq) not provided, set to %.2f!\n', sFunctionName, txfrq );
+end
+if nargin < 8
+	XnuclOffset	= 4.65;
+	warning('%s: Input argument XnuclOffset not provided, set to %.2f!\n', sFunctionName, XnuclOffset );
+end
 
 
-% apply LB and ZF
+%% apply LB and ZF
 dw = 1/sw; t = (0:dw:dw*(length(fid)-1))';
 if (filterFlag==1)
     disp(' *** FID apodization applied! ***')
