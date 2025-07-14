@@ -71,9 +71,9 @@ else
 	GF = 1000;
 end
 sifactor = 10;
-[np,nt,nbCoils]=size(fid);
-fidzf = complex(zeros(np*(sifactor+1),nt,nbCoils));
-fidCor = complex(zeros(np,nt,nbCoils));
+[np,nt,nbCoils] = size(fid);
+fidzf			= complex(zeros(np*(sifactor+1),nt,nbCoils));
+fidCor			= complex(zeros(np,nt,nbCoils));
 for ical=1:nbCoils
     for jcal=1:nt
         fidzf(:,jcal,ical) = [fid(:,jcal,ical).*exp(-t*pi*LB-t.^2/(GF^2)); zeros(np*sifactor,1)];
@@ -101,7 +101,9 @@ Refchemicalranges_ppm = chemicalRange;
 fmax=(sw)/2;
 f=fmax:-2*fmax/(length(fidzf)-1):-fmax;
 deltaFnew = sw/(length(fidzf)-1);
-scale_ppm=f/(sfrq1H)+H1offset;
+% RM: Replace original variables with new input arguments
+%scale_ppm=f/(sfrq1H)+H1offset;
+scale_ppm=f/(txfrq)+XnuclOffset;
 findval1 = find(Refchemicalranges_ppm(1)-0.1 < scale_ppm & scale_ppm < Refchemicalranges_ppm(1)+0.1, 1, 'last' );
 findval2 = find(Refchemicalranges_ppm(2)-0.1 < scale_ppm & scale_ppm < Refchemicalranges_ppm(2)+0.1, 1 );
 region = findval2:findval1;
@@ -151,7 +153,9 @@ valOut = [ShiftCalc; phaseCalc]';
 
 if plotFlag
     f=fmax:-2*fmax/(length(fid)-1):-fmax;
-    scale_ppmOrig = f/(sfrq1H)+H1offset;
+	% RM: Replace original variables with new input arguments
+    %scale_ppmOrig = f/(sfrq1H)+H1offset;
+	scale_ppmOrig = f/(txfrq)+XnuclOffset;
     figure, clf
     
     spectfftOrig = fftshift(fft(fid,[],1),1);
