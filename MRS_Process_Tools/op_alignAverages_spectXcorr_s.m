@@ -63,6 +63,13 @@ end
 
 
 %% Perform frequency and phase drift correction using spectral cross-correlation 
+% Derive required parameters for spectral cross-correlation from MRS input data and input
+% arguments (minppmSC and maxppmSC are separate input parameters to preserve some 
+% similarity with routine op_alignAverages_fd(...) from FID-A)
+swSC				= 1;
+txfrqSC				= 2;
+chemicalRangeSC		= [minppmSC, maxppmSC];
+
 % Determine whether MRS data contains subspectra
 if in.dims.subSpecs==0
     B=1;
@@ -70,16 +77,16 @@ else
     B=in.sz(in.dims.subSpecs);
 end
 
-% Allocate arrays for frequency and phase shifts and extract FIDs in time domain for one
-% subspectrum and for all time points and all averages
+% Allocate arrays for frequency and phase shifts for all averages and all subspectra and 
+% for extracted FIDs in time domain for all time points, all averages, and all subspectra
 fs		= zeros(in.sz(in.dims.averages),B);
 phs		= zeros(in.sz(in.dims.averages),B);
 fids	= zeros(in.sz(in.dims.t),in.dims.averages,B);
 for m=1:1:B
 	% For each subspectrum, extract FIDs in time-domain for all averages and
 	% perform spectral cross-correlation for extracted FIDs
-    fids(:,:,m)		= in.fids(:,:,m);
-	
+    fids(:,:,m)				= in.fids(:,:,m);
+	[fids(:,:,m), outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrqSC, XnuclOffset);
 
 end		% End of for m=1:1:B
 
