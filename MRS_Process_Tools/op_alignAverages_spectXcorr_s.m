@@ -85,7 +85,7 @@ end
 % for extracted FIDs in time domain for all time points, all averages, and all subspectra
 fs		= zeros(in.sz(in.dims.averages),B);
 phs		= zeros(in.sz(in.dims.averages),B);
-fids	= zeros(in.sz(in.dims.t),in.dims.averages,B);
+fids	= zeros(in.sz(in.dims.t),in.sz(in.dims.averages),B);
 for m=1:1:B
 	% For each subspectrum, extract FIDs in time-domain for all averages and
 	% perform spectral cross-correlation for extracted FIDs and
