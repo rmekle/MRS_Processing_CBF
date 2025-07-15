@@ -66,8 +66,8 @@ end
 % Derive required parameters for spectral cross-correlation from MRS input data and input
 % arguments (minppmSC and maxppmSC are separate input parameters to preserve some 
 % similarity with routine op_alignAverages_fd(...) from FID-A)
-swSC				= 1;
-txfrqSC				= 2;
+swSC				= 1/in.dwelltime;
+txfrqSC				= in.txfrq;
 chemicalRangeSC		= [minppmSC, maxppmSC];
 
 % Determine whether MRS data contains subspectra
@@ -84,13 +84,16 @@ phs		= zeros(in.sz(in.dims.averages),B);
 fids	= zeros(in.sz(in.dims.t),in.dims.averages,B);
 for m=1:1:B
 	% For each subspectrum, extract FIDs in time-domain for all averages and
-	% perform spectral cross-correlation for extracted FIDs
+	% perform spectral cross-correlation for extracted FIDs and
+	% extract frequency and phase shifts from output values
     fids(:,:,m)				= in.fids(:,:,m);
 	[fids(:,:,m), outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrqSC, XnuclOffset);
-
+	fs(:,m)					= outVal(:,1);
+	phs(:,m)				= outVal(:,2);	
 end		% End of for m=1:1:B
 
 
+%% 
 %re-calculate Specs using fft
 specs=fftshift(ifft(fids,[],in.dims.t),in.dims.t);
 
