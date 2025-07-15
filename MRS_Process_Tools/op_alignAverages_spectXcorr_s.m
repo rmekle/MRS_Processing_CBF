@@ -95,6 +95,8 @@ for m=1:1:B
 	% extract frequency and phase shifts from output values
     fids(:,:,m)				= in.fids(:,:,m);
 	[fids(:,:,m), outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrq_ppmInHzSC, XnuclOffsetSC);
+	%[fidsCor, outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrq_ppmInHzSC, XnuclOffsetSC);
+	%fids(:,:,m)				= fidsCor;
 	fs(:,m)					= outVal(:,1);
 	phs(:,m)				= outVal(:,2);	
 end		% End of for m=1:1:B
