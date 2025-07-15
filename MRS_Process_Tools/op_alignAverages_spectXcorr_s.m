@@ -7,17 +7,21 @@
 % 
 % DESCRIPTION:
 % Perform frequency-domain spectral cross-correlation using a limited range of
-% frequencies to correct frequency and phase drifts.  As described in Near
-% et al.  Frequency and phase drift correction of magnetic resonance 
-% spectroscopy data by spectral registration in the time domain. Magn Reson 
-% Med 2015; 73(1):44-50.
+% frequencies to correct frequency and phase drifts of MRS data.  As described in 
+% Deelchand, D.K. et al.  Simultaneous frequency and phase corrections of single-shot MRS 
+% data using cross-correlation.  Magn Reson Med 2025; 93(1):8-17.
 % 
 % INPUTS:
 % in        = Input data structure
-% minppmSC	= Minimum of frequency range (ppm).
-% maxppmSC	= Maximum of frequency range (ppm).
-% refSC     = An externally provided reference spectrum that you would like
-%             to align everything to (Required only if med = 'r').  
+% minppmSC	= Minimum of frequency range (ppm) used for spectral cross-correlation
+% maxppmSC	= Maximum of frequency range (ppm) used for spectral cross-correlation
+% refSC     = Character array to choose reference signal for spectral cross-correlation
+%             - use 1st transient (='f') or mean all spectra ('m') as reference, 
+%					default is 'f'
+% filterFlagSC	= Flag whether to apply apodization (LB=5 and GF=0.12) to data before SC, 
+%					default is off (=0)
+% plotFlagSC	= Flag wehether to plot spectra and offsets, default is 0
+% XnuclOffsetSC	= Offset in ppm for X-nucleus relative to water. e.g. = 4.65 for 1H
 %
 % OUTPUTS:
 % out       = Output following alignment of averages.  
