@@ -70,11 +70,11 @@ end
 % Derive required parameters for spectral cross-correlation from MRS input data and input
 % arguments:
 % swSC				= Spectral width in Hz
-% txfrq_ppmInHzSC	=  1 ppm in Hz from the transmitter frequency (txfrq) of the MRS FIDs
+% txfrq_ppmInHzSC	=  1 ppm in Hz from the transmitter frequency (txfrq) of the MRS data
 % (minppmSC and maxppmSC are separate input parameters to preserve some  similarity with 
 % routine op_alignAverages_fd(...) from FID-A)
 swSC				= 1/in.dwelltime;
-txfrq_ppmInHzSC		= in.txfrq/1e6;		% 1 ppm in Hz from the transmitter frequency (txfrq) of the MRS FIDs
+txfrq_ppmInHzSC		= in.txfrq/1e6;
 chemicalRangeSC		= [minppmSC, maxppmSC];
 
 % Determine whether MRS data contains subspectra
