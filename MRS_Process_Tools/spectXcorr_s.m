@@ -1,4 +1,4 @@
-function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq_ppmInHz XnuclOffset)
+function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq_ppmInHz, XnuclOffset)
 %
 %function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq_ppmInHz, XnuclOffset)
 % Simultaneous phase and frequency estimation using cross-correlation
