@@ -1,6 +1,6 @@
-function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq, XnuclOffset)
+function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq_ppmInHz XnuclOffset)
 %
-%function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq, XnuclOffset)
+%function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, plotFlag, sw, txfrq_ppmInHz, XnuclOffset)
 % Simultaneous phase and frequency estimation using cross-correlation
 % in the frequency domain.  Method is termed spectral cross-correlation or SC
 %
@@ -17,7 +17,7 @@ function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, pl
 %     filterFlag    - apply apodization (LB=5 and GF=0.12) to data before SC, default is off
 %     plotFlag      - plot spectra and offsets, default is 0
 %	  sw			- spectral width (sw) of the MRS FIDs
-%	  txfrq			- Transmitter frequency (txfrq) of the MRS FIDs in Hz
+%	  txfrq_ppmInHz	- 1 ppm in Hz from the transmitter frequency (txfrq) of the MRS FIDs
 %	  XnuclOffset	- Offset in ppm for X-nucleus relative to water. e.g. = 4.65 for 1H,
 %						required, since signal sampling occurs symmetrically around that
 %
@@ -51,15 +51,15 @@ end
 % RM: Default values for additional input arguments
 % 3T values
 if nargin < 6
-	sw			= 2000;
+	sw				= 2000;
 	warning('%s: Input argument spectral width (sw) not provided, set to %.1f!\n', sFunctionName, sw );
 end
 if nargin < 7
-	txfrq		= 123.23;
-	warning('%s: Input argument transmitter frequency (txfrq) not provided, set to %.2f!\n', sFunctionName, txfrq );
+	txfrq_ppmInHz	= 123.23;
+	warning('%s: Input argument 1 ppm in Hz from transmitter frequency (txfrq_ppmInHz) not provided, set to %.2f!\n', sFunctionName, txfrq_ppmInHz );
 end
 if nargin < 8
-	XnuclOffset	= 4.65;
+	XnuclOffset		= 4.65;
 	warning('%s: Input argument XnuclOffset not provided, set to %.2f!\n', sFunctionName, XnuclOffset );
 end
 
@@ -107,7 +107,7 @@ f=fmax:-2*fmax/(length(fidzf)-1):-fmax;
 deltaFnew = sw/(length(fidzf)-1);
 % RM: Replace original variables with new input arguments
 %scale_ppm=f/(sfrq1H)+H1offset;
-scale_ppm=f/(txfrq)+XnuclOffset;
+scale_ppm=f/(txfrq_ppmInHz)+XnuclOffset;
 findval1 = find(Refchemicalranges_ppm(1)-0.1 < scale_ppm & scale_ppm < Refchemicalranges_ppm(1)+0.1, 1, 'last' );
 findval2 = find(Refchemicalranges_ppm(2)-0.1 < scale_ppm & scale_ppm < Refchemicalranges_ppm(2)+0.1, 1 );
 region = findval2:findval1;
@@ -159,7 +159,7 @@ if plotFlag
     f=fmax:-2*fmax/(length(fid)-1):-fmax;
 	% RM: Replace original variables with new input arguments
     %scale_ppmOrig = f/(sfrq1H)+H1offset;
-	scale_ppmOrig = f/(txfrq)+XnuclOffset;
+	scale_ppmOrig = f/(txfrq_ppmInHz)+XnuclOffset;
     figure, clf
     
     spectfftOrig = fftshift(fft(fid,[],1),1);
