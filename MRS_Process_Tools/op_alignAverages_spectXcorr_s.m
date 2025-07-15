@@ -93,7 +93,7 @@ for m=1:1:B
 end		% End of for m=1:1:B
 
 
-%% 
+%% Fill in MRS data and complete all flag settings for output data structure
 %re-calculate Specs using fft
 specs=fftshift(ifft(fids,[],in.dims.t),in.dims.t);
 
@@ -107,4 +107,5 @@ out.flags=in.flags;
 out.flags.writtentostruct=1;
 out.flags.freqcorrected=1;
    
+
 end		% End of function
