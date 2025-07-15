@@ -13,7 +13,7 @@
 % Med 2015; 73(1):44-50.
 % 
 % INPUTS:
-% in        = Input data structure.
+% in        = Input data structure
 % minppmSC	= Minimum of frequency range (ppm).
 % maxppmSC	= Maximum of frequency range (ppm).
 % refSC     = An externally provided reference spectrum that you would like
@@ -24,7 +24,7 @@
 % fs        = Vector of frequency shifts (in Hz) used for alignment.
 % phs       = Vector of phase shifts (in degrees) used for alignment.
 
-function [out,fs,phs] = op_alignAverages_spectXcorr_s(in,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,X_nuclOffset)
+function [out,fs,phs] = op_alignAverages_spectXcorr_s(in,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,XnuclOffsetSC)
 
 %% Set string for name of routine and display blank lines for enhanced output visibility
 sFunctionName		= 'op_alignAverages_spectXcorr_s';
@@ -40,7 +40,7 @@ end
 maxNargin	= 7;
 if nargin<maxNargin
 	% Default value for 1H
-	X_nuclOffset	= 4.65;
+	XnuclOffsetSC	= 4.65;
 	if nargin<(maxNargin-1)
 		plotFlagSC = 0;
 		if nargin<(maxNargin-2)
@@ -87,7 +87,7 @@ for m=1:1:B
 	% perform spectral cross-correlation for extracted FIDs and
 	% extract frequency and phase shifts from output values
     fids(:,:,m)				= in.fids(:,:,m);
-	[fids(:,:,m), outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrqSC, XnuclOffset);
+	[fids(:,:,m), outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrqSC, XnuclOffsetSC);
 	fs(:,m)					= outVal(:,1);
 	phs(:,m)				= outVal(:,2);	
 end		% End of for m=1:1:B
