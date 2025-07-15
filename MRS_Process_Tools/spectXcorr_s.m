@@ -16,7 +16,7 @@ function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, pl
 %						default is 'f'
 %     filterFlag    - apply apodization (LB=5 and GF=0.12) to data before SC, default is off
 %     plotFlag      - plot spectra and offsets, default is 0
-%	  sw			- spectral width (sw) of the MRS FIDs
+%	  sw			- spectral width (sw) of the MRS FIDs in Hz
 %	  txfrq_ppmInHz	- 1 ppm in Hz from the transmitter frequency (txfrq) of the MRS FIDs
 %	  XnuclOffset	- Offset in ppm for X-nucleus relative to water. e.g. = 4.65 for 1H,
 %						required, since signal sampling occurs symmetrically around that
