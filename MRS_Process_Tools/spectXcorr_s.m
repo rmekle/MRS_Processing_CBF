@@ -16,10 +16,14 @@ function [fidCor, valOut] = spectXcorr_s(fid, chemicalRange, ref, filterFlag, pl
 %						default is 'f'
 %     filterFlag    - apply apodization (LB=5 and GF=0.12) to data before SC, default is off
 %     plotFlag      - plot spectra and offsets, default is 0
+%	  sw			- spectral width (sw) of the MRS FIDs
+%	  txfrq			- Transmitter frequency (txfrq) of the MRS FIDs in Hz
+%	  XnuclOffset	- Offset in ppm for X-nucleus relative to water. e.g. = 4.65 for 1H,
+%						required, since signal sampling occurs symmetrically around that
 %
 % OUTPUTS:
-%     fidCor - frequency and phase corrected FID
-%     valOut - vector contains estimated frequency (Hz) and phase offsets (deg)
+%     fidCor		- frequency and phase corrected FID
+%     valOut		- vector contains estimated frequency (Hz) and phase offsets (deg)
 %
 
 % RM: Global variables are replaced by additional input arguments
@@ -32,7 +36,7 @@ if nargin < 1
     error('Missing input FID signal. Aborting!');
 end
 
-if nargin < 2
+if nargin < 2 
     chemicalRange = [1.8 3.6];
 end
 if nargin < 3
@@ -179,5 +183,8 @@ if plotFlag
     xlabel('Scan number')
 end
 
-return
+
+% RM: Replace return with end of function
+%return
+end		% End of function
 
