@@ -12,6 +12,6 @@ load sampleData;
 % RM: Call own version of spectral cross-correlation routine
 %[fidCor,outVal] = spectXcorr(fidm,[1.8 3.6],'f',0,1);
 [fidCor,outVal] = spectXcorr_s(fidm,[1.8 3.6],'f',0,1,sw,sfrq1H,H1offset);
-
+%[fidCor,outVal] = spectXcorr_s(conj(fidm),[1.8 3.6],'f',0,1,sw,sfrq1H,H1offset);
 
 
