@@ -64,8 +64,6 @@ if nargin < 8
 end
 
 
-%fid		= -conj(fid);
-
 %% apply LB and ZF
 dw = 1/sw; t = (0:dw:dw*(length(fid)-1))';
 if (filterFlag==1)
@@ -156,7 +154,7 @@ for ix=1:nt
     phaseCalc(ix) = rad2deg(phzCal);
     
 	%% Freq and phase corrected FID
-    fidCor(:,ix) = fid(:,ix).*exp(1i*2*pi*ShiftCalc(ix).*t).*exp(1i*deg2rad(phaseCalc(ix)));
+    fidCor(:,ix) = fid(:,ix).*exp(1i*2*pi*ShiftCalc(ix).*t).*exp(1i*deg2rad(phaseCalc(ix)));	
 end
 elapsed_time = toc * 1000;
 fprintf('SC Time taken: %.2f ms\n', elapsed_time);
