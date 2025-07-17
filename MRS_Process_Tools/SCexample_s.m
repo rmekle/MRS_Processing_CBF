@@ -1,5 +1,5 @@
 % example 
-clearvars
+%clearvars
 global fidm sw sfrq1H H1offset
 
 % sample data
@@ -11,6 +11,7 @@ load sampleData;
 %  - no apodization to determine freq/phase offsets
 % RM: Call own version of spectral cross-correlation routine
 %[fidCor,outVal] = spectXcorr(fidm,[1.8 3.6],'f',0,1);
+%fidm	= conj(fidm);
 [fidCor,outVal] = spectXcorr_s(fidm,[1.8 3.6],'f',0,1,sw,sfrq1H,H1offset);
 %[fidCor,outVal] = spectXcorr_s(conj(fidm),[1.8 3.6],'f',0,1,sw,sfrq1H,H1offset);
 
