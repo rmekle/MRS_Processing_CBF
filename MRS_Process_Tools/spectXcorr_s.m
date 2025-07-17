@@ -85,7 +85,14 @@ for ical=1:nbCoils
 end
 
 % FFT and mean
-spectfft = fftshift(fft(fidzf,[],1),1);
+% RM: Choose type of FFT based on corresponding flag 
+% This is usually just a sign convention of the complex exponential that is set when the 
+% FID data are read in; using the 'incorrect', e.g. forward instead of inverse fft and
+% vice versa, leads to a sift of the data along the ppm axis
+% Forward FFT (original code)
+%spectfft = fftshift(fft(fidzf,[],1),1);
+% Inverse FFT for FID data from a FID-A toolkit data structure
+spectfft = fftshift(ifft(fidzf,[],1),1);
 if ~strcmp(ref, 'f') && ~strcmp(ref, 'm')
     disp(' reference is out of range. Using 1st transient as reference')
     ref = 'f';
@@ -162,7 +169,11 @@ if plotFlag
 	scale_ppmOrig = f/(txfrq_ppmInHz)+XnuclOffset;
     figure, clf
     
-    spectfftOrig = fftshift(fft(fid,[],1),1);
+	% RM: Choose type of FFT based on corresponding flag
+	% Forward FFT (original code)
+	%spectfftOrig = fftshift(fft(fid,[],1),1);
+	% Inverse FFT for FID data from a FID-A toolkit data structure
+	spectfftOrig = fftshift(ifft(fid,[],1),1);
     subplot(221), plot(scale_ppmOrig,real(spectfftOrig)); title('Original data');
     set(gca,'xdir','reverse')
     curAxis=axis; axis([0.5 4.5 curAxis(3) curAxis(4)]); useAxis=axis;
@@ -170,7 +181,11 @@ if plotFlag
     %average spectrum
     hold on, plot(scale_ppmOrig,mean(real(spectfftOrig),2),'k','linewidth',2); 
     
-    spectfftCor = fftshift(fft(fidCor,[],1),1);
+	% RM: Choose type of FFT based on corresponding flag
+	% Forward FFT (original code)
+	%spectfftCor = fftshift(fft(fidCor,[],1),1);
+	% Inverse FFT for FID data from a FID-A toolkit data structure
+    spectfftCor = fftshift(ifft(fidCor,[],1),1);
     subplot(222), plot(scale_ppmOrig,real(spectfftCor)); title('Corrected data'); set(gca,'xdir','reverse')
     axis(useAxis);
     xlabel('Chemical shift (ppm)')
