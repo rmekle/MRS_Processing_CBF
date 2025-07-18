@@ -3,7 +3,7 @@
 % Edits from Ralf Mekle (RM), Charite, 2025.
 % 
 % USAGE:
-% [out,fs,phs] = op_alignAverages_spectXcorr_s(in,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,X_nuclOffset);
+% [out,fs,phs] = op_alignAverages_spectXcorr_s(in,dataFlag,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,X_nuclOffset);
 % 
 % DESCRIPTION:
 % Perform frequency-domain spectral cross-correlation using a limited range of
@@ -13,6 +13,7 @@
 % 
 % INPUTS:
 % in        = Input data structure
+% dataFlag	= Flag to indicate whether original data was
 % minppmSC	= Minimum of frequency range (ppm) used for spectral cross-correlation
 % maxppmSC	= Maximum of frequency range (ppm) used for spectral cross-correlation
 % refSC     = Character array to choose reference signal for spectral cross-correlation
@@ -28,7 +29,7 @@
 % fs        = Vector of frequency shifts (in Hz) used for alignment.
 % phs       = Vector of phase shifts (in degrees) used for alignment.
 
-function [out,fs,phs] = op_alignAverages_spectXcorr_s(in,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,XnuclOffsetSC)
+function [out,fs,phs] = op_alignAverages_spectXcorr_s(in,dataFlag,minppmSC,maxppmSC,refSC,filterFlagSC,plotFlagSC,XnuclOffsetSC)
 
 %% Set string for name of routine and display blank lines for enhanced output visibility
 sFunctionName		= 'op_alignAverages_spectXcorr_s';
@@ -41,7 +42,7 @@ if ~in.flags.addedrcvrs
 end
 
 % Check on (missing) input arguments and assign default values
-maxNargin	= 7;
+maxNargin	= 8;
 if nargin<maxNargin
 	% Default value for 1H
 	XnuclOffsetSC	= 4.65;
@@ -56,7 +57,10 @@ if nargin<maxNargin
 					if nargin<(maxNargin-5)
 						minppmSC = 1.8;
 						if nargin<(maxNargin-6)
-							error('%s: MRS input data missing. Aborting!', sFunctionName)
+							dataFlag = 'conj';
+							if nargin<(maxNargin-7)
+								error('%s: MRS input data missing. Aborting!', sFunctionName)
+							end
 						end
 					end
 				end
@@ -86,20 +90,41 @@ end
 
 % Allocate arrays for frequency and phase shifts for all averages and all subspectra and 
 % for extracted FIDs in time domain for all time points, all averages, and all subspectra
+% and extract FIDs from input data structure
 fs		= zeros(in.sz(in.dims.averages),B);
 phs		= zeros(in.sz(in.dims.averages),B);
 fids	= zeros(in.sz(in.dims.t),in.sz(in.dims.averages),B);
+fids	= in.fids(:,:,:);
+
+% Take conjugate complex of FID data, if data flag = 'conj'
+% This is done to largely use original code and sign conventions in spectxCorr_(...),
+% where to generate spectra from FIDs,
+% the forward FFT is used (as is e.g. in Osprey), whereas
+% the inverse FFT is used in the FID-A toolkit (probably since Siemens DICOM data (.IMA) 
+% is read in using the conjugate Mode in io_loadspec_IMA_s(...) and Siemens raw data
+% (twix) is read in using mapVBVD()... in io_loadspec_twix_s(...) that was originally 
+% devised to read in k-space data of MR images)
+if strcmp(dataFlag, 'conj')
+	fids	= conj(fids);
+end		% End of if strcmp(dataFlag, 'conj')
+
+% For each subspectrum, extract FIDs in time-domain for all averages and
+% perform spectral cross-correlation for extracted FIDs and
+% extract frequency and phase shifts from output values
 for m=1:1:B
-	% For each subspectrum, extract FIDs in time-domain for all averages and
-	% perform spectral cross-correlation for extracted FIDs and
-	% extract frequency and phase shifts from output values
-    fids(:,:,m)				= in.fids(:,:,m);
+	%fids(:,:,m)				= in.fids(:,:,m);
 	[fids(:,:,m), outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrq_ppmInHzSC, XnuclOffsetSC);
-	%[fidsCor, outVal]	= spectXcorr_s(fids(:,:,m), chemicalRangeSC, refSC, filterFlagSC, plotFlagSC, swSC, txfrq_ppmInHzSC, XnuclOffsetSC);
 	%fids(:,:,m)				= fidsCor;
 	fs(:,m)					= outVal(:,1);
-	phs(:,m)				= outVal(:,2);	
+	phs(:,m)				= outVal(:,2);
 end		% End of for m=1:1:B
+
+% Take conjugate complex of FID data, if data flag = 'conj'
+% to reverse the same operation performed prior to spectral cross-correlation, in order to
+% be able to continue using operations from FID-A
+if strcmp(dataFlag, 'conj')
+	fids	= conj(fids);
+end		% End of if strcmp(dataFlag, 'conj')
 
 
 %% Fill in MRS data and complete all flag settings for output data structure
