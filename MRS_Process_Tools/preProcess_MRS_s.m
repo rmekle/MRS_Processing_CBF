@@ -1239,6 +1239,7 @@ switch seqType
 					fprintf('\nAligning of averages using cross-correlation for MRS signal(s) ...\n');
 					% Perform alignment of averages in frequency domain
 					%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,medin);
+					%[out_aa,fs,phs]		= op_alignAverages_spectXcorr_s(out_rm,ppmmin,ppmmax,tmax,medin);
 
 					% Calculate total frequency and phase drifts
 					% as mean of (maximum-minimum) (like in all FID-A example scripts)
