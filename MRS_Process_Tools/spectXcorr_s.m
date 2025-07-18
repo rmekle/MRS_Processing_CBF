@@ -63,6 +63,9 @@ if nargin < 8
 	warning('%s: Input argument XnuclOffset not provided, set to %.2f!\n', sFunctionName, XnuclOffset );
 end
 
+% Set parameter for debug mode (requires change of code to activate)
+debugMode	= 0;
+
 
 %% apply LB and ZF
 dw = 1/sw; t = (0:dw:dw*(length(fid)-1))';
@@ -133,6 +136,7 @@ indxRef = indx;
 phzRefx = angle(CRef); %phase ref
 ptsUse=5; %on each side
 phzRef = (phzRefx(indxRef-ptsUse:indxRef+ptsUse));
+ptsPlot		= 100;
  
 for ix=1:nt
     clear Sn Cn
@@ -154,7 +158,22 @@ for ix=1:nt
     phaseCalc(ix) = rad2deg(phzCal);
     
 	%% Freq and phase corrected FID
-    fidCor(:,ix) = fid(:,ix).*exp(1i*2*pi*ShiftCalc(ix).*t).*exp(1i*deg2rad(phaseCalc(ix)));	
+    fidCor(:,ix) = fid(:,ix).*exp(1i*2*pi*ShiftCalc(ix).*t).*exp(1i*deg2rad(phaseCalc(ix)));
+
+	if (plotFlag && debugMode)
+		% For testing and debugging
+		% Plot magnitude and phase of spectral cross-correlation for selected ranges
+		lagVector_full		= [-maxLag : 1 : maxLag];
+		indVector_f_sel		= [(indx-ptsPlot):(indx+ptsPlot)];
+		lagVector_f_sel		= indVector_f_sel - (maxLag+1);
+		indVector_phs_sel	= [(indx-ptsUse):(indx+ptsUse)];
+		lagVector_phs_sel	= indVector_phs_sel - (maxLag+1);
+		phzRefCur			= [phzRef, phzCur];
+		figure, plot(lagVector_f_sel, abs(Cn(indVector_f_sel))); title(sprintf('Magnitude of cross-correlation for average = %d', ix));
+		xlabel('Lag between spectrum and reference spectrum');
+		figure, plot(lagVector_phs_sel, phzRefCur); title(sprintf('Reference phase and phase of cross-correlation for average = %d', ix));
+		xlabel('Lag between spectrum and reference spectrum');
+	end		% End of if (plotFlag && debugMode)
 end
 elapsed_time = toc * 1000;
 fprintf('SC Time taken: %.2f ms\n', elapsed_time);
@@ -196,6 +215,14 @@ if plotFlag
     
     subplot(224), plot(-phaseCalc), title('Phase offset (deg)');
     xlabel('Scan number')
+
+	if debugMode
+		% For testing and debugging
+		% Plot selected refrence data
+		figure, plot(scale_ppm(region), real(SRef(region))); title(sprintf('Selected reference data for ref = %s', ref));
+		set(gca,'xdir','reverse');
+		xlabel('Chemical shift (ppm)');
+	end		% End of if debugMode
 end
 
 
