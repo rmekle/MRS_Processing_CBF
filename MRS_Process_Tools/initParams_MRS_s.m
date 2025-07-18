@@ -79,8 +79,8 @@ switch config
 		paramsMRS_struct.ppmOption				= 1;
 		paramsMRS_struct.medin					= 'y';		% 'y';	'n';	'a';	'ref';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
-		% Set parameters for drift correction depending on type of data, i.e. whether MRS
-		% data is spectrum or water signal
+		% Set parameters for drift correction using spectral registration (SR) 
+		% depending on type of data, i.e. whether MRS data are spectra or water signals
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain
 		switch paramsMRS_struct.dataType_MRS
@@ -170,8 +170,8 @@ switch config
 		paramsMRS_struct.ppmOption				= 1;
 		paramsMRS_struct.medin					= 'y';
 		paramsMRS_struct.alignSS				= 2;
-		% Set parameters for drift correction depending on type of data, i.e. whether MRS
-		% data is spectrum or water signal
+		% Set parameters for drift correction using spectral registration (SR) 
+		% depending on type of data, i.e. whether MRS data are spectra or water signals
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain
 		switch paramsMRS_struct.dataType_MRS
@@ -260,8 +260,8 @@ switch config
 		paramsMRS_struct.ppmOption				= 1;
 		paramsMRS_struct.medin					= 'y';
 		paramsMRS_struct.alignSS				= 2;
-		% Set parameters for drift correction depending on type of data, i.e. whether MRS
-		% data is spectrum or water signal
+		% Set parameters for drift correction using spectral registration (SR) 
+		% depending on type of data, i.e. whether MRS data are spectra or water signals
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain
 		switch paramsMRS_struct.dataType_MRS
@@ -339,9 +339,12 @@ switch config
 
 		% Parameters for aligning of averages/frequency and phase drift correction using
 		% one of the following techniques:
-		%	Spectral registration	performed in either frequency or time domain or
-		%	Cross-Correlation		performed in frequency domain
-		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';	
+		%	Spectral registration (SR)		performed in either frequency or time domain 
+		%	or
+		%	Spectral cross-correlation (SC)	performed in frequency domain
+		paramsMRS_struct.strFreqPhaseCorr		= 'SC1';
+
+		% Parameters for spectral registration (SR)
 		paramsMRS_struct.driftCorr				= 'y';
 		paramsMRS_struct.iterin					= 20;
 		paramsMRS_struct.aaDomain				= 'f';
@@ -350,8 +353,8 @@ switch config
 		paramsMRS_struct.ppmOption				= 1;
 		paramsMRS_struct.medin					= 'y';
 		paramsMRS_struct.alignSS				= 2;
-		% Set parameters for drift correction depending on type of data, i.e. whether MRS
-		% data is spectrum or water signal
+		% Set parameters for drift correction using spectral registration (SR) 
+		% depending on type of data, i.e. whether MRS data are spectra or water signals
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain
 		switch paramsMRS_struct.dataType_MRS
@@ -398,6 +401,29 @@ switch config
 			otherwise
 				error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, paramsMRS_struct.dataType_MRS);
 		end		% End of switch paramsMRS_struct.dataType_MRS
+		
+		% Parameters for spectral cross-correlation (SC)
+		paramsMRS_struct.structSC.dataFlag		= 'conj';
+		paramsMRS_struct.structSC.refSC			= 'f';
+		paramsMRS_struct.structSC.filterFlagSC	= 0;
+		paramsMRS_struct.structSC.plotFlagSC	= 0;
+		paramsMRS_struct.structSC.XnuclOffsetSC	= 0;
+		% Set parameters for drift correction using spectral cross-correlation (SC) 
+		% depending on type of data, i.e. whether MRS data are spectra or water signals
+		switch paramsMRS_struct.dataType_MRS
+			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+				% MR spectrum is provided together without or with unsuppressed water
+				% signal and/or with reference scans
+				paramsMRS_struct.structSC.minppmSC		= 1.8;
+				paramsMRS_struct.structSC.maxppmSC		= 3.6;
+			case {'water', 'water_ref'}
+				% MR spectrum is water signal itself without or with reference scans
+				pparamsMRS_struct.structSC.minppmSC		= 3.75;
+				paramsMRS_struct.structSC.maxppmSC		= 5.55;
+
+			otherwise
+				error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, paramsMRS_struct.dataType_MRS);
+		end		% End of switch paramsMRS_struct.dataType_MRS
 
 		% Additional parameter settings
 		paramsMRS_struct.bECC					= 1;
@@ -435,10 +461,12 @@ switch config
 
 		% Parameters for aligning of averages/frequency and phase drift correction using
 		% one of the following techniques:
-		%	Spectral registration	performed in either frequency or time domain or
-		%	Cross-Correlation		performed in frequency domain
-		%paramsMRS_struct.strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
-		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';	
+		%	Spectral registration (SR)		performed in either frequency or time domain 
+		%	or
+		%	Spectral cross-correlation (SC)	performed in frequency domain
+		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+
+		% Parameters for spectral registration (SR)
 		paramsMRS_struct.driftCorr				= 'y';		% 'y';		'n';
 		paramsMRS_struct.iterin					= 20;
 		paramsMRS_struct.aaDomain				= 'f';		% 'f';		't';
@@ -447,8 +475,8 @@ switch config
 		paramsMRS_struct.ppmOption				= 1;
 		paramsMRS_struct.medin					= 'y';		% 'y';	'n';	'a';	'ref';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
-		% Set parameters for drift correction depending on type of data, i.e. whether MRS
-		% data is spectrum or water signal
+		% Set parameters for drift correction using spectral registration (SR) 
+		% depending on type of data, i.e. whether MRS data are spectra or water signals
 		% NOTE: Check whether aligning of averages in frequency domain works, if the MR
 		% spectrum is water signal itself; if not, simply align averages in time domain
 		switch paramsMRS_struct.dataType_MRS
