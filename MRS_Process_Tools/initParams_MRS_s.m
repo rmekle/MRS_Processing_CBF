@@ -561,3 +561,16 @@ end		% End of if strcmp(paramsMRS_struct.seqType_MRS, 'sLASER')
 fprintf('%s: strStudy_MRS = %s\t strVOI_MRS = %s\n\n\tSettings (in paramsMRS_struct) for OVS are strOVS = %s\t and\t strOVS_w = %s\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS, paramsMRS_struct.strOVS, paramsMRS_struct.strOVS_w);
 
 end		% End of function
+
+
+% Introduce two new functions to init struct for spectral registration and spectral
+% cross-correlation
+% Input parameters are paramsMRS_struct.strFreqPhaseCorr and paramsMRS_struct.dataType_MRS
+% Init one struct for SR1, SR2, SR3, and SR4, and use settings for SR1 for all SC options
+% Init one struct for SC1, SC2, SC3, and SC4, and use settings for SC1 for all SR options
+% Return these two sturcts with larger parameter struct
+% Init parameters from structs in preprocess_ListOfFiles_s(...)
+% Pass on all parameters into preProcess_MRS_s(...)
+% Call options for SC in preProcess_MRS_s(...)
+% Check on categories in initParams_MRS_s(...)
+
