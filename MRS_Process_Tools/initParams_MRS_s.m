@@ -28,7 +28,7 @@
 
 function [paramsMRS_struct] = initParams_MRS_s(config)
 
-%% Set string for name of routine and display blank lines for enhanced output visibility
+% Set string for name of routine and display blank lines for enhanced output visibility
 sFunctionName		= 'initParams_MRS_s';
 fprintf('\n\n');
 
@@ -560,7 +560,8 @@ if strcmp(paramsMRS_struct.seqType_MRS, 'sLASER')
 end		% End of if strcmp(paramsMRS_struct.seqType_MRS, 'sLASER')
 fprintf('%s: strStudy_MRS = %s\t strVOI_MRS = %s\n\n\tSettings (in paramsMRS_struct) for OVS are strOVS = %s\t and\t strOVS_w = %s\n\n', sFunctionName, paramsMRS_struct.strStudy_MRS, paramsMRS_struct.strVOI_MRS, paramsMRS_struct.strOVS, paramsMRS_struct.strOVS_w);
 
-end		% End of function
+
+end		% End of function [paramsMRS_struct] = initParams_MRS_s(config)
 
 
 % Introduce two new functions to init struct for spectral registration and spectral
@@ -573,4 +574,36 @@ end		% End of function
 % Pass on all parameters into preProcess_MRS_s(...)
 % Call options for SC in preProcess_MRS_s(...)
 % Check on categories in initParams_MRS_s(...)
+
+function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
+
+% Set string for name of routine and display blank lines for enhanced output visibility
+sFunctionName		= 'initParams_specReg_s';
+%fprintf('\n\n');
+
+
+%% Init parameters for frequency and phase correction using spectral registration (SR)
+switch strFreqPhaseCorr
+	case {'SR1', 'SC1', 'SC2', 'SC3', 'SC4'}
+		% Use same settings as for 'SR1' for all options of spectral cross-correlation
+		% (i.e. 'SC1', 'SC2', etc.) to have these parameters still available in callin
+		% routines
+		
+	case 'SR2'
+
+	case 'SR3'
+
+	case 'SR4'
+
+
+otherwise
+		error('%s: ERROR: Unknown strFreqPhaseCorr = %s!', sFunctionName, strFreqPhaseCorr);
+end		% End of switch strFreqPhaseCorr
+
+
+end		% End of function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
+
+
+
+
 
