@@ -55,10 +55,21 @@ noSD_In					= sParamsMRS_struct.noSD;
 % Parameters for aligning of averages/frequency and phase drift correction using
 % one of the following techniques:
 %	Spectral registration	performed in either frequency or time domain or
-%	Cross-Correlation		performed in frequency domain 
-% strFreqPhaseCorr_In is used to distinguish settings for frequency and phase correction
-%strSpecReg_In			= sParamsMRS_struct.strSpecReg;	% To distinguish settings for spectral registration
-strFreqPhaseCorr_In		= sParamsMRS_struct.strFreqPhaseCorr;	
+%	Cross-Correlation		performed in frequency domain
+% Parameter to select frequency and phase drift correction method
+strFreqPhaseCorr_In		= sParamsMRS_struct.strFreqPhaseCorr;
+
+% Extract settings for frequency and phase drift correction techniques into separate 
+% structs for easier use
+% Parameters for spectral registration (SR)
+structSR_In				= paramsMRS_struct.structSR;
+% Parameters for spectral cross-correlation (SC)
+structSC_In				= paramsMRS_struct.structSC;
+
+% Extract parameters that are used for processing specific types of data
+alignSS_In				= structSR_In.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
+
+
 driftCorr_In			= sParamsMRS_struct.driftCorr;
 iterin_In				= sParamsMRS_struct.iterin;
 aaDomain_In				= sParamsMRS_struct.aaDomain;
@@ -73,7 +84,6 @@ alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SP
 % spectrum is water signal itself; if not, simply align averages in time domain
 ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix;
 ppmmaxarray_fix_In		= sParamsMRS_struct.ppmmaxarray_fix;
-
 
 % Additional parameter settings
 bECC_In					= sParamsMRS_struct.bECC;
