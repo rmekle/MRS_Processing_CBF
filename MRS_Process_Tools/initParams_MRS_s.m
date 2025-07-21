@@ -70,7 +70,9 @@ switch config
 		%	Spectral registration	performed in either frequency or time domain or
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
 		% available in calling routines (possible use of both methods)
@@ -116,7 +118,9 @@ switch config
 		%	Spectral registration	performed in either frequency or time domain or
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
 		% available in calling routines (possible use of both methods)
@@ -161,7 +165,9 @@ switch config
 		%	Spectral registration	performed in either frequency or time domain or
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
 		% available in calling routines (possible use of both methods)
@@ -206,7 +212,9 @@ switch config
 		%	Spectral registration	performed in either frequency or time domain or
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.strFreqPhaseCorr		= 'SC1';
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
 		% available in calling routines (possible use of both methods)
@@ -257,8 +265,10 @@ switch config
 		%	Spectral registration	performed in either frequency or time domain or
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
-
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
+		
 		% Note that both structs for SR and SC will be initialized to have these settings
 		% available in calling routines (possible use of both methods)
 		% Parameters for spectral registration (SR)
@@ -330,7 +340,7 @@ paramsSpecReg_struct.tmaxin				= 0.2;		% 0.2;		0.1;
 paramsSpecReg_struct.bTmaxset			= 1;
 paramsSpecReg_struct.ppmOption			= 1;
 paramsSpecReg_struct.medin				= 'y';		% 'y';	'n';	'a';	'ref';
-paramsSpecReg_struct.alignSS			= 2;		% For aligning subspectra (e.g. in SPECIAL)
+%paramsSpecReg_struct.alignSS			= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 % Modify settings for specifc options of spectral registration (SR), i.e. differences 
 % with respect to 'SR1'
