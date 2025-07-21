@@ -532,6 +532,7 @@ switch config
 		paramsMRS_struct.reportSwitch			= 1;
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
 
+
 	otherwise
 		error('%s: ERROR: Unknown configuration %s!', sFunctionName, config);
 end		% End of switch config
@@ -583,25 +584,101 @@ sFunctionName		= 'initParams_specReg_s';
 
 
 %% Init parameters for frequency and phase correction using spectral registration (SR)
+% Initialize (independent) settings as for 'SR1' for all options of frequency and phase
+% correction
+paramsSpecReg_struct.driftCorr			= 'y';		% 'y';		'n';
+paramsSpecReg_struct.iterin				= 20;
+paramsSpecReg_struct.aaDomain			= 'f';		% 'f';		't';
+paramsSpecReg_struct.tmaxin				= 0.2;		% 0.2;		0.1;
+paramsSpecReg_struct.bTmaxset			= 1;
+paramsSpecReg_struct.ppmOption			= 1;
+paramsSpecReg_struct.medin				= 'y';		% 'y';	'n';	'a';	'ref';
+paramsSpecReg_struct.alignSS			= 2;		% For aligning subspectra (e.g. in SPECIAL)
+
+% Modify settings for specifc options of spectral registration (SR), i.e. differences with
+% respect to 'SR1'
 switch strFreqPhaseCorr
 	case {'SR1', 'SC1', 'SC2', 'SC3', 'SC4'}
+		% SR in frequency domain
+		% No modifications required
 		% Use same settings as for 'SR1' for all options of spectral cross-correlation
-		% (i.e. 'SC1', 'SC2', etc.) to have these parameters still available in callin
+		% (i.e. 'SC1', 'SC2', etc.) to have these parameters still available in calling
 		% routines
-		
 	case 'SR2'
-
+		% SR in frequency domain
+		% Different range of ppm values
+		paramsSpecReg_struct.ppmOption			= 2;
 	case 'SR3'
-
+		% SR in time domain
+		% tmaxin is set to fixed value
+		paramsSpecReg_struct.aaDomain			= 't';
+		paramsSpecReg_struct.tmaxin				= 0.2;
+		paramsSpecReg_struct.bTmaxset			= 1;
+		paramsSpecReg_struct.ppmOption			= 2;	% Not relevant here, since SR in time domain
 	case 'SR4'
+		% SR in time domain
+		% tmaxin is determined from the data in corresponding alignment routine
+		paramsSpecReg_struct.aaDomain			= 't';
+		paramsSpecReg_struct.tmaxin				= 0.2;
+		paramsSpecReg_struct.bTmaxset			= 0;
+		paramsSpecReg_struct.ppmOption			= 2;	% Not relevant here, since SR in time domain
 
-
-otherwise
+	otherwise
 		error('%s: ERROR: Unknown strFreqPhaseCorr = %s!', sFunctionName, strFreqPhaseCorr);
 end		% End of switch strFreqPhaseCorr
 
+% Set parameters for drift correction using spectral registration (SR)
+% depending on type of data, i.e. whether MRS data are spectra or water signals and
+% other settings for selected option for spectral registration (i.e. 'SR1', 'SR2', etc.)
+% NOTE: Check whether aligning of averages in frequency domain works, if the MR
+% spectrum is water signal itself; if not, simply align averages in time domain
+switch dataType_MRS
+	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+		% MR spectrum is provided together without or with unsuppressed water
+		% signal and/or with reference scans
+		%ppmmin_fix		= 1.6;		% 1.6;		1.8;
+		%ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+		%ppmmaxarray_fix	= [2.4,2.85,3.35,4.2,4.4,5.2];
+		switch paramsSpecReg_struct.ppmOption
+			case 1
+				% For MR spectra
+				paramsSpecReg_struct.ppmmin_fix			= 1.6;		% 1.6;		1.8;
+				paramsSpecReg_struct.ppmmaxarray_fix	= [2.4,2.85,3.35,4.2,4.4,5.2];
+			case 2
+				% For MR spectra
+				paramsSpecReg_struct.ppmmin_fix			= 1.6;
+				paramsSpecReg_struct.ppmmaxarray_fix	= [3.5; 4.0; 5.5];
+			case 3
+				% For MR spectra using settings for water signals
+				paramsSpecReg_struct.ppmmin_fix			= 4.2;
+				paramsSpecReg_struct.ppmmaxarray_fix	= [5.5 5.5 5.2];
+			case 4
+				% Wide range to always include water resonance
+				paramsSpecReg_struct.ppmmin_fix			= 1.6;
+				paramsSpecReg_struct.ppmmaxarray_fix	= [5.5 5.5 5.2];
+			case 5
+				% For MMs signals
+				paramsSpecReg_struct.ppmmin_fix			= 0.2;
+				paramsSpecReg_struct.ppmmaxarray_fix	= [3.35,4.2,4.4];
+			case 6
+				% For MMs signals
+				paramsSpecReg_struct.ppmmin_fix			= 0.2;
+				paramsSpecReg_struct.pmmaxarray_fix		= [3.35,4.0,4.1];
 
-end		% End of function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
+			otherwise
+				error('%s: Unknown ppmOption = %d!', sFunctionName, paramsSpecReg_struct.ppmOption);
+		end			% End of switch paramsSpecReg_struct.ppmOption
+	case {'water', 'water_ref'}
+		% MR spectrum is water signal itself without or with reference scans
+		paramsSpecReg_struct.ppmmin_fix			= 4.2;
+		paramsSpecReg_struct.ppmmaxarray_fix	= [5.5 5.5 5.2];
+
+	otherwise
+		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, paramsSpecReg_struct.dataType_MRS);
+end		% End of switch dataType_MRS
+
+
+end		%End of function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
 
 
 
