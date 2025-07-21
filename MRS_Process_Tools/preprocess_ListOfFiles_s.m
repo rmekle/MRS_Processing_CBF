@@ -59,15 +59,15 @@ noSD_In					= sParamsMRS_struct.noSD;
 % Parameter to select frequency and phase drift correction method
 strFreqPhaseCorr_In		= sParamsMRS_struct.strFreqPhaseCorr;
 
+% Extract setting to align subspectra independent of selected correction technique
+alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
+
 % Extract settings for frequency and phase drift correction techniques into separate 
 % structs for easier use
 % Parameters for spectral registration (SR)
-structSR_In				= paramsMRS_struct.structSR;
+structSR_In				= sParamsMRS_struct.structSR;
 % Parameters for spectral cross-correlation (SC)
-structSC_In				= paramsMRS_struct.structSC;
-
-% Extract parameters that are used for processing specific types of data
-alignSS_In				= structSR_In.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
+structSC_In				= sParamsMRS_struct.structSC;
 
 
 driftCorr_In			= sParamsMRS_struct.driftCorr;
@@ -77,7 +77,6 @@ tmaxin_In				= sParamsMRS_struct.tmaxin;
 bTmaxset_In				= sParamsMRS_struct.bTmaxset;
 ppmOption				= sParamsMRS_struct.ppmOption;
 medin_In				= sParamsMRS_struct.medin;
-alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
 % Obtain parameters for drift correction depending on type of data, i.e. whether MRS
 % data is spectrum or water signal
 % NOTE: Check whether aligning of averages in frequency domain works, if the MR
