@@ -70,7 +70,12 @@ switch config
 		%	Spectral registration	performed in either frequency or time domain or
 		%	Cross-Correlation		performed in frequency domain
 		%paramsMRS_struct.strSpecReg				= 'SR1';	% To distinguish settings for spectral registration
-		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';	
+		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+
+
+
+
+
 		paramsMRS_struct.driftCorr				= 'y';		% 'y';		'n';
 		paramsMRS_struct.iterin					= 20;
 		paramsMRS_struct.aaDomain				= 'f';		% 'f';		't';
@@ -408,22 +413,7 @@ switch config
 		paramsMRS_struct.structSC.filterFlagSC	= 0;
 		paramsMRS_struct.structSC.plotFlagSC	= 0;
 		paramsMRS_struct.structSC.XnuclOffsetSC	= 0;
-		% Set parameters for drift correction using spectral cross-correlation (SC) 
-		% depending on type of data, i.e. whether MRS data are spectra or water signals
-		switch paramsMRS_struct.dataType_MRS
-			case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
-				% MR spectrum is provided together without or with unsuppressed water
-				% signal and/or with reference scans
-				paramsMRS_struct.structSC.minppmSC		= 1.8;
-				paramsMRS_struct.structSC.maxppmSC		= 3.6;
-			case {'water', 'water_ref'}
-				% MR spectrum is water signal itself without or with reference scans
-				pparamsMRS_struct.structSC.minppmSC		= 3.75;
-				paramsMRS_struct.structSC.maxppmSC		= 5.55;
-
-			otherwise
-				error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, paramsMRS_struct.dataType_MRS);
-		end		% End of switch paramsMRS_struct.dataType_MRS
+		
 
 		% Additional parameter settings
 		paramsMRS_struct.bECC					= 1;
@@ -574,7 +564,7 @@ end		% End of function [paramsMRS_struct] = initParams_MRS_s(config)
 % Init parameters from structs in preprocess_ListOfFiles_s(...)
 % Pass on all parameters into preProcess_MRS_s(...)
 % Call options for SC in preProcess_MRS_s(...)
-% Check on categories in initParams_MRS_s(...)
+% Check on configurations in initParams_MRS_s(...)
 
 function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
 
@@ -595,8 +585,8 @@ paramsSpecReg_struct.ppmOption			= 1;
 paramsSpecReg_struct.medin				= 'y';		% 'y';	'n';	'a';	'ref';
 paramsSpecReg_struct.alignSS			= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
-% Modify settings for specifc options of spectral registration (SR), i.e. differences with
-% respect to 'SR1'
+% Modify settings for specifc options of spectral registration (SR), i.e. differences 
+% with respect to 'SR1'
 switch strFreqPhaseCorr
 	case {'SR1', 'SC1', 'SC2', 'SC3', 'SC4'}
 		% SR in frequency domain
@@ -666,7 +656,7 @@ switch dataType_MRS
 				paramsSpecReg_struct.pmmaxarray_fix		= [3.35,4.0,4.1];
 
 			otherwise
-				error('%s: Unknown ppmOption = %d!', sFunctionName, paramsSpecReg_struct.ppmOption);
+				error('%s: Unknown paramsSpecReg_struct.ppmOption = %d!', sFunctionName, paramsSpecReg_struct.ppmOption);
 		end			% End of switch paramsSpecReg_struct.ppmOption
 	case {'water', 'water_ref'}
 		% MR spectrum is water signal itself without or with reference scans
@@ -678,9 +668,89 @@ switch dataType_MRS
 end		% End of switch dataType_MRS
 
 
-end		%End of function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
+end		% End of function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
 
 
 
 
+
+
+function [paramsSC_struct] = initParams_SpecCrossCorrel_s(strFreqPhaseCorr, dataType_MRS, plotFlagSC)
+
+% Set string for name of routine and display blank lines for enhanced output visibility
+sFunctionName		= 'initParams_specReg_s';
+%fprintf('\n\n');
+
+
+%% Init parameters for frequency and phase correction using spectral cross-correlation (SC)
+% Initialize (independent) settings as for 'SC1' for all options of frequency and phase
+% correction
+paramsSC_struct.dataFlag			= 'conj';	% FIDs were read in as conjugate complex
+paramsSC_struct.refSC				= 'f';		% Use first FID as reference
+paramsSC_struct.filterFlagSC		= 0;		% Default is no filtering (linebroadening)
+paramsSC_struct.plotFlagSC			= plotFlagSC;	% Default is no plotting, (=0)
+paramsSC_struct.XnuclOffsetSC		= 4.65;		% Default ppm offset for 1H
+paramsSC_struct.ppmOption			= 1;		% Default setting for ppm values
+paramsSC_struct.LB					= 0;		% Default linebroadening factor, if filterFlag = 0
+paramsSC_struct.GF					= 1000;		% Default (Gaussian) apodization factor, if filterFlag = 0
+
+% Modify settings for specifc options of spectral cross-correlation (SC), i.e. differences
+% with respect to 'SC1'
+% SC in frequency domain
+switch strFreqPhaseCorr
+	case {'SC1', 'SR1', 'SR2', 'SR3', 'SR4'}
+		% For MR spectra wihtout baseline issue(s)
+		% No modifications required
+		% Use same settings as for 'SC1' for all options of spectral registration
+		% (i.e. 'SR1', 'SR2', etc.) to have these parameters still available in calling
+		% routines
+	case 'SC2'
+		% For MR spectra with baseline issue(s)
+		% Different range of ppm values
+		paramsSC_struct.ppmOption			= 2;
+	case 'SC3'
+		% Apply filtering of MRS data (linebroadening and Gaussian apodization)
+		% Use default values for linebroadening factor and Gaussian apodization factor
+		paramsSC_struct.filterFlagSC		= 1;
+		paramsSC_struct.LB					= 5;
+		paramsSC_struct.GF					= 0.15;		
+	case 'SC4'
+		% NOT YET!
+		error('%s: ERROR: Option for strFreqPhaseCorr = %s not yet implemented!', sFunctionName, strFreqPhaseCorr);
+		
+	otherwise
+		error('%s: ERROR: Unknown strFreqPhaseCorr = %s!', sFunctionName, strFreqPhaseCorr);
+end		% End of switch strFreqPhaseCorr
+
+% Set parameters for drift correction using spectral cross-correlation (SC)
+% depending on type of data, i.e. whether MRS data are spectra or water signals and
+% other settings for selected option for spectral cross-correlation (i.e. 'SC1', 'SC2', etc.)
+switch dataType_MRS
+	case {'mrs', 'mrs_w', 'mrs_w_ref', 'mrs_ref'}
+		% MR spectrum is provided together without or with unsuppressed water
+		% signal and/or with reference scans
+		switch paramsSC_struct.ppmOption
+			case 1
+				% For MR spectra without baseline issue(s)
+				paramsSC_struct.minppmSC		= 1.8;
+				paramsSC_struct.maxppmSC		= 3.6;
+			case 2
+				% For MR spectra with baseline issue(s)
+				paramsSC_struct.minppmSC		= 1.8;
+				paramsSC_struct.maxppmSC		= 2.2;
+
+			otherwise
+				error('%s: Unknown paramsSC_struct.ppmOption = %d!', sFunctionName, paramsSC_struct.ppmOption);
+		end			% End of switch paramsSC_struct.ppmOption
+	case {'water', 'water_ref'}
+		% MR spectrum is water signal itself without or with reference scans
+		pparamsSC_struct.minppmSC		= 3.75;
+		paramsSC_struct.maxppmSC		= 5.55;
+
+	otherwise
+		error('%s: Unknown MRS dataType_MRS = %s!', sFunctionName, dataType_MRS);
+end		% End of switch dataType_MRS
+
+
+end		% End of function [paramsSC_struct] = initParams_SpecCrossCorrel_s(strFreqPhaseCorr, dataType_MRS, plotFlagSC)
 
