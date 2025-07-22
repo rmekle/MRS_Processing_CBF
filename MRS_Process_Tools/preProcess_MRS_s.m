@@ -710,7 +710,7 @@ switch seqType
 		if strcmpi(driftCorr, 'y')	% Case-insensitive strcmp
 			strAdd_2		= strFreqPhaseCorr;
 		else
-			strAdd_2		= 'NoSR';
+			strAdd_2		= 'NoSRNoSC';
 		end		% End of if strcmpi(driftCorr, 'y')
 		outFileName				= [nameSpec, '_', strOVS, '_', strAdd_1, '_', strAdd_2];
 		outFileName_w			= [name_w, '_w', '_', strOVS_w];
