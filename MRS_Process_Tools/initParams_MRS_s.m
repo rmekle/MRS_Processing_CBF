@@ -71,6 +71,7 @@ switch config
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.driftCorr				= 'y';		% 'y';		'n';
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
@@ -119,6 +120,7 @@ switch config
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.driftCorr				= 'y';
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
@@ -166,6 +168,7 @@ switch config
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.driftCorr				= 'y';
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
@@ -213,6 +216,7 @@ switch config
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.driftCorr				= 'y';
 		paramsMRS_struct.strFreqPhaseCorr		= 'SC1';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
@@ -266,6 +270,7 @@ switch config
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.driftCorr				= 'y';
 		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 		
@@ -333,7 +338,7 @@ sFunctionName		= 'initParams_specReg_s';
 %% Init parameters for frequency and phase correction using spectral registration (SR)
 % Initialize (independent) settings as for 'SR1' for all options of frequency and phase
 % correction
-paramsSpecReg_struct.driftCorr			= 'y';		% 'y';		'n';
+%paramsSpecReg_struct.driftCorr			= 'y';		% 'y';		'n';
 paramsSpecReg_struct.iterin				= 20;
 paramsSpecReg_struct.aaDomain			= 'f';		% 'f';		't';
 paramsSpecReg_struct.tmaxin				= 0.2;		% 0.2;		0.1;
