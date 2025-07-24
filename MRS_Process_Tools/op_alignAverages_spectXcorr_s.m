@@ -22,7 +22,7 @@
 %					default is 'f'
 % filterFlagSC	= Flag whether to apply apodization (LB=5 and GF=0.12) to data before SC, 
 %					default is off (=0)
-% plotFlagSC	= Flag wehether to plot spectra and offsets, default is 0
+% plotFlagSC	= Flag whether to plot spectra and frequency & phase offsets, default is 0
 % XnuclOffsetSC	= Offset in ppm for X-nucleus relative to water. e.g. = 4.65 for 1H
 %
 % OUTPUTS:
