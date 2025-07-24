@@ -36,6 +36,50 @@
 %									reference (water) scans (should be very rare!)
 % fileExt	   = String variable for the file extension of MRS data files: 
 %					'dat' (raw data) or 'IMA' (DICOM) or '.dcm (extended DICOM)
+% NOTE: structs cannot be part of options, if there are other variables in options!
+% structSR	   = Struct that contains all parameter settings for frequency and phase drift
+%					correction using spectral registration (SR) with fields:
+%					.iterin			 Maximum number of allowed iterations for SR to
+%									 converge. Default is 20..
+%					.aaDomain		 Perform SR using the full spectrum ('t'), or only a 
+%									 limited frequency range ('f').  Default is 'f'.
+%					.tmaxin			 Duration (in sec.) of the time domain signal used in
+%									 SR. Default is 0.2 sec.
+%					.bTmaxset		 Boolean, if 1, the given value for tmaxin is used;
+%											  if 0, the routine that aligns all averages 
+%									 determines tmax from the data (currently only 
+%									 implemented for the time domain). Default is 1.
+%					.ppmOption		 Used to select frequency range for SR in frequency
+%									 domain (actually already used during initialization)
+%					.medin			 Selects reference, to which all averages are aligned
+%									 to in SR; 'y', 'n', 'a' or 'ref' are possible; see
+%									 op_alignAverages_fd.m and op_alignAverages.m from 
+%									 FID-A for details. Default is 'y'.
+%					.ppmmin_fix		 Initial minimum ppm value, for which SR is applied in
+%									 the frequency domain. Default is 1.6.
+%					.ppmmaxarray_fix Initial array of maximum ppm values, for which SR is 
+%									 applied in the frequency domain. 
+%									 Default is [3.5; 4.0; 5.5].
+% structSC	   = Struct that contains all parameter settings for frequency and phase drift
+%					correction using spectral cross-correlation (SC) with fields:
+%					.dataFlag		 Flag to indicate whether original data was read as 
+%									 conjugate complex ('conj') or not ('forw')
+%					.refSC			 Character array to choose reference signal for SC 
+%									 - use 1st transient (='f') or mean all spectra ('m') 
+%									 as reference, default is 'f'
+%					.filterFlagSC	 Flag whether to apply apodization (LB=5 and GF=0.12) 
+%									 to data before SC, default is off (=0)
+%					.plotFlagSC		 Flag whether to plot spectra and frequency & phase 
+%									 offsets, default is 0
+%					.XnuclOffsetSC	 Offset in ppm for X-nucleus relative to water. 
+%									 e.g. = 4.65 for 1H
+%					ppmOption		 Used to select frequency range for SC in frequency
+%									 domain (actually already used during initialization)
+%					.LB				 Linebroadening factor, if filterFlag = 0, default is 0
+%					.GF				 (Gaussian) apodization factor, if filterFlag = 0, 
+%									 default is 1000
+%					.minppmSC		 Minimum ppm value, for which SC is performed
+%					.maxppmSC		 Maximum ppm value, for which SC is performed
 % dirString_w  = (Optional) ['DirectoryWater'] String variable for the name of the 
 %					directory containing the water unsuppressed .dat file or .IMA files,
 %                   Optional, because water unsupressed data is optional and dat file can 
@@ -79,6 +123,20 @@
 % driftCorr	   = (Optional) ['DriftCorrection'] Character array that specifies whether 
 %					spectral registration (drift correction) should be performed or not. 
 %					Default is 'y'.
+% bECC 		   = (Optional) ['ECC'] Boolean that specifies whether eddy current correction
+%					 (ECC) should be performed or not. Default is 0.
+% bPhaseCorrFreqShift = (Optional) ['PhaseFrequencyCorrection'] Boolean that specifies 
+%					whether (automatic) phase correction and frequency shifting should be 
+%					performed or not. Default is 0.
+% strMinUserIn = (Optional) ['MinimizeUserInput'] String that specifies whether user 
+%					input/interaction should be minimized or not; 'y' or 'Y' lead to 
+%					minimization, 'n' or 'N' do not. Default is 'y'.
+% plotSwitch   = (Optional)	['ShowPlots'] Switch for displaying plots: 1 = ON, 0 = OFF. 
+%					Default is 0
+% reportSwitch = (Optional) ['GenerateReport'] Switch for generating an html report with 
+%					corresponding figures & a readme file: 1 = ON, 0 = OFF. Default is 1. 
+%
+% No Longer Used:
 % iterin       = (Optional) ['Iterations']  Maximum number of allowed iterations for the 
 %                   spectral registration to converge. Default is 20.
 % aaDomain     = (Optional) ['aaDomain'] Perform the spectral registration (drift 
@@ -101,18 +159,8 @@
 % ppmmaxarreay_fix = (Optional) ['ppmMaximumArray_fix'] Initial array of maximum ppm
 %					values, for which spectral registration is applied in the frequency
 %					domain. Default is [3.5; 4.0; 5.5].
-% bECC 		   = (Optional) ['ECC'] Boolean that specifies whether eddy current correction
-%					 (ECC) should be performed or not. Default is 0.
-% bPhaseCorrFreqShift = (Optional) ['PhaseFrequencyCorrection'] Boolean that specifies 
-%					whether (automatic) phase correction and frequency shifting should be 
-%					performed or not. Default is 0.
-% strMinUserIn = (Optional) ['MinimizeUserInput'] String that specifies whether user 
-%					input/interaction should be minimized or not; 'y' or 'Y' lead to 
-%					minimization, 'n' or 'N' do not. Default is 'y'.
-% plotSwitch   = (Optional)	['ShowPlots'] Switch for displaying plots: 1 = ON, 0 = OFF. 
-%					Default is 0
-% reportSwitch = (Optional) ['GenerateReport'] Switch for generating an html report with 
-%					corresponding figures & a readme file: 1 = ON, 0 = OFF. Default is 1. 
+% End of No Longer Used
+%
 % 
 % OUTPUTS:
 % out          = Fully preprocessed, water suppressed output spectrum
