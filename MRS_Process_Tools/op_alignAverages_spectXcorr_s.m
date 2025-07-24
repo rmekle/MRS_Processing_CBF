@@ -13,7 +13,7 @@
 % 
 % INPUTS:
 % in        = Input data structure
-% dataFlag	= Flag to indicate whether original data was
+% dataFlag	= Flag to indicate whether original data was read as conjugate complex or not
 % minppmSC	= Minimum of frequency range (ppm) used for spectral cross-correlation
 % maxppmSC	= Maximum of frequency range (ppm) used for spectral cross-correlation
 % refSC     = Character array to choose reference signal for spectral cross-correlation
