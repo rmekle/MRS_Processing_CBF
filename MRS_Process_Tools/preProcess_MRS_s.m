@@ -1250,7 +1250,7 @@ switch seqType
 						% are never executed
 						% If user interaction is included, then user should see display 
 						% of results from spectral registration before deciding						
-						if strcmp(strMinUserIn), 'y') 
+						if strcmp(strMinUserIn, 'y') 
 							sat='y';
 						else
 							sat=input('Are you satisfied with the frequency drift correction? ','s');
@@ -1269,8 +1269,8 @@ switch seqType
 						% % Calculate total frequency and phase drifts
 						% % as mean of (maximum-minimum) (like in all FID-A example scripts)
 						% % as sum of frequency and phase drifts (= net drifts)
-						totalFreqDrift	% 	= mean(max(fscum)-min(fscum));
-						totalPhaseDrift	% 	= mean(max(phscum)-min(phscum));
+						% totalFreqDrift	 	= mean(max(fscum)-min(fscum));
+						% totalPhaseDrift	 	= mean(max(phscum)-min(phscum));
 						% totalFreqDrift_net	= sum(fscum);
 						% totalPhaseDrift_net	= sum(phscum);
 					end		% End of while sat=='n' || sat=='N'
@@ -1309,7 +1309,7 @@ switch seqType
 			totalPhaseDrift		= mean(max(phscum)-min(phscum));
 			totalFreqDrift_net	= sum(fscum);
 			totalPhaseDrift_net	= sum(phscum);
-			
+
 			% Only display figure(s), if selected
 			if plotSwitch == 1
 				h5	= figure('position',[fig_left fig_bottom fig_width fig_height]);
@@ -2154,3 +2154,4 @@ switch seqType
 end		% End of switch seqType
 
 
+end		% End of function 
