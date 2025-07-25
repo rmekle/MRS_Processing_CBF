@@ -1155,7 +1155,7 @@ switch seqType
 			% cross-correlation
 			switch strFreqPhaseCorr
 				case {'SR1', 'SR2', 'SR3', 'SR4'}	% Spectral registration (SR)
-					fprintf('%s: Aligning of averages aka frequency and phase drift correction using spectral registration ...\n\n', sFunctionName);
+					fprintf('%s: Aligning of averages aka frequency and phase drift correction using spectral registration (SR) ...\n\n', sFunctionName);
 					% Create string about frequency and phase correction for report
 					reportStrFreqPhaseCorr		= sprintf('spectral registration %s',  strFreqPhaseCorr);
 					if with_water
@@ -1277,22 +1277,22 @@ switch seqType
 						% totalPhaseDrift_net	= sum(phscum);
 					end		% End of while sat=='n' || sat=='N'
 				case {'SC1', 'SC2', 'SC3', 'SC4'}	% Spectral cross-correlation (SC)
-					fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation ...\n\n');
+					fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation (SC) ...\n\n');
 					% Create string about frequency and phase correction for report
 					reportStrFreqPhaseCorr		= sprintf('spectral cross-correlation %s',  strFreqPhaseCorr);
 					minppmSC_w	= 3.75;
 					maxppmSC_w	= 5.55;
 					if with_water
-						fprintf('Aligning of averages using cross-correlation for unsuppressed water signal(s) ...\n');
+						fprintf('Aligning of averages using spectral cross-correlation for unsuppressed water signal(s) ...\n');
 						[out_w_aa,fs_w,phs_w]	= op_alignAverages_spectXcorr_s(out_w_cc,structSC.dataFlag,minppcSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
 					end
 					if with_ref
-						fprintf('Aligning of averages using cross-correlation for water reference signal(s) ...\n');
+						fprintf('Aligning of averages using spectral cross-correlation for water reference signal(s) ...\n');
 						[out_ref_ECC_aa,fs_ref_ECC,phs_ref_ECC]		= op_alignAverages_spectXcorr_s(out_ref_ECC_cc,structSC.dataFlag,minppmSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
 						[out_ref_Quant_aa,fs_ref_Quant,phs_ref_]	= op_alignAverages_spectXcorr_s(out_ref_Quant_cc,structSC.dataFlag,minppmSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
 					end
 					% MRS signals
-					fprintf('\nAligning of averages using cross-correlation for MRS signal(s) ...\n');
+					fprintf('\nAligning of averages using spectral cross-correlation for MRS signal(s) ...\n');
 					% Perform alignment of averages in frequency domain
 					[out_aa,fs,phs]	= op_alignAverages_spectXcorr_s(out_rm,structSC.dataFlag,structSC.minppmSC,structSC.maxppmSC,...
 											structSC.refSC,structSC.filterFlagSC,structSC.plotFlagSC,structSC.XnuclOffsetSC);
