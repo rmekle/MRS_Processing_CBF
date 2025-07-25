@@ -1156,6 +1156,8 @@ switch seqType
 			switch strFreqPhaseCorr
 				case {'SR1', 'SR2', 'SR3', 'SR4'}	% Spectral registration (SR)
 					fprintf('%s: Aligning of averages aka frequency and phase drift correction using spectral registration ...\n\n', sFunctionName);
+					% Create string about frequency and phase correction for report
+					reportStrFreqPhaseCorr		= sprintf('spectral registration %s',  strFreqPhaseCorr);
 					if with_water
 						fprintf('Aligning of averages using spectral registration for unsuppressed water signal(s) ...\n');
 						%out_w_aa		= op_alignAverages(out_w_cc,structSR.tmaxin,'n');
@@ -1276,6 +1278,8 @@ switch seqType
 					end		% End of while sat=='n' || sat=='N'
 				case {'SC1', 'SC2', 'SC3', 'SC4'}	% Spectral cross-correlation (SC)
 					fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation ...\n\n');
+					% Create string about frequency and phase correction for report
+					reportStrFreqPhaseCorr		= sprintf('spectral cross-correlation %s',  strFreqPhaseCorr);
 					minppmSC_w	= 3.75;
 					maxppmSC_w	= 5.55;
 					if with_water
@@ -1290,7 +1294,7 @@ switch seqType
 					% MRS signals
 					fprintf('\nAligning of averages using cross-correlation for MRS signal(s) ...\n');
 					% Perform alignment of averages in frequency domain
-					[out_aa,fscum,phscum]	= op_alignAverages_spectXcorr_s(out_rm,structSC.dataFlag,structSC.minppmSC,structSC.maxppmSC_w,...
+					[out_aa,fscum,phscum]	= op_alignAverages_spectXcorr_s(out_rm,structSC.dataFlag,structSC.minppmSC,structSC.maxppmSC,...
 											structSC.refSC,structSC.filterFlagSC,structSC.plotFlagSC,structSC.XnuclOffsetSC);
 
 					% Calculate total frequency and phase drifts
@@ -2100,7 +2104,7 @@ switch seqType
 			% Write results from drift correction into html report, only if this step was
 			% actually performed, i.e. it was selected and dimension of averages existed
 			if (driftCorr=='y' || driftCorr=='Y') && out_rm.dims.averages > 0
-				fprintf(fid2,'\n\n<h2>Results of spectral registration:</h2>');
+				fprintf(fid2,'\n\n<h2>Results of frequency and phase drift correction using %s:</h2>', reportStrFreqPhaseCorr);
 				fprintf(fid2,'\n<p>Total frequency drift = max(mean(max-min)) was: \t%5.6f %s%s%s Net frequency drift = sum(freq. drifts) = %5.6f</p>',max(totalFreqDrift),tabStr,tabStr,tabStr,totalFreqDrift_net);
 				fprintf(fid2,'\n<p>Total phase drift = max(mean(max-min)) was: \t%5.6f %s%s%s Net phase drift = sum(phase drifts) = %5.6f</p>',max(totalPhaseDrift),tabStr,tabStr,tabStr,totalPhaseDrift_net);
 				%fprintf(fid2,'\n<img src= " %s%salignAvgs_prePostFig.jpg " width="800" height="600">', outDirString, reportFigDirStr);
