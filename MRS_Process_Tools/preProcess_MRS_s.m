@@ -1294,13 +1294,15 @@ switch seqType
 					% MRS signals
 					fprintf('\nAligning of averages using cross-correlation for MRS signal(s) ...\n');
 					% Perform alignment of averages in frequency domain
-					[out_aa,fscum,phscum]	= op_alignAverages_spectXcorr_s(out_rm,structSC.dataFlag,structSC.minppmSC,structSC.maxppmSC,...
+					[out_aa,fs,phs]	= op_alignAverages_spectXcorr_s(out_rm,structSC.dataFlag,structSC.minppmSC,structSC.maxppmSC,...
 											structSC.refSC,structSC.filterFlagSC,structSC.plotFlagSC,structSC.XnuclOffsetSC);
-
-					% Calculate total frequency and phase drifts
-					% as mean of (maximum-minimum) (like in all FID-A example scripts)
-					% as sum of frequency and phase drifts (= net drifts)
-
+					% Resulting frequency shifts 'fs' and phase shifts 'phs' are frequency
+					% and phase shifts that were applied to correct for calculated 
+					% frequency and phase shifts using spectral cross-correlatation (SC), 
+					% i.e. the actual frequency and phase drifts are the corresponding
+					% negative values
+					fscum		= -fs;
+					phscum		= -phs;
 
 				otherwise
 					error('%s: Unknown strFreqPhasecorr = %s!', sFunctionName, strFreqPhaseCorr);
