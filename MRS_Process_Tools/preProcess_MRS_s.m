@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % USAGE
-% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,fileExt,options)
+% [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,fileExt,structSR,structSC,options)
 % 
 % DESCRIPTION:
 % Function for processing Siemens MRS data in .dat format (twix raw data) or in .IMA
@@ -184,7 +184,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,fileExt,options)
+function [out,out_w,out_noproc,out_w_noproc,out_ref_ECC,out_ref_Quant,out_ref_ECC_noproc,out_ref_Quant_noproc] = preProcess_MRS_s(dirString,outDirString,seqType,dataType,fileExt,structSR,structSC,options)
 
 % Parse arguments
 arguments
@@ -193,6 +193,8 @@ arguments
     seqType         {mustBeText}
     dataType        {mustBeText}
 	fileExt			{mustBeText}
+	structSR		struct
+	structSC		struct
 	options.WaterDirectory          {mustBeText} = ''
     options.Filename                {mustBeText} = ''    
     options.WaterFilename           {mustBeText} = ''
@@ -206,13 +208,13 @@ arguments
     options.noStandardDeviation     (1,1) double				= 3.2
 	options.FreqPhaseCorrectionID	{mustBeText} = 'SR00'
 	options.DriftCorrection			{mustBeMember(options.DriftCorrection,{'y', 'Y', 'n', 'N'})} = 'y'
-	options.Iterations				(1,1) {mustBeNumeric}   = 20
-    options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
-    options.MaxTimeAlignment		(1,1) double            = 0.2
-	options.MaxTimeAlignmentSet		(1,1) {islogical}       = 1
-	options.medianAlignment			{mustBeMember(options.medianAlignment,{'y', 'Y', 'n', 'N', 'a', 'A', 'r', 'R'})} = 'y'
-	options.ppmMinimum_fix			(1,1) double            = 1.6
-	options.ppmMaximumArray_fix		(1,:) double			= [3.5; 4.0; 5.5]
+	% options.Iterations				(1,1) {mustBeNumeric}   = 20
+    % options.aaDomain                {mustBeMember(options.aaDomain,{'t', 'f'})} = 'f'
+    % options.MaxTimeAlignment		(1,1) double            = 0.2
+	% options.MaxTimeAlignmentSet		(1,1) {islogical}       = 1
+	% options.medianAlignment			{mustBeMember(options.medianAlignment,{'y', 'Y', 'n', 'N', 'a', 'A', 'r', 'R'})} = 'y'
+	% options.ppmMinimum_fix			(1,1) double            = 1.6
+	% options.ppmMaximumArray_fix		(1,:) double			= [3.5; 4.0; 5.5]
     options.ECC						(1,1) {islogical}       = 0
     options.PhaseFrequencyCorrection(1,1) {islogical}		= 0
 	options.MinimizeUserInput		{mustBeMember(options.MinimizeUserInput,{'y', 'Y', 'n', 'N'})} = 'y'
@@ -238,13 +240,13 @@ end
     noSD					= options.noStandardDeviation;
 	strFreqPhaseCorr		= options.FreqPhaseCorrectionID;
 	driftCorr				= options.DriftCorrection;
-	iterin					= options.Iterations;
-    aaDomain				= options.aaDomain;
-    tmaxin					= options.MaxTimeAlignment;
-	bTmaxSet				= options.MaxTimeAlignmentSet;
-	medin					= options.medianAlignment;
-	ppmmin_fix				= options.ppmMinimum_fix;
-	ppmmaxarray_fix			= options.ppmMaximumArray_fix;
+	% iterin					= options.Iterations;
+    % aaDomain				= options.aaDomain;
+    % tmaxin					= options.MaxTimeAlignment;
+	% bTmaxSet				= options.MaxTimeAlignmentSet;
+	% medin					= options.medianAlignment;
+	% ppmmin_fix				= options.ppmMinimum_fix;
+	% ppmmaxarray_fix			= options.ppmMaximumArray_fix;
     bECC					= options.ECC;
 	bPhaseCorrFreqShift		= options.PhaseFrequencyCorrection;
 	strMinUserIn			= options.MinimizeUserInput;
@@ -1127,7 +1129,7 @@ switch seqType
 		% spectrum is water signal itself; if not, simply align averages in time domain 
 
 		% Determine # of initial values for ppmmax
-		noVals_ppmmax_fix		= length(ppmmaxarray_fix);
+		noVals_ppmmax_fix		= length(structSR.ppmmaxarray_fix);
 
 		% Do not perform drift correction, if either not selected or if dimension of
 		% averages does not exist (index for dimension of averages = 0),
@@ -1156,7 +1158,7 @@ switch seqType
 					fprintf('%s: Aligning of averages aka frequency and phase drift correction using spectral registration ...\n\n', sFunctionName);
 					if with_water
 						fprintf('Aligning of averages using spectral registration for unsuppressed water signal(s) ...\n');
-						%out_w_aa		= op_alignAverages(out_w_cc,tmaxin,'n');
+						%out_w_aa		= op_alignAverages(out_w_cc,structSR.tmaxin,'n');
 						out_w_aa			= op_alignAverages(out_w_cc,0.2,'n');
 					end
 					if with_ref
@@ -1177,7 +1179,7 @@ switch seqType
 						fscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
 						phscum		= zeros(out_rm2.sz(out_rm2.dims.averages),1);
 						iter		= 1;
-						while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
+						while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<structSR.iterin
 							fprintf(1, 'Drift correction by aligning averages: iteration iter = %d\n', iter);
 							%iter			= iter+1
 							close all
@@ -1185,16 +1187,16 @@ switch seqType
 							%ppmmin			= 1.6+0.1*randn(1);
 							%ppmmaxarray	= [3.5+0.1*randn(1,2),4+0.1*randn(1,3),5.5+0.1*randn(1,1)];
 							%ppmmax			= ppmmaxarray(randi(6,1));
-							%tmax			= tmaxin+0.03*randn(1);	 % From run_pressProc_auto.m
-							tmax			= tmaxin+0.04*randn(1);  % From run_specialProc_auto.m
-							ppmmin			= ppmmin_fix+0.1*randn(1);
+							%tmax			= structSR.tmaxin+0.03*randn(1);	 % From run_pressProc_auto.m
+							tmax			= structSR.tmaxin+0.04*randn(1);  % From run_specialProc_auto.m
+							ppmmin			= structSR.ppmmin_fix+0.1*randn(1);
 							switch noVals_ppmmax_fix
 								case 3
 									% Generate array of ppmmax values using random number variations
-									ppmmaxarray		= [ppmmaxarray_fix(1)+0.1*randn(1,2),ppmmaxarray_fix(2)+0.1*randn(1,3),ppmmaxarray_fix(3)+0.1*randn(1,1)];
+									ppmmaxarray		= [structSR.ppmmaxarray_fix(1)+0.1*randn(1,2),structSR.ppmmaxarray_fix(2)+0.1*randn(1,3),structSR.ppmmaxarray_fix(3)+0.1*randn(1,1)];
 								case 6
 									% Generate array of ppmmax values using given values
-									ppmmaxarray		= ppmmaxarray_fix;
+									ppmmaxarray		= structSR.ppmmaxarray_fix;
 
 								otherwise
 									error('%s: No option for noVals_ppmmax_fix = %d!', sFunctionName, noVals_ppmmax_fix);
@@ -1206,27 +1208,27 @@ switch seqType
 							fprintf('ppmmaxarray = [%s]\n', join(string(ppmmaxarray), ' '));
 							fprintf('ppmmin = %f \t ppmmax = %f\n\n\n', ppmmin, ppmmax);
 
-							switch aaDomain
+							switch structSR.aaDomain
 								case 't'
 									% Perform alignment of averages in time domain
 									% either using a given value for tmax or let tmax be
 									% calculated in op_AlignAverages (which also requires that
 									% median alignment of averages is set in op_AlignAverages)
-									if bTmaxSet == 1
+									if structSR.bTmaxSet == 1
 										% Use given tmax
 										%[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,'y');
-										[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,medin);
+										[out_aa,fs,phs]		= op_alignAverages(out_rm2,tmax,structSR.medin);
 									else
 										[out_aa,fs,phs]		= op_alignAverages(out_rm2);
-									end
+									end		% End of if structSR.bTmaxSet == 1
 								case 'f'
 									% Perform alignment of averages in frequency domain
 									%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,'y');
-									[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,medin);
+									[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,structSR.medin);
 
 								otherwise
 									error('%s: ERROR: avgAlignDomain %s not recognized!', sFunctionName, aaDomain);
-							end		% End of switch aaDomain
+							end		% End of switch structSR.aaDomain
 
 							fsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',fs,1)
 							phsPoly		= polyfit([1:out_aa.sz(out_aa.dims.averages)]',phs,1)
@@ -1241,7 +1243,7 @@ switch seqType
 								out_rm2		= out_aa;
 							end
 							iter			= iter+1;
-						end		% End of while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<iterin
+						end		% End of while (abs(fsPoly(1))>0.001 || abs(phsPoly(1))>0.01) && iter<structSR.iterin
 
 						% For automatic batch processing set satisfaction variable to 'y' 
 						% to end while loop; then the subsequent conditioned statements 
@@ -1286,8 +1288,8 @@ switch seqType
 					% MRS signals
 					fprintf('\nAligning of averages using cross-correlation for MRS signal(s) ...\n');
 					% Perform alignment of averages in frequency domain
-					%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,medin);
-					%[out_aa,fs,phs]		= op_alignAverages_spectXcorr_s(out_rm,ppmmin,ppmmax,tmax,medin);
+					%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,structSR.medin);
+					%[out_aa,fs,phs]		= op_alignAverages_spectXcorr_s(out_rm,ppmmin,ppmmax,tmax,structSR.medin);
 
 					% Calculate total frequency and phase drifts
 					% as mean of (maximum-minimum) (like in all FID-A example scripts)
