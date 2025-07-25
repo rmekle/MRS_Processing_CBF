@@ -136,7 +136,7 @@
 % reportSwitch = (Optional) ['GenerateReport'] Switch for generating an html report with 
 %					corresponding figures & a readme file: 1 = ON, 0 = OFF. Default is 1. 
 %
-% No Longer Used:
+% No Longer Used (since now fields of structSR):
 % iterin       = (Optional) ['Iterations']  Maximum number of allowed iterations for the 
 %                   spectral registration to converge. Default is 20.
 % aaDomain     = (Optional) ['aaDomain'] Perform the spectral registration (drift 
@@ -1133,7 +1133,7 @@ switch seqType
 
 		% Do not perform drift correction, if either not selected or if dimension of
 		% averages does not exist (index for dimension of averages = 0),
-		% e.g. when data is already averaged
+		% e.g. when data is already averaged or only one average was acquired
 		%driftCorr		= 'y';
 		%if driftCorr=='n' || driftCorr=='N'
 		fprintf('\n\n');
@@ -1266,30 +1266,32 @@ switch seqType
 							%phs2cum		= zeros(out_cc.sz(2:end));
 							%out_cc2		= out_cc;
 						end		% End of if sat=='n'
-						% Calculate total frequency and phase drifts
-						% as mean of (maximum-minimum) (like in all FID-A example scripts)
-						% as sum of frequency and phase drifts (= net drifts)
-						totalFreqDrift		= mean(max(fscum)-min(fscum));
-						totalPhaseDrift		= mean(max(phscum)-min(phscum));
-						totalFreqDrift_net	= sum(fscum);
-						totalPhaseDrift_net	= sum(phscum);
+						% % Calculate total frequency and phase drifts
+						% % as mean of (maximum-minimum) (like in all FID-A example scripts)
+						% % as sum of frequency and phase drifts (= net drifts)
+						totalFreqDrift	% 	= mean(max(fscum)-min(fscum));
+						totalPhaseDrift	% 	= mean(max(phscum)-min(phscum));
+						% totalFreqDrift_net	= sum(fscum);
+						% totalPhaseDrift_net	= sum(phscum);
 					end		% End of while sat=='n' || sat=='N'
 				case {'SC1', 'SC2', 'SC3', 'SC4'}	% Spectral cross-correlation (SC)
 					fprintf('Aligning of averages aka frequency and phase drift correction using spectral cross-correlation ...\n\n');
+					minppmSC_w	= 3.75;
+					maxppmSC_w	= 5.55;
 					if with_water
 						fprintf('Aligning of averages using cross-correlation for unsuppressed water signal(s) ...\n');
-						%out_w_aa			= op_alignAverages(out_w_cc,0.2,'n');
+						[out_w_aa,fs_w,phs_w]	= op_alignAverages_spectXcorr_s(out_w_cc,structSC.dataFlag,minppcSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
 					end
 					if with_ref
 						fprintf('Aligning of averages using cross-correlation for water reference signal(s) ...\n');
-						%out_ref_ECC_aa		= op_alignAverages(out_ref_ECC_cc,0.2,'n');
-						%out_ref_Quant_aa	= op_alignAverages(out_ref_Quant_cc,0.2,'n');
+						[out_ref_ECC_aa,fs_ref_ECC,phs_ref_ECC]		= op_alignAverages_spectXcorr_s(out_ref_ECC_cc,structSC.dataFlag,minppmSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
+						[out_ref_Quant_aa,fs_ref_Quant,phs_ref_]	= op_alignAverages_spectXcorr_s(out_ref_Quant_cc,structSC.dataFlag,minppmSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
 					end
 					% MRS signals
 					fprintf('\nAligning of averages using cross-correlation for MRS signal(s) ...\n');
 					% Perform alignment of averages in frequency domain
-					%[out_aa,fs,phs]		= op_alignAverages_fd(out_rm2,ppmmin,ppmmax,tmax,structSR.medin);
-					%[out_aa,fs,phs]		= op_alignAverages_spectXcorr_s(out_rm,ppmmin,ppmmax,tmax,structSR.medin);
+					[out_aa,fscum,phscum]	= op_alignAverages_spectXcorr_s(out_rm,structSC.dataFlag,structSC.minppmSC,structSC.maxppmSC_w,...
+											structSC.refSC,structSC.filterFlagSC,structSC.plotFlagSC,structSC.XnuclOffsetSC);
 
 					% Calculate total frequency and phase drifts
 					% as mean of (maximum-minimum) (like in all FID-A example scripts)
@@ -1300,6 +1302,14 @@ switch seqType
 					error('%s: Unknown strFreqPhasecorr = %s!', sFunctionName, strFreqPhaseCorr);
 			end % End of switch strFreqPhaseCorr
 
+			% Calculate total frequency and phase drifts
+			% as mean of (maximum-minimum) (like in all FID-A example scripts)
+			% as sum of frequency and phase drifts (= net drifts)
+			totalFreqDrift		= mean(max(fscum)-min(fscum));
+			totalPhaseDrift		= mean(max(phscum)-min(phscum));
+			totalFreqDrift_net	= sum(fscum);
+			totalPhaseDrift_net	= sum(phscum);
+			
 			% Only display figure(s), if selected
 			if plotSwitch == 1
 				h5	= figure('position',[fig_left fig_bottom fig_width fig_height]);
