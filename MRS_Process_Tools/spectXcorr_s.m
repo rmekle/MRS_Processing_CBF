@@ -160,8 +160,8 @@ for ix=1:nt
 	%% Freq and phase corrected FID
     fidCor(:,ix) = fid(:,ix).*exp(1i*2*pi*ShiftCalc(ix).*t).*exp(1i*deg2rad(phaseCalc(ix)));
 
-	if (plotFlag && debugMode)
-		% For testing and debugging
+	% RM: For testing and debugging
+	if (plotFlag && debugMode)		
 		% Plot magnitude and phase of spectral cross-correlation for selected ranges
 		lagVector_full		= [-maxLag : 1 : maxLag];
 		indVector_f_sel		= [(indx-ptsPlot):(indx+ptsPlot)];
@@ -216,9 +216,9 @@ if plotFlag
     subplot(224), plot(-phaseCalc), title('Phase offset (deg)');
     xlabel('Scan number')
 
+	% RM: For testing and debugging
 	if debugMode
-		% For testing and debugging
-		% Plot selected refrence data
+		% Plot selected reference data
 		figure, plot(scale_ppm(region), real(SRef(region))); title(sprintf('Selected reference data for ref = %s', ref));
 		set(gca,'xdir','reverse');
 		xlabel('Chemical shift (ppm)');
