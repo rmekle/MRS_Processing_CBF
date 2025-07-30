@@ -91,7 +91,7 @@ end
 % RM: Choose type of FFT based on corresponding flag 
 % This is usually just a sign convention of the complex exponential that is set when the 
 % FID data are read in; using the 'incorrect', e.g. forward instead of inverse fft and
-% vice versa, leads to a sift of the data along the ppm axis
+% vice versa, leads to a shift of the data along the ppm axis
 % Forward FFT (original code)
 spectfft = fftshift(fft(fidzf,[],1),1);
 % Inverse FFT for FID data from a FID-A toolkit data structure
