@@ -271,7 +271,7 @@ switch config
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.driftCorr				= 'y';
-		paramsMRS_struct.strFreqPhaseCorr		= 'SC1';		% SR1';		SC1';
+		paramsMRS_struct.strFreqPhaseCorr		= 'SC2';		% SR1';		SC1';
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 		
 		% Note that both structs for SR and SC will be initialized to have these settings
