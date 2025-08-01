@@ -142,7 +142,8 @@ switch config
 		paramsMRS_struct.reportSwitch				= 0;
 		paramsMRS_struct.bPrep_MetabQuant			= 1;
 
-	case 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC'
+	case {'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR2_ECC', ...
+			'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR4_ECC'}
 		% MR spectra in DICOM (.IMA) format processed using spectral registration (SR1)
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
@@ -167,9 +168,10 @@ switch config
 		%	Spectral registration	performed in either frequency or time domain or
 		%	Cross-Correlation		performed in frequency domain
 		% Parameter to select frequency and phase drift correction method
-		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.driftCorr				= 'y';
-		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+		paramsMRS_struct.strFreqPhaseCorr		= config_ExtractFreqPhaseCorr_s(config);
+
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
@@ -328,6 +330,46 @@ end		% End of function [paramsMRS_struct] = initParams_MRS_s(config)
 
 
 
+function [strFreqPhaseCorr_config] = config_ExtractFreqPhaseCorr_s(config)
+
+% Set string for name of routine and display blank lines for enhanced output visibility
+sFunctionName		= 'config_ExtractFreqPhaseCorr_s';
+%fprintf('\n\n');
+
+
+%% Extract string for frequency and phase drift correction from configuration 
+% Create cell array with all possible options (strings) for frequency and phase correction
+% and init output
+cellFreqPhaseCorr_Options	= {'SR1', 'SR2', 'SR3', 'SR4', 'SC1', 'SC2', 'SC3', 'SC4'};
+strFreqPhaseCorr_config		= '';
+
+% Find selected option for frequency and phase correction in configuration (string)
+% Obtain cell array of positions of all options for frequency and phase correction in
+% configuration string
+positions			= cellfun(@(p) strfind(config, p), cellFreqPhaseCorr_Options, 'UniformOutput', false);
+% Find non-zero indices in cell array of positions resulting in a logical array for all
+% positions (any is used to check for any non-zero element inside each cell of cell array
+% of positions; this is needed, since zero entries (cells) in positions are of type 
+% {0×0 double}, whereas the non-zero entry (cell) is of type {[number]}, e.g. {[43]})
+nonZeroIdx			= cellfun(@(x) any(x(:) ~= 0), positions);
+% Find index of single non-zero value in logical array 
+% (there should be only one selected option)
+indFreqPhaseCorr	= find(nonZeroIdx, 1);
+
+% Return string for frequency and phase correction corresponding to determined index
+% If index is empty, issue error message
+if ~isempty(indFreqPhaseCorr)
+	strFreqPhaseCorr_config = cellFreqPhaseCorr_Options{indFreqPhaseCorr};
+else
+	error('%s: ERROR: Option for frequency and phase correction not found in config = %s!', sFunctionName, config);
+end		% End of if ~isempty(indFreqPhaseCorr)
+
+end		% End of function [strFreqPhaseCorr_config] = config_ExtractFreqPhaseCorr(config)
+
+
+
+
+
 function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
 
 % Set string for name of routine and display blank lines for enhanced output visibility
@@ -431,7 +473,6 @@ end		% End of switch dataType_MRS
 
 
 end		% End of function [paramsSpecReg_struct] = initParams_SpecReg_s(strFreqPhaseCorr, dataType_MRS)
-
 
 
 
