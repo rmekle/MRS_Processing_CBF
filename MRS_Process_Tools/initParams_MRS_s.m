@@ -72,7 +72,9 @@ switch config
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.driftCorr				= 'y';		% 'y';		'n';
-		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+		paramsMRS_struct.strFreqPhaseCorr		= config_ExtractFreqPhaseCorr_s(config);
+
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
@@ -121,7 +123,9 @@ switch config
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.driftCorr				= 'y';
-		paramsMRS_struct.strFreqPhaseCorr		= 'SR1';
+		paramsMRS_struct.strFreqPhaseCorr		= config_ExtractFreqPhaseCorr_s(config);
+
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
@@ -144,7 +148,7 @@ switch config
 
 	case {'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR2_ECC', ...
 			'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR4_ECC'}
-		% MR spectra in DICOM (.IMA) format processed using spectral registration (SR1)
+		% MR spectra in DICOM (.IMA) format processed using spectral registration (SR1, SR2, SR3 or SR4)
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
 		paramsMRS_struct.strVOI_MRS				= 'HC';
@@ -192,8 +196,9 @@ switch config
 		paramsMRS_struct.reportSwitch			= 1;
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
 
-	case 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC'
-		% MR spectra in DICOM (.IMA) format processed using spectral registration (SR1)
+	case {'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC2_ECC', ...
+			'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC3_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC4_ECC'}
+		% MR spectra in DICOM (.IMA) format processed using spectral cross-correlation (SC1, SC2, SC3 or SC4)
 		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
 		paramsMRS_struct.strVOI_MRS				= 'HC';
@@ -219,7 +224,9 @@ switch config
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.driftCorr				= 'y';
-		paramsMRS_struct.strFreqPhaseCorr		= 'SC1';
+		paramsMRS_struct.strFreqPhaseCorr		= config_ExtractFreqPhaseCorr_s(config);
+
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 
 		% Note that both structs for SR and SC will be initialized to have these settings
@@ -273,7 +280,9 @@ switch config
 		% Parameter to select frequency and phase drift correction method
 		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.driftCorr				= 'y';
-		paramsMRS_struct.strFreqPhaseCorr		= 'SC2';		% SR1';		SC1';
+		paramsMRS_struct.strFreqPhaseCorr		= config_ExtractFreqPhaseCorr_s(config);
+
+		% Setting to align subspectra independent of selected correction technique
 		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
 		
 		% Note that both structs for SR and SC will be initialized to have these settings
