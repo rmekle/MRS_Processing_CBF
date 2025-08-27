@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 %% Init input parameters for selected MRS study including those used for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
+configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC';
 %configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
@@ -49,24 +49,38 @@ rmbadav_In				= sParamsMRS_struct.rmbadav;
 noSD_In					= sParamsMRS_struct.noSD;
 %digits_noSD_In			= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
 
-% Parameters for spectral registration (aligning of averages/frequency and phase drift
-% correction) performed in either frequency or time domain
-strSpecReg_In			= sParamsMRS_struct.strSpecReg;	% To distinguish settings for spectral registration
+% Parameters for aligning of averages/frequency and phase drift correction using
+% one of the following techniques:
+%	Spectral registration	performed in either frequency or time domain or
+%	Cross-Correlation		performed in frequency domain
+% Parameter to select frequency and phase drift correction method
 driftCorr_In			= sParamsMRS_struct.driftCorr;
-iterin_In				= sParamsMRS_struct.iterin;
-aaDomain_In				= sParamsMRS_struct.aaDomain;
-tmaxin_In				= sParamsMRS_struct.tmaxin;
-bTmaxset_In				= sParamsMRS_struct.bTmaxset;
-ppmOption				= sParamsMRS_struct.ppmOption;
-medin_In				= sParamsMRS_struct.medin;
+strFreqPhaseCorr_In		= sParamsMRS_struct.strFreqPhaseCorr;
+
+% Extract setting to align subspectra independent of selected correction technique
 alignSS_In				= sParamsMRS_struct.alignSS;	% For aligning subspectra (e.g. in SPECIAL)
+
+% Extract settings for frequency and phase drift correction techniques into separate 
+% structs for easier use
+% Parameters for spectral registration (SR)
+structSR_In				= sParamsMRS_struct.structSR;
+% Parameters for spectral cross-correlation (SC)
+structSC_In				= sParamsMRS_struct.structSC;
+
+
+% driftCorr_In			= sParamsMRS_struct.driftCorr;
+% iterin_In				= sParamsMRS_struct.iterin;
+% aaDomain_In				= sParamsMRS_struct.aaDomain;
+% tmaxin_In				= sParamsMRS_struct.tmaxin;
+% bTmaxset_In				= sParamsMRS_struct.bTmaxset;
+% ppmOption				= sParamsMRS_struct.ppmOption;
+% medin_In				= sParamsMRS_struct.medin;
 % Obtain parameters for drift correction depending on type of data, i.e. whether MRS
 % data is spectrum or water signal
 % NOTE: Check whether aligning of averages in frequency domain works, if the MR
 % spectrum is water signal itself; if not, simply align averages in time domain
-ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix;
-ppmmaxarray_fix_In		= sParamsMRS_struct.ppmmaxarray_fix;
-
+%ppmmin_fix_In			= sParamsMRS_struct.ppmmin_fix;
+%ppmmaxarray_fix_In		= sParamsMRS_struct.ppmmaxarray_fix;
 
 % Additional parameter settings
 bECC_In					= sParamsMRS_struct.bECC;
@@ -534,18 +548,18 @@ switch seqType_MRS
 								LCM_ControlAdd					= '_Con8';
 							case 'IMA'
 								% IMA2047 for leftshit = 1
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44889_mac_nratio0_v3';
-								%LCM_ControlAdd					= '_Con8_44889';
-								%strSheetSel_AddOn				= '_Left_1';
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44889_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8_44889';
+								strSheetSel_AddOn				= '_Left_1';
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44080_mac_nratio0_v3';
 								%LCM_ControlAdd					= '_Con8_44080';
 								%strSheetSel_AddOn				= '_Right_1';
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43315_mac_nratio0_v3';
 								%LCM_ControlAdd					= '_Con8_43206';	%  _Con8_43315';
 								%strSheetSel_AddOn				= '_Left_2';
-								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43278_mac_nratio0_v3';
-								LCM_ControlAdd					= '_Con8_43295';	% '_Con8_43278';
-								strSheetSel_AddOn				= '_Right_2';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43278_mac_nratio0_v3';
+								%LCM_ControlAdd					= '_Con8_43295';	% '_Con8_43278';
+								%strSheetSel_AddOn				= '_Right_2';
 
 							otherwise
 								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
@@ -707,7 +721,7 @@ switch seqType_MRS
 		% Complete output data directory name for preprocessed MRS data
 		%dirData_Processed	= [dirData_Base, dirData_AddOn1, dirData_AddOn2, filesep];
 		dirData_Processed	= completeDirName_MRS_processed_s(dirData_Base, strVOI_MRS, fileExt_MRS, dataType_MRS, signals_MRS, leftshift_In, avgBlockSize_In, ...
-			strProcessTool_In, rmbadav_In, noSD_In, strSpecReg_In, driftCorr_In, bECC_In);
+			strProcessTool_In, rmbadav_In, noSD_In, strFreqPhaseCorr_In, driftCorr_In, bECC_In);
 
 		% Add elements for voxel location and quantification analysis to input directory
 		% name
