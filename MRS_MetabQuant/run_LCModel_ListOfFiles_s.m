@@ -556,7 +556,7 @@ switch seqType_MRS
 								strSheetSel_AddOn				= '_Left_2';
 								%str_wconc						= '43295';
 								%strSheetSel_AddOn				= '_Right_2';
-								LCM_Control						= ['3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_', str_wconc, '_mac_nratio_v3'];
+								LCM_Control						= ['3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_', str_wconc, '_mac_nratio0_v3'];
 								LCM_ControlAdd					= ['_Conc8_', str_wconc];
 
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44889_mac_nratio0_v3';
