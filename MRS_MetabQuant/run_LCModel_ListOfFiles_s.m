@@ -548,16 +548,27 @@ switch seqType_MRS
 								LCM_ControlAdd					= '_Con8';
 							case 'IMA'
 								% IMA2047 for leftshit = 1
+								%str_wconc						= '44889';
+								%strSheetSel_AddOn				= '_Left_1';
+								%str_wconc						= '44080';
+								%strSheetSel_AddOn				= '_Right_1';
+								str_wconc						= '43206';
+								strSheetSel_AddOn				= '_Left_2';
+								%str_wconc						= '43295';
+								%strSheetSel_AddOn				= '_Right_2';
+								LCM_Control						= ['3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_', str_wconc, '_mac_nratio_v3'];
+								LCM_ControlAdd					= ['_Conc8_', str_wconc];
+
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44889_mac_nratio0_v3';
 								%LCM_ControlAdd					= '_Con8_44889';
 								%strSheetSel_AddOn				= '_Left_1';
-								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44080_mac_nratio0_v3';
-								LCM_ControlAdd					= '_Con8_44080';
-								strSheetSel_AddOn				= '_Right_1';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43315_mac_nratio0_v3';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44080_mac_nratio0_v3';
+								%LCM_ControlAdd					= '_Con8_44080';
+								%strSheetSel_AddOn				= '_Right_1';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43206_mac_nratio0_v3';
 								%LCM_ControlAdd					= '_Con8_43206';	%  _Con8_43315';
 								%strSheetSel_AddOn				= '_Left_2';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43278_mac_nratio0_v3';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43295_mac_nratio0_v3';
 								%LCM_ControlAdd					= '_Con8_43295';	% '_Con8_43278';
 								%strSheetSel_AddOn				= '_Right_2';
 
