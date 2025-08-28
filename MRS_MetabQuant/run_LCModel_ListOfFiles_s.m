@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 %% Init input parameters for selected MRS study including those used for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC';
+configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC2_ECC';
 %configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
@@ -548,12 +548,12 @@ switch seqType_MRS
 								LCM_ControlAdd					= '_Con8';
 							case 'IMA'
 								% IMA2047 for leftshit = 1
-								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44889_mac_nratio0_v3';
-								LCM_ControlAdd					= '_Con8_44889';
-								strSheetSel_AddOn				= '_Left_1';
-								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44080_mac_nratio0_v3';
-								%LCM_ControlAdd					= '_Con8_44080';
-								%strSheetSel_AddOn				= '_Right_1';
+								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44889_mac_nratio0_v3';
+								%LCM_ControlAdd					= '_Con8_44889';
+								%strSheetSel_AddOn				= '_Left_1';
+								LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_44080_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8_44080';
+								strSheetSel_AddOn				= '_Right_1';
 								%LCM_Control						= '3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_43315_mac_nratio0_v3';
 								%LCM_ControlAdd					= '_Con8_43206';	%  _Con8_43315';
 								%strSheetSel_AddOn				= '_Left_2';
