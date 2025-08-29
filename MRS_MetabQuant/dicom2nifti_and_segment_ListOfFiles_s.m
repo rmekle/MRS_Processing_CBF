@@ -26,11 +26,11 @@ fprintf('\n\n');
 inputDir				= '';
 command					= '';
 status					= 0;
-bProcessNewFiles		= 1;
+bProcessNewFiles		= 0;
 bConvert_dcm2nii		= 'No';			% 'Yes';		% 'No';
 bSegmentImages			= 'Yes';			% 'Yes';		% 'No';
 seqType_MRS				= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-strStudy				= '3T_TGA';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';	'3T_TGA';
+strStudy				= '3T_BPAPS';	% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';	'3T_TGA';	'3T_BPAPS';
 
 % Init parameters for brain extraction and segmentation
 % (parameters can be adjusted for each sequence type depending on specific voxel location)
@@ -92,8 +92,18 @@ switch seqType_MRS
 				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI';
 				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented';
 				% Set parameters for brain extraction and segmentation depending on voxel location
-				% T1w images in 3T_TGA study have different resolution compared to 3T_SBA 
-				% and 3T_SBAM studies				
+				% T1w images in 3T_TGA study have different resolution compared to 
+				% 3T_SBA and 3T_SBAM studies				
+				coordCenterOfBrain		= [96 115 170];		% [96 115 170];	[96 120 170];	[90 115 150];	[87 115 180];	
+				fractIntensThresh		= 0.3;
+			case '3T_BPAPS'
+				% 3T MRS BPAPS study
+				dirData_DICOM			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_BPAPS/BPAPS_BCAN/MRS_BPAPS_00_All_MPRAGE_DICOM';
+				outputDir_NIfTI			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_BPAPS/BPAPS_BCAN/MRS_BPAPS_00_All_MPRAGE_NIfTI';
+				outputDir_Seg			= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_BPAPS/BPAPS_BCAN/MRS_BPAPS_00_All_MPRAGE_NIfTI_Segmented';
+				% Set parameters for brain extraction and segmentation depending on voxel location
+				% T1w images in 3T_BPAPS study have different resolution compared to 
+				% 3T_SBA and 3T_SBAM studies, similar (1 mm) to TGA study (0.9375 mmm)			
 				coordCenterOfBrain		= [96 115 170];		% [96 115 170];	[96 120 170];	[90 115 150];	[87 115 180];	
 				fractIntensThresh		= 0.3;
 
