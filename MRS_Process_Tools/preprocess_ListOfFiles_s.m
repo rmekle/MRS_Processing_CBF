@@ -271,7 +271,7 @@ switch seqType_MRS
 				end			% End of switch fileExt_MRS
 			case '3T_BPAPS'
 				% Data (input) directories
-				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_BPAPS/BCAN_BPAPS';
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_BPAPS/BPAPS_BCAN/';
 
 				% Output data directory
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_BPAPS_Analysis/';
