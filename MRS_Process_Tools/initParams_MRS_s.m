@@ -199,14 +199,14 @@ switch config
 	case {'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC2_ECC', ...
 			'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC3_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC4_ECC'}
 		% MR spectra in DICOM (.IMA) format processed using spectral cross-correlation (SC1, SC2, SC3 or SC4)
-		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
+		paramsMRS_struct.strStudy_MRS			= '3T_BPAPS';			%'3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
-		paramsMRS_struct.strVOI_MRS				= 'HC';
+		paramsMRS_struct.strVOI_MRS				= 'LAUD';				%'HC';
 		paramsMRS_struct.fileExt_MRS			= 'IMA';
 		paramsMRS_struct.dataType_MRS			= 'mrs_ref';
 		paramsMRS_struct.signals_MRS			= 'Spectra';
 		paramsMRS_struct.strOVS					= 'wOVS';
-		paramsMRS_struct.strOVS_w				= 'wOVS';
+		paramsMRS_struct.strOVS_w				= 'woutOVS';
 		paramsMRS_struct.leftshift				= 1;
 		paramsMRS_struct.avgBlockSize			= 0;
 		
