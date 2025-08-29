@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 %% Init input parameters for selected MRS study including those used for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC2_ECC';
+configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC';
 %configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
@@ -552,10 +552,10 @@ switch seqType_MRS
 								%strSheetSel_AddOn				= '_Left_1';
 								%str_wconc						= '44080';
 								%strSheetSel_AddOn				= '_Right_1';
-								str_wconc						= '43206';
-								strSheetSel_AddOn				= '_Left_2';
-								%str_wconc						= '43295';
-								%strSheetSel_AddOn				= '_Right_2';
+								%str_wconc						= '43206';
+								%strSheetSel_AddOn				= '_Left_2';
+								str_wconc						= '43295';
+								strSheetSel_AddOn				= '_Right_2';
 								LCM_Control						= ['3T_IMA2047_sLASER_TE23_HC_water_noECC_TGA_', str_wconc, '_mac_nratio0_v3'];
 								LCM_ControlAdd					= ['_Conc8_', str_wconc];
 
