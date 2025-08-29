@@ -22,7 +22,7 @@ fprintf('\n\n');
 
 %% Init input parameters for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC2_ECC';
+configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
 % Set addition to starting index into list of files to be preprocessed; 
@@ -267,7 +267,28 @@ switch seqType_MRS
 
 					otherwise
 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+						
 				end			% End of switch fileExt_MRS
+			case '3T_BPAPS'
+				% Data (input) directories
+				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_BPAPS/BCAN_BPAPS';
+
+				% Output data directory
+				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_BPAPS_Analysis/';
+
+				% Directories depending on MRS data type
+				switch fileExt_MRS
+					case 'dat'
+						% Select directories specific to MRS raw data (.dat)
+						dirString_In_AddOn1		= sprintf('MRS_BPAPS_00_All_RawData_dat_Files_MRS_%s', strVOI_MRS);
+					case 'IMA'
+						% Select directories specific to MRS DICOM data (.IMA)
+						dirString_In_AddOn1		= sprintf('MRS_BPAPS_00_All_DICOM_IMA_Files_MRS_%s', strVOI_MRS);
+
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+						
+				end			% End of switch fileExt_MRS				
 			case '7T_KCL'
 				% Data (input) directories
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/7T_KCL/';
