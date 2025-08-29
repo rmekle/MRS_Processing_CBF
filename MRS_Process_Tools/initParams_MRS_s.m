@@ -46,7 +46,7 @@ switch config
 		%paramsMRS_struct.dirString_Out			= '';
 		%paramsMRS_struct.filename				= '';
 		%paramsMRS_struct.filename_w				= '';
-		paramsMRS_struct.strStudy_MRS			= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';
+		paramsMRS_struct.strStudy_MRS			= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';	'3T_BPAPS';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
 		paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 		paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
@@ -149,14 +149,14 @@ switch config
 	case {'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR2_ECC', ...
 			'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR4_ECC'}
 		% MR spectra in DICOM (.IMA) format processed using spectral registration (SR1, SR2, SR3 or SR4)
-		paramsMRS_struct.strStudy_MRS			= '3T_TGA';
+		paramsMRS_struct.strStudy_MRS			= '3T_BPAPS';			%'3T_TGA';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
-		paramsMRS_struct.strVOI_MRS				= 'HC';
+		paramsMRS_struct.strVOI_MRS				= 'LAUD';				%'HC';
 		paramsMRS_struct.fileExt_MRS			= 'IMA';
 		paramsMRS_struct.dataType_MRS			= 'mrs_ref';
 		paramsMRS_struct.signals_MRS			= 'Spectra';
 		paramsMRS_struct.strOVS					= 'wOVS';
-		paramsMRS_struct.strOVS_w				= 'wOVS';
+		paramsMRS_struct.strOVS_w				= 'woutOVS';
 		paramsMRS_struct.leftshift				= 1;
 		paramsMRS_struct.avgBlockSize			= 0;
 		
