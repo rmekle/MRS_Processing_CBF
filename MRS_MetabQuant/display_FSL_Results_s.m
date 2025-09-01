@@ -27,7 +27,7 @@ command					= '';
 status					= 0;
 bShowOverlays			= 'Yes';			% 'Yes';		% 'No';
 seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
-strStudy				= '3T_TGA';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';	'3T_TGA';
+strStudy				= '3T_BPAPS';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';	'3T_TGA';	'3T_BPAPS';
 
 % Set (additional) parameters depending on sequence type
 switch seqType
@@ -66,6 +66,11 @@ switch seqType
 				%inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_87_115_180_fractThresh_0_3/'];
 				inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_96_115_170_fractThresh_0_3/'];
 				%inputDirOverlays	= [inputDirBase,'MRS_TGA_00_All_MPRAGE_NIfTI_Segmented/3T_TGA_bet_BrainCenter_90_115_150_fractThresh_0_3/'];
+			case '3T_BPAPS'
+				inputDirBase		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_BPAPS/BPAPS_BCAN/'
+				inputDirImages 		= [inputDirBase,'MRS_BPAPS_00_All_MPRAGE_NIfTI/'];
+				inputDirOverlays	= [inputDirBase,'MRS_BPAPS_00_All_MPRAGE_NIfTI_Segmented/3T_BPAPS_bet_BrainCenter_96_115_170_fractThresh_0_3/'];
+				%inputDirOverlays	= [inputDirBase,'MRS_BPAPS_00_All_MPRAGE_NIfTI_Segmented/3T_BPAPS_bet_BrainCenter_90_115_150_fractThresh_0_3/'];
 
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
