@@ -26,13 +26,13 @@ fprintf('\n\n');
 %% Init input parameters
 command					= '';
 status					= 0;
-bProcessNewFiles		= 1;
+bProcessNewFiles		= 0;
 noTissues				= 3;
 bCalcPartialVolCoeffs	= 'Yes';			% 'Yes';		% 'No';
 winnerFileName			= 'winner.nii';
 seqType					= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS';		% 'sLASER';
-strStudy				= '3T_TGA';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';	3T_TGA';
-strVOI					= 'HC';			% 'HC';		% 'PCG';
+strStudy				= '3T_BPAPS';		% '3T_Trauma';	'7T_KCL';	'3T_MMs';	'3T_SBAM';	3T_TGA';	3T_BPAPS';
+strVOI					= 'LAUD';			% 'HC';		% 'PCG';	'LAUD';
 strDataFormat           = 'DICOM';		% 'DICOM';      % 'RawData';      %'rda';
 %strDataExtension        = '*.rda';      %'*.IMA';       %'*.dat';       %'*.rda';
 %strPVoxel               = 'pvoxel4_rda.py';     %'pvoxel4_rda.py' for rda data;      %'pvoxel4_RawData.py' for RawData;    %'pvoxel4_DICOM.py' for DICOM
@@ -157,7 +157,35 @@ switch seqType
 				dirData_Seg_Base		= ['/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_All_MPRAGE_NIfTI_Segmented_', ...
 											strVOI, '_', strDataExtension];
 				outputDir_PVCorr_Base	= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_00_PartialVolumeCorrection';
-				
+			case '3T_BPAPS'
+				% 3T MRS BPAPS study
+				%outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strVOI, '.txt'];
+				outFileName_PVCorr		= [strStudy, '_TissueVolCoeffs_', strPVCorr_AddOn_1, '.txt'];
+				% Select directory for MRS data based on data format
+				% Select directories for NIfTI and segmented data also based on data
+				% format, since available cases for MRS data of different format are
+				% different
+				dirData_MRS_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_BPAPS/BPAPS_BCAN/';
+				switch strDataFormat
+					case 'rda'
+						dirData_MRS		    	= [dirData_MRS_Base, 'MRS_BPAPS_00_All_rda_Files_MRS_', strVOI];
+					case 'RawData'
+						%dirData_MRS		    	= [dirData_MRS_Base, 'MRS_BPAPS_00_All_RawData_dat_Files_w8_', strVOI];
+						dirData_MRS		    	= [dirData_MRS_Base, 'MRS_BPAPS_00_All_RawData_dat_Files_MRS_', strVOI];
+					case 'DICOM'
+						dirData_MRS		    	= [dirData_MRS_Base, 'MRS_BPAPS_00_All_DICOM_IMA_Files_SUM_MRS_', strVOI];
+
+					otherwise
+						error('%s: ERROR: Unknown data format strDataFromat = %s!', sFunctionName, strDataFormat);
+				end		% End of switch strDataFormat
+				%dirData_NIfTI 			= [dirData_MRS_Base, 'MRS_BPAPS_00_All_MPRAGE_NIfTI_', strVOI, '_', strDataExtension];
+				dirData_NIfTI 			= [dirData_MRS_Base, 'MRS_BPAPS_00_All_MPRAGE_NIfTI_', strVOI];
+				%dirData_Seg				= [dirData_MRS_Base,'MRS_BPAPS_00_All_MPRAGE_NIfTI_Segmented_', ...
+				%							strVOI, '_', strDataExtension, filesep, strSeg];
+				dirData_Seg_Base		= [dirData_MRS_Base, 'MRS_BPAPS_00_All_MPRAGE_NIfTI_Segmented_', ...
+											strVOI];	%, '_', strDataExtension];
+				outputDir_PVCorr_Base	= [dirData_MRS_Base, 'MRS_BPAPS_00_PartialVolumeCorrection'];
+
 			otherwise
 				error('%s: ERROR: Unknown study %s!', sFunctionName, strStudy);
 		end				% End of switch strStudy
