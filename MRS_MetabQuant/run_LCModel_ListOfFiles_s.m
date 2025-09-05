@@ -579,6 +579,32 @@ switch seqType_MRS
 					otherwise
 						error('%s: ERROR: No LCM control file found for strVOI_MRS = %s!\n', sFunctionName, strVOI_MRS);
 				end				% End of switch strVOI_MRS
+			case '3T_BPAPS'
+				% svs_dkd_slaser with TE = 23 ms
+				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_DineshKD/';
+				LCM_Basis						= 'sead_3T_23ms_02Nov2017.BASIS';
+				dirControl_Add1					= 'LCM_Control_sLASER_dkd_TE23/';
+				switch strVOI_MRS
+					case 'LAUD'
+						switch fileExt_MRS
+							case 'dat'
+								% RAW4093 for leftshit = 3
+								LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_TGA_42677_mac_nratio0_v3';
+								LCM_ControlAdd					= '_Con8';
+							case 'IMA'
+								% IMA2047 for leftshit = 1
+								str_wconc						= '42113';
+								strSheetSel_AddOn				= '_Right_2';
+								LCM_Control						= ['3T_IMA2047_sLASER_TE23_LAUD_water_noECC_BPAPS_', str_wconc, '_mac_nratio0_v3'];
+								LCM_ControlAdd					= ['_Conc8_', str_wconc];
+
+							otherwise
+								error('%s: ERROR: Unknown file extension (data type) %s!\n', sFunctionName, fileExt_MRS);
+						end			% End of switch fileExt_MRS
+
+					otherwise
+						error('%s: ERROR: No LCM control file found for strVOI_MRS = %s!\n', sFunctionName, strVOI_MRS);
+				end				% End of switch strVOI_MRS
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirBasis_Add1					= 'Basis_Sets_sLASER/Basis_Sets_Gosia/';
@@ -631,11 +657,11 @@ switch seqType_MRS
 				end				% End of switch strVOI_MRS
 				
 			otherwise
-				error('%s: ERROR: Unknown study %s!\n', sFunctionName, strStudy_MRS);
+				error('%s: ERROR: Unknown study %s for selecting basis set and control file!\n', sFunctionName, strStudy_MRS);
 		end			% End of switch strStudy_MRS
 		
 	otherwise
-		error('%s: ERROR: Unknown sequence type %s!\n', sFunctionName, seqType_MRS);
+		error('%s: ERROR: Unknown sequence type %s for selecting basis set and control file!\n', sFunctionName, seqType_MRS);
 end		% End of switch seqType_MRS
 
 % Sequence independent settings
@@ -708,6 +734,10 @@ switch seqType_MRS
 				% svs_dkd_slaser with TE = 23 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_MRS_TGA_Analysis/';
 				dirData_Base		= dirDataAnalysis;
+			case '3T_BPAPS'
+				% svs_dkd_slaser with TE = 23 ms
+				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_BPAPS_Analysis/';
+				dirData_Base		= dirDataAnalysis;
 			case '7T_KCL'
 				% eja_svs_slaser with TE = 40 ms
 				dirDataAnalysis		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/7T_KCL_Analysis/';
@@ -716,7 +746,7 @@ switch seqType_MRS
 				%dirData_AddOn2		= '';
 				
 			otherwise
-				error('%s: ERROR: Unknown study %s!\n', sFunctionName, strStudy_MRS);
+				error('%s: ERROR: Unknown study %s for selecting data directories!\n', sFunctionName, strStudy_MRS);
 		end			% End of switch strStudy_MRS
 		
 				
@@ -1374,6 +1404,15 @@ if( noFiles_table > 0 )
 						otherwise
 							error('%s: ERROR: Unknown VOI %s for study %s when selecting Excel template!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
 					end			% End of switch strVOI_MRS
+				case '3T_BPAPS'
+					% Select template according to selected VOI
+					switch strVOI_MRS
+						case 'LAUD'
+							astrTemplateFilesExcel	= ["3T_BPAPS_MRS_Analysis_Template_LAUD.xltx"];
+
+						otherwise
+							error('%s: ERROR: Unknown VOI %s for study %s when selecting Excel template(s)!\n', sFunctionName, strVOI_MRS, strStudy_MRS);
+					end			% End of switch strVOI_MRS
 				case '3T_MMs'
 					fprintf('%s: Preparation for coyping results into existing Excel sheet NOT YET IMPLEMENTED!\n\n', strStudy_MRS);
 					bCopyIntoExcel			= 0;		
@@ -1382,7 +1421,7 @@ if( noFiles_table > 0 )
 					bCopyIntoExcel			= 0;	
 
 				otherwise
-					error('%s: ERROR: No Excel template for unknown study %s!\n', sFunctionName, strStudy_MRS);
+					error('%s: ERROR: No Excel template for unknown study %s for selecting Excel template(s)!\n', sFunctionName, strStudy_MRS);
 			end			% End of switch strStudy_MRS
 			noTemplateFilesExcel	= length(astrTemplateFilesExcel);
 
@@ -1394,11 +1433,16 @@ if( noFiles_table > 0 )
 			% Select sheet and range of Excel file, where table of results is to be saved
 			% and # of columns to be inserted into final table
 			% depending on type of spectra being analyzed and MRS study
+			% Obtain parts of string for MRS study
+			partsStudy_MRS		= split(strStudy_MRS, "_");
 			if strcmp(strAnalysisData, 'MRS_reg')
 				% Regular MR spectra
 				switch strStudy_MRS
-					case {'3T_Trauma', '3T_SBAM'}
-						strSheetSel				= ['MRS_', strVOI_MRS, '_All'];
+					case {'3T_Trauma', '3T_SBAM', '3T_BPAPS'}
+						% Assume that name of study without field strength is part 2 of
+						% parts of study string, e.g. 'SBAM' in '3T_SBAM'
+						%strSheetSel				= ['MRS_', strVOI_MRS, '_All'];
+						strSheetSel				= [partsStudy_MRS{2}, '_', strVOI_MRS, '_All'];
 					case '3T_TGA'
 						strSheetSel				= ['MRS_', strVOI_MRS, '_All', strSheetSel_AddOn];
 
