@@ -40,7 +40,9 @@ paramsMRS_struct.filename_w				= '';
 
 % Parameter settings depending on selected configuration
 switch config
-	case 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC'
+	%case 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC'
+	case {'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC', 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR2_ECC', ...
+			'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR4_ECC'}
 		% MR spectra in raw data (.dat) format processed using spectral registration (SR1)
 		%paramsMRS_struct.dirString_In			= '';
 		%paramsMRS_struct.dirString_Out			= '';
@@ -145,6 +147,57 @@ switch config
 		paramsMRS_struct.plotSwitch					= 0;
 		paramsMRS_struct.reportSwitch				= 0;
 		paramsMRS_struct.bPrep_MetabQuant			= 1;
+		
+	case {'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SC1_ECC', 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SC2_ECC', ...
+			'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SC3_ECC', 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SC4_ECC'}
+		paramsMRS_struct.strStudy_MRS			= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';	'3T_BPAPS';
+		paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
+		paramsMRS_struct.strVOI_MRS				= 'PCG';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+		paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMA' (DICOM)
+		paramsMRS_struct.dataType_MRS			= 'mrs_w_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
+		paramsMRS_struct.signals_MRS			= 'Spectra';	% 'MMs';	% 'Spectra';
+		paramsMRS_struct.strOVS					= 'wOVS';		% 'wOVS';	% 'woutOVS';
+		paramsMRS_struct.strOVS_w				= 'woutOVS';	% 'wOVS';	% 'woutOVS';
+		paramsMRS_struct.leftshift				= 3;			% 3;	% 2;	% 0;	% 1;
+		paramsMRS_struct.avgBlockSize			= 0;			% 0;	2;		4;		8;		16;
+		
+		% Info about processing tool(s) mainly used
+		paramsMRS_struct.strProcessTool			= 'FID-A';
+
+		% Parameters for removal of bad averages
+		paramsMRS_struct.rmbadav				= 'y';			% 'y';		'n';
+		paramsMRS_struct.noSD					= 3.2;			% 3.2;	2.6;	5.0;	4.0;	3.0;	2.0;	1.8;
+		%paramsMRS_struct.digits_noSD_In		= [fix(noSD_In) round(abs(noSD_In-fix(noSD_In))*10)];
+
+		% Parameters for aligning of averages/frequency and phase drift correction using
+		% one of the following techniques:
+		%	Spectral registration	performed in either frequency or time domain or
+		%	Cross-Correlation		performed in frequency domain
+		% Parameter to select frequency and phase drift correction method
+		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.driftCorr				= 'y';		% 'y';		'n';
+		paramsMRS_struct.strFreqPhaseCorr		= config_ExtractFreqPhaseCorr_s(config);
+
+		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
+
+		% Note that both structs for SR and SC will be initialized to have these settings
+		% available in calling routines (possible use of both methods)
+		% Parameters for spectral registration (SR)
+		[paramsMRS_struct.structSR]				= initParams_SpecReg_s(paramsMRS_struct.strFreqPhaseCorr, ...
+																		paramsMRS_struct.dataType_MRS);
+		% Parameters for spectral cross-correlation (SC)
+		plotFlagSC_init		= 0;
+		[paramsMRS_struct.structSC]				= initParams_SpecCrossCorrel_s(paramsMRS_struct.strFreqPhaseCorr, ...
+																		paramsMRS_struct.dataType_MRS, plotFlagSC_init);
+		
+		% Additional parameter settings
+		paramsMRS_struct.bECC					= 1;
+		paramsMRS_struct.bPhaseCorrFreqShift	= 0;
+		paramsMRS_struct.strMinUserIn			= 'y';
+		paramsMRS_struct.plotSwitch				= 0;
+		paramsMRS_struct.reportSwitch			= 1;
+		paramsMRS_struct.bPrep_MetabQuant		= 1;
 
 	case {'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR1_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR2_ECC', ...
 			'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SR4_ECC'}
