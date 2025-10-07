@@ -866,12 +866,17 @@ switch seqType
 		    % Combine coil channels before and after signal averaging for comparison and
 		    % plotting
 			% Not clear why next statement with coilcombos as output to be an input down
-			% below was used
+			% below was used; 
+			% Explanantion: routine op_addcvrs(...) returns newly determined coilcombos 
+			% as fourth output argument, if coilcombos is not provided as an input
 			%[out_cc,fid_pre,spec_pre,coilcombos]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
-			[out_cc,fid_pre,spec_pre,ph,sig]		= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+			%[out_cc,fid_pre,spec_pre,ph,sig]		= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
+			[out_cc,fid_pre,spec_pre,coilcombos_pre]	= op_addrcvrs(out_raw,nPos_cc,'w',coilcombos);
 			%[out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(op_averaging(out_raw),nPos_cc,'w',coilcombos);
             out_raw_av								= op_averaging(out_raw);
 		    [out_av_cc,fid_av_pre,spec_av_pre]		= op_addrcvrs(out_raw_av,nPos_cc,'w',coilcombos);
+			% Alternatively, output coilcombos_av_pre not needed
+			%[out_av_cc,fid_av_pre,spec_av_pre, coilcombos_av_pre]		= op_addrcvrs(out_raw_av,nPos_cc,'w',coilcombos);
 
 		    % Generate unprocessed spectrum or spectra, respectively
 			% MRS data
@@ -1284,7 +1289,7 @@ switch seqType
 					maxppmSC_w	= 5.55;
 					if with_water
 						fprintf('Aligning of averages using spectral cross-correlation for unsuppressed water signal(s) ...\n');
-						[out_w_aa,fs_w,phs_w]	= op_alignAverages_spectXcorr_s(out_w_cc,structSC.dataFlag,minppcSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
+						[out_w_aa,fs_w,phs_w]	= op_alignAverages_spectXcorr_s(out_w_cc,structSC.dataFlag,minppmSC_w,maxppmSC_w,'f',0,0,structSC.XnuclOffsetSC);
 					end
 					if with_ref
 						fprintf('Aligning of averages using spectral cross-correlation for water reference signal(s) ...\n');
