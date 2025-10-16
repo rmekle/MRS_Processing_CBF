@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 %% Init input parameters for selected MRS study including those used for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SC2_ECC';
+configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 %configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC';
 %configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
@@ -432,8 +432,10 @@ switch seqType_MRS
 
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v2';
 										%LCM_ControlAdd					= '_Con7';
-										LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBAM_42720_mac_nratio0_v3';
-										LCM_ControlAdd					= '_Con8';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBAM_42720_mac_nratio0_v3';
+										%LCM_ControlAdd					= '_Con8';
+										LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBAM_42720_mac_nratio0_v3_Fig';
+										LCM_ControlAdd					= '_Con8_Fig';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v4';
 										%LCM_ControlAdd					= '_Con9';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_HC_water_noECC_SBA_42677_mac_nratio0_v5';
@@ -491,8 +493,10 @@ switch seqType_MRS
 										%LCM_ControlAdd					= '_Con6';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v2';
 										%LCM_ControlAdd					= '_Con7';
-										LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v3';
-										LCM_ControlAdd					= '_Con8';
+										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v3';
+										%LCM_ControlAdd					= '_Con8';
+										LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v3_Fig';
+										LCM_ControlAdd					= '_Con8_Fig';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v4';
 										%LCM_ControlAdd					= '_Con9';
 										%LCM_Control						= '3T_RAW4093_sLASER_TE23_PCG_water_noECC_SBAM_44755_93T2_mac_nratio0_v5';
