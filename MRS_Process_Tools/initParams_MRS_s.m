@@ -48,9 +48,9 @@ switch config
 		%paramsMRS_struct.dirString_Out			= '';
 		%paramsMRS_struct.filename				= '';
 		%paramsMRS_struct.filename_w				= '';
-		paramsMRS_struct.strStudy_MRS			= '3T_Trauma';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';	'3T_BPAPS';
+		paramsMRS_struct.strStudy_MRS			= '3T_SBAM';		% '3T_Trauma';	'7T_KCL';	'3T_MMs'; '3T_SBAM';	'3T_TGA';	'3T_BPAPS';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';		% 'SPECIAL';	% 'MEGA-PRESS'; % 'sLASER';
-		paramsMRS_struct.strVOI_MRS				= 'HC';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
+		paramsMRS_struct.strVOI_MRS				= 'PCG';		% 'PCG';	% 'HC'; % 'Pons'; % 'CB'; % 'PFC'; % 'PCC';
 		paramsMRS_struct.fileExt_MRS			= 'dat';		% Currently: 'dat' (raw data) or 'IMAm' (DICOM)
 		paramsMRS_struct.dataType_MRS			= 'mrs_w_ref';	% 'mrs_w_ref';		'mrs_w';	% 'mrs_ref';
 		paramsMRS_struct.signals_MRS			= 'Spectra';	% 'MMs';	% 'Spectra';
