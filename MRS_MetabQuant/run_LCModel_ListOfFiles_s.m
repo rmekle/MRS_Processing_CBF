@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 %% Init input parameters for selected MRS study including those used for preprocessing
 % Obtain parameter settings for preprocessing from initialization routine
-configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
+configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SC1_ECC';
 %configSel				= 'config_Study_sLASER_VOI_IMA_MRS_lsN_SDx_y_SC1_ECC';
 %configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SR1_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
