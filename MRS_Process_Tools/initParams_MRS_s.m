@@ -301,8 +301,10 @@ switch config
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
 
 	case {'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR1_ECC', 'config_Study_sLASER_VOI_IMA_MMS_lsN_SDx_y_SR2_ECC', ...
-			'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR4_ECC'}
-		% Macromolecules (MMs) in DICOM (.IMA) format processed using spectral registration (SR1, SR2, SR3 or SR4)
+			'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR4_ECC', ...
+			'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR5_ECC', 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR6_ECC', ...
+			'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR7_ECC', 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR8_ECC'}
+		% Macromolecules (MMs) in DICOM (.IMA) format processed using spectral registration (SR1, SR2, ..., SR8)
 		paramsMRS_struct.strStudy_MRS			= '3T_SBAM';			%'3T_SBA';	'3T_SBAM';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
 		paramsMRS_struct.strVOI_MRS				= 'PCG';				%'PCG';
