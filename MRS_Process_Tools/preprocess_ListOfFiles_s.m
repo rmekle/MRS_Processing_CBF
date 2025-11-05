@@ -214,19 +214,28 @@ switch seqType_MRS
 					otherwise
 						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
 				end			% End of switch fileExt_MRS
-			case '3T_MMs'
-				% Data (input) directories
-				%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
-				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
-				%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
-				%dirString_In_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
-				
-				
-				% Output data directory
-				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
-				%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/ZZZZ_Test/';
-				%dirString_Out_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/CodeResults/';
-				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_MMs_Analysis/';
+			case {'3T_MMs_SBA', '3T_MMs_SBAM'}
+			%case '3T_MMs'
+			switch strStudy_MRS		% MMs
+				case '3T_MMs_SBA'
+					% Data (input) directories
+					%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/';
+					dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
+					%dirString_In_Base		= '/home/mekler/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
+					%dirString_In_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/';
+
+
+					% Output data directory
+					%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Ralf/CSB_Projects/MRS_Trauma/Trauma_Z_Analysis/';
+					%dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/ZZZZ_Test/';
+					%dirString_Out_Base		= '/home/destiana/CSB_NeuroRad/destiana/Data_II/3T_BCAN_MRS_Trauma/MRS_Trauma_00_All_MMs/CodeResults/';
+					dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_Trauma_MMs_Analysis/';
+				case '3T_MMs_SBAM'
+					
+
+				otherwise
+					error('%s: ERROR: Unknown study %s for selecting MMs!', sFunctionName, strStudy_MRS);
+			end				% End of switch strStudy_MRS		% MMs
 
 				% Directories depending on MRS data type
 				switch fileExt_MRS
