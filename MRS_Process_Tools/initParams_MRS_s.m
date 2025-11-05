@@ -528,6 +528,19 @@ switch strFreqPhaseCorr
 		paramsSpecReg_struct.tmaxin				= 0.2;
 		paramsSpecReg_struct.bTmaxset			= 0;
 		paramsSpecReg_struct.ppmOption			= 2;	% Not relevant here, since SR in time domain
+	case 'SR5'
+		% SR in frequency domain
+		% Settings for water signals or macromolecules (MMs)
+		paramsSpecReg_struct.ppmOption			= 3;
+	case 'SR6'
+		% SR in frequency domain
+		paramsSpecReg_struct.ppmOption			= 4;
+	case 'SR7'
+		% SR in frequency domain
+		paramsSpecReg_struct.ppmOption			= 5;
+	case 'SR8'
+		% SR in frequency domain
+		paramsSpecReg_struct.ppmOption			= 6;
 
 	otherwise
 		error('%s: ERROR: Unknown strFreqPhaseCorr = %s!', sFunctionName, strFreqPhaseCorr);
@@ -613,7 +626,7 @@ paramsSC_struct.GF					= 1000;		% Default (Gaussian) apodization factor, if filt
 % with respect to 'SC1'
 % SC in frequency domain
 switch strFreqPhaseCorr
-	case {'SC1', 'SR1', 'SR2', 'SR3', 'SR4'}
+	case {'SC1', 'SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'SR8'}
 		% For MR spectra wihtout baseline issue(s)
 		% No modifications required
 		% Use same settings as for 'SC1' for all options of spectral registration
