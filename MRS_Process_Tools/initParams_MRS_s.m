@@ -452,7 +452,7 @@ sFunctionName		= 'config_ExtractFreqPhaseCorr_s';
 %% Extract string for frequency and phase drift correction from configuration 
 % Create cell array with all possible options (strings) for frequency and phase correction
 % and init output
-cellFreqPhaseCorr_Options	= {'SR1', 'SR2', 'SR3', 'SR4', 'SC1', 'SC2', 'SC3', 'SC4'};
+cellFreqPhaseCorr_Options	= {'SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'SR8', 'SC1', 'SC2', 'SC3', 'SC4'};
 strFreqPhaseCorr_config		= '';
 
 % Find selected option for frequency and phase correction in configuration (string)
