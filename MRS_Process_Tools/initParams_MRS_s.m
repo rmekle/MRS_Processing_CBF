@@ -300,6 +300,56 @@ switch config
 		paramsMRS_struct.reportSwitch			= 1;
 		paramsMRS_struct.bPrep_MetabQuant		= 1;
 
+	case {'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR1_ECC', 'config_Study_sLASER_VOI_IMA_MMS_lsN_SDx_y_SR2_ECC', ...
+			'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR3_ECC', 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR4_ECC'}
+		% Macromolecules (MMs) in DICOM (.IMA) format processed using spectral registration (SR1, SR2, SR3 or SR4)
+		paramsMRS_struct.strStudy_MRS			= '3T_SBAM';			%'3T_SBA';	'3T_SBAM';
+		paramsMRS_struct.seqType_MRS			= 'sLASER';
+		paramsMRS_struct.strVOI_MRS				= 'PCG';				%'PCG';
+		paramsMRS_struct.fileExt_MRS			= 'IMA';
+		paramsMRS_struct.dataType_MRS			= 'mrs_ref';
+		paramsMRS_struct.signals_MRS			= 'MMs';
+		paramsMRS_struct.strOVS					= 'wOVS';
+		paramsMRS_struct.strOVS_w				= 'woutOVS';
+		paramsMRS_struct.leftshift				= 1;
+		paramsMRS_struct.avgBlockSize			= 0;
+		
+		% Info about processing tool(s) mainly used
+		paramsMRS_struct.strProcessTool			= 'FID-A';
+
+		% Parameters for removal of bad averages
+		paramsMRS_struct.rmbadav				= 'y';
+		paramsMRS_struct.noSD					= 3.0;
+
+		% Parameters for aligning of averages/frequency and phase drift correction using
+		% one of the following techniques:
+		%	Spectral registration	performed in either frequency or time domain or
+		%	Cross-Correlation		performed in frequency domain
+		% Parameter to select frequency and phase drift correction method
+		paramsMRS_struct.driftCorr				= 'y';
+		paramsMRS_struct.strFreqPhaseCorr		= config_ExtractFreqPhaseCorr_s(config);
+
+		% Setting to align subspectra independent of selected correction technique
+		paramsMRS_struct.alignSS				= 2;		% For aligning subspectra (e.g. in SPECIAL)
+
+		% Note that both structs for SR and SC will be initialized to have these settings
+		% available in calling routines (possible use of both methods)
+		% Parameters for spectral registration (SR)
+		[paramsMRS_struct.structSR]				= initParams_SpecReg_s(paramsMRS_struct.strFreqPhaseCorr, ...
+																		paramsMRS_struct.dataType_MRS);
+		% Parameters for spectral cross-correlation (SC)
+		plotFlagSC_init		= 0;
+		[paramsMRS_struct.structSC]				= initParams_SpecCrossCorrel_s(paramsMRS_struct.strFreqPhaseCorr, ...
+																		paramsMRS_struct.dataType_MRS, plotFlagSC_init);
+
+		% Additional parameter settings
+		paramsMRS_struct.bECC					= 1;
+		paramsMRS_struct.bPhaseCorrFreqShift	= 0;
+		paramsMRS_struct.strMinUserIn			= 'y';
+		paramsMRS_struct.plotSwitch				= 0;
+		paramsMRS_struct.reportSwitch			= 1;
+		paramsMRS_struct.bPrep_MetabQuant		= 1;
+
 	case 'config_Test_seqType_VOI_ext_MRS_lsN_SDx_y_FreqPhaseCorr_bECC'
 		% Test configuration
 		% MR spectra in format fileExt processed using frequency and phase correction
