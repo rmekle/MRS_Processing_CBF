@@ -314,7 +314,7 @@ switch config
 		paramsMRS_struct.strOVS					= 'wOVS';
 		paramsMRS_struct.strOVS_w				= 'woutOVS';
 		paramsMRS_struct.leftshift				= 1;
-		paramsMRS_struct.avgBlockSize			= 0;
+		paramsMRS_struct.avgBlockSize			= 0;			% 0;	2;		4;		8;		16;
 		
 		% Info about processing tool(s) mainly used
 		paramsMRS_struct.strProcessTool			= 'FID-A';
