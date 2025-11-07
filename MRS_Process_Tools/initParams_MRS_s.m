@@ -584,7 +584,7 @@ switch dataType_MRS
 			case 6
 				% For MMs signals
 				paramsSpecReg_struct.ppmmin_fix			= 0.2;
-				paramsSpecReg_struct.pmmaxarray_fix		= [3.35,4.0,4.1];
+				paramsSpecReg_struct.ppmmaxarray_fix		= [3.35,4.0,4.1];
 
 			otherwise
 				error('%s: Unknown paramsSpecReg_struct.ppmOption = %d!', sFunctionName, paramsSpecReg_struct.ppmOption);
