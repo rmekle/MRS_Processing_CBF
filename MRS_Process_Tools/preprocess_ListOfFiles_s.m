@@ -386,7 +386,7 @@ switch seqType_MRS
 			% (should help to avoid accidentally overwriting previously processed data)
 			prompt			= sprintf('\n\nOutput directoy = %s\nDo you want to overwrite the existing output directory (y/n)?  ', dirString_Out);
 			strOverwrite	= input(prompt, 's');
-			if strOverwrite == 'n' || strOverwrite  == 'N'
+			if strcmp(strOverwrite, 'n') || strcmp(strOverwrite, 'N')
 				fprintf('\n%s: Already existing output directory is not overwritten! Preprocessing aborted!\n\n\n', sFunctionName)
 				return;
 			else
