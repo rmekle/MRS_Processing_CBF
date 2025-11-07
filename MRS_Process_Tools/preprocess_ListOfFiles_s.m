@@ -256,9 +256,20 @@ switch seqType_MRS
 				% Output data directory
 				dirString_Out_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II_Analysis/3T_BCAN_MRS_SBAM_MMs_Analysis/';
 				
-				
+				% Directories depending on MRS data type
+				switch fileExt_MRS
+					case 'dat'
+						% Select directories specific to MRS raw data (.dat)
+						% for acquired macromolecules (MMs)
+						dirString_In_AddOn1		= 'MMs_SBAM_dat';
+					case 'IMA'
+						% Select directories specific to MRS DICOM data (.IMA)
+						% for acquired macromolecules (MMs)
+						dirString_In_AddOn1		= 'MMs_SBAM_IMA';
 
-				
+					otherwise
+						error('%s: ERROR: Unknown file extension (data type) %s!', sFunctionName, fileExt_MRS);
+				end			% End of switch fileExt_MRS
 			case '3T_TGA'
 				% Data (input) directories
 				dirString_In_Base		= '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/';
@@ -423,6 +434,7 @@ end
 
 % FLAG: TODO: Update for all 3 cases the function to the new version with
 % name-value pair parameters, depending on if imaDataSwitch is set or not
+
 
 switch seqType_MRS
 	case 'SPECIAL'
