@@ -1159,7 +1159,7 @@ switch seqType
 			% either using spectral registration or
 			% cross-correlation
 			switch strFreqPhaseCorr
-				case {'SR1', 'SR2', 'SR3', 'SR4'}	% Spectral registration (SR)
+				case {'SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'SR8'}	% Spectral registration (SR)
 					fprintf('%s: Aligning of averages aka frequency and phase drift correction using spectral registration (SR) ...\n\n', sFunctionName);
 					% Create string about frequency and phase correction for report
 					reportStrFreqPhaseCorr		= sprintf('spectral registration %s',  strFreqPhaseCorr);
@@ -1310,7 +1310,7 @@ switch seqType
 					phscum		= -phs;
 
 				otherwise
-					error('%s: Unknown strFreqPhasecorr = %s!', sFunctionName, strFreqPhaseCorr);
+					error('%s: Unknown strFreqPhaseCorr = %s!', sFunctionName, strFreqPhaseCorr);
 			end % End of switch strFreqPhaseCorr
 
 			% Calculate total frequency and phase drifts
