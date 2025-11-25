@@ -355,7 +355,7 @@ switch config
 	case {'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SC1_ECC', 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SC2_ECC', ...
 			'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SC3_ECC', 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SC4_ECC'}
 		% Macromolecules (MMs) in DICOM (.IMA) format processed using spectral cross-correlation (SC1, SC2, SC3 or SC4)
-		paramsMRS_struct.strStudy_MRS			= '3T_MMs_SBAM';		%'3T_MMs_SBA';	'3T_MMs_SBAM';
+		paramsMRS_struct.strStudy_MRS			= '3T_MMs_SBA';		%'3T_MMs_SBA';	'3T_MMs_SBAM';
 		paramsMRS_struct.seqType_MRS			= 'sLASER';
 		paramsMRS_struct.strVOI_MRS				= 'PCG';				
 		paramsMRS_struct.fileExt_MRS			= 'IMA';
