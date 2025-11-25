@@ -24,7 +24,7 @@ fprintf('\n\n');
 % Obtain parameter settings for preprocessing from initialization routine
 %configSel				= 'config_Study_sLASER_VOI_dat_MRS_lsN_SDx_y_SC1_ECC';
 %configSel				= 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SR8_ECC';
-configSel				= 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SC1_ECC';
+configSel				= 'config_Study_sLASER_VOI_IMA_MMs_lsN_SDx_y_SC3_ECC';
 [sParamsMRS_struct]		= initParams_MRS_s(configSel);
 
 % Set addition to starting index into list of files to be preprocessed; 
