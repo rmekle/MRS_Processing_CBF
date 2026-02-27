@@ -210,7 +210,7 @@ outDirString_In			= dirString_In;
 
 
 % Select file extension to search for depending on selected LCModel output
-% (again, here assuming that all LCModel outputfiles are in same directory)
+% (again, here assuming that all LCModel output files are in same directory)
 % Then determine filenames and # of files for all corresponding LCModel output files
 acSearchString			= '*.print';
 
@@ -292,7 +292,7 @@ corrMatrix_min_metabSel1			= corrMatrix_min(indMetabSel1, :)
 corrMatrix_Below1_max_metabSel1		= corrMatrix_Below1_max(indMetabSel1, :);
 corrMatrix_Below1_mean_metabSel1	= corrMatrix_Below1_mean(indMetabSel1, :);
 
-% Minimum orrelation coefficent with any metabolite for metabolite selected 1
+% Minimum correlation coefficient with any metabolite for metabolite selected 1
 [corrMatrix_metabSel1_min, corr_min_metabSel1_ind]			= min(corrMatrix_min_metabSel1);
 metabMinCorr_metabSel1				= metabs{corr_min_metabSel1_ind};
 % Obtain the corresponding maximum and mean correlation coefficient for the resulting
@@ -300,7 +300,7 @@ metabMinCorr_metabSel1				= metabs{corr_min_metabSel1_ind};
 maxCorr_metabSel1_metabMinCorr		= corrMatrix_max_metabSel1(corr_min_metabSel1_ind);
 meanCorr_metabSel1_metabMinCorr		= corrMatrix_mean_metabSel1(corr_min_metabSel1_ind);
 
-% Maximumn correlation coefficent with any metabolite for metabolite selected 1
+% Maximum correlation coefficient with any metabolite for metabolite selected 1
 % Exclude (Glu+Gln) for maximum correlation with either Gln or Glu
 if strcmp(metabSel1, 'Gln') || strcmp(metabSel1, 'Glu')
 	[corrMatrix_Below1_metabSel1_max, corr_max_metabSel1_ind]	= max(corrMatrix_Below1_max_metabSel1(setdiff(1:end, indMetabGlu_Gln)));
@@ -331,7 +331,7 @@ corrMatrix_min_metabSel2			= corrMatrix_min(indMetabSel2, :)
 corrMatrix_Below1_max_metabSel2		= corrMatrix_Below1_max(indMetabSel2, :);
 corrMatrix_Below1_mean_metabSel2	= corrMatrix_Below1_mean(indMetabSel2, :);
 
-% Minimum orrelation coefficent with any metabolite for metabolite selected 2
+% Minimum correlation coefficient with any metabolite for metabolite selected 2
 [corrMatrix_metabSel2_min, corr_min_metabSel2_ind]			= min(corrMatrix_min_metabSel2);
 metabMinCorr_metabSel2				= metabs{corr_min_metabSel2_ind};
 % Obtain the corresponding maximum and mean correlation coefficient for the resulting
@@ -339,7 +339,7 @@ metabMinCorr_metabSel2				= metabs{corr_min_metabSel2_ind};
 maxCorr_metabSel2_metabMinCorr		= corrMatrix_max_metabSel2(corr_min_metabSel2_ind);
 meanCorr_metabSel2_metabMinCorr		= corrMatrix_mean_metabSel2(corr_min_metabSel2_ind);
 
-% Maximumn correlation coefficent with any metabolite for metabolite selected 2
+% Maximum correlation coefficient with any metabolite for metabolite selected 2
 % Exclude (Glu+Gln) for maximum correlation with either Gln or Glu
 if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
 	[corrMatrix_Below1_metabSel2_max, corr_max_metabSel2_ind]	= max(corrMatrix_Below1_max_metabSel2(setdiff(1:end, indMetabGlu_Gln)));
@@ -363,7 +363,7 @@ end		% End of if strcmp(metabSel2, 'Gln') || strcmp(metabSel2, 'Glu')
 
 
 %% Display info
-fprintf('\n\nCorrelation Coefficients from Detailed LCM Ouput for\n');
+fprintf('\n\nCorrelation Coefficients from Detailed LCM Output for\n');
 fprintf('seqType_MRS = %s, strStudy_MRS = %s, strVOI_MRS = %s, and fileExt_MRS = %s:\n\n', seqType_MRS, strStudy_MRS, strVOI_MRS, fileExt_MRS);
 fprintf('corrMatrix_all_min = %.3f\tcorrMatrix_all_Below1_max  = %.3f\n\n\n\n', corrMatrix_all_min, corrMatrix_all_Below1_max);
 fprintf('For metabolite selected 1 = %s\n\n', metabSel1);
