@@ -364,11 +364,25 @@ fprintf('Size of background = sz_background = %d\t%d\n', sz_background);
 min_ppmFloor	= floor( min(ppm)*100 ) / 100;
 max_ppmCeil		= ceil( max(ppm)*100 ) / 100;
 
-%%%%%%%%%%%%%     RESIDUALS    %%%%%%%%%%%%
-residuals		= raw_spectrum - spectrum_fit;
+% Signal minimum, maximum, and range of spectrum
 min_spectrum	= min(raw_spectrum);
 max_spectrum	= max(raw_spectrum);
 SIrange			= (max_spectrum - min_spectrum);
+
+% Signal minimum, maximum, and range of background (baseline)
+min_background	= min(background);
+max_background	= max(background);
+%BGrange			= (max_background) - min_background));
+
+% Determine minimum and maximum of all signals
+% Minimum is either minimum of spectrum of of background (baseline)
+% Maximum is always maximum of spectrum
+min_Signals		= min(min_spectrum, min_background);
+max_Signals		= max_spectrum;
+
+
+%%%%%%%%%%%%%     RESIDUALS    %%%%%%%%%%%%
+residuals		= raw_spectrum - spectrum_fit;
 ranges_figR		= [min_ppmFloor max_ppmCeil -0.25*SIrange 0.25*SIrange];
 %ranges_figR		= [min(ppm) max(ppm) -0.25*SIrange 0.25*SIrange];
 %ranges_fig		= [min(ppm) max(ppm) min_spectrum 1.25*max_spectrum];
@@ -432,15 +446,17 @@ yPlotDeltaMax		= 0.05;
 yPlotDeltaMin		= 0.05;
 yPlotFactorMax		= 1 + yPlotDeltaMax;
 yPlotFactorMin		= 1 + yPlotDeltaMin;
-if( min_spectrum < 0 )
-	% Water signal or other part of spectrum negative
-	spectrumPlotRange		= [(yPlotFactorMin*abs(min_spectrum)*sign(min_spectrum)) yPlotFactorMax*max_spectrum];
-	spectrumPlotRangeSame	= [(min_spectrum-yPlotDeltaMin*max_spectrum) yPlotFactorMax*max_spectrum];
+min_RefSignal		= min_Signals;		% min_Signals;	min_spectrum;
+max_RefSignal		= max_Signals;		% max_Signals;	max_spectrum;	
+if( min_RefSignal < 0 )
+	% Water signal or other part of spectrum or background negative
+	spectrumPlotRange		= [(yPlotFactorMin*abs(min_RefSignal)*sign(min_RefSignal)) yPlotFactorMax*max_RefSignal];
+	spectrumPlotRangeSame	= [(min_RefSignal-yPlotDeltaMin*max_RefSignal) yPlotFactorMax*max_RefSignal];
 else
-	% Water signal and spectrum positive
-	spectrumPlotRange		= [0 yPlotFactorMax*max_spectrum];
-	spectrumPlotRangeSame	= [-yPlotDeltaMin*max_spectrum yPlotFactorMax*max_spectrum];
-end % End of if( min_spectrum < 0 )
+	% Water signal and spectrum and background positive
+	spectrumPlotRange		= [0 yPlotFactorMax*max_RefSignal];
+	spectrumPlotRangeSame	= [-yPlotDeltaMin*max_RefSignal yPlotFactorMax*max_RefSignal];
+end % End of if( min_RefSignal < 0 )
 ranges_fig				= [ppmPlotRange spectrumPlotRange];
 ranges_figSameScale		= [ppmPlotRange spectrumPlotRangeSame];
 
@@ -453,9 +469,10 @@ ranges_figR			= [ppmPlotRange -plotFactor_figR*max_residuals plotFactor_figR*max
 % Display some info
 fprintf('\n\n');
 fprintf('min_spectrum = %.2f\t\tmax_spectrum = %.2f\n', min_spectrum, max_spectrum);
+fprintf('min_background = %.2f\t\tmax_background = %.2f\n', min_background, max_background);
 disp('ppmPlotRange = '); disp(ppmPlotRange);
-disp('spectumPlotRange = '); disp(spectrumPlotRange);
-disp('spectumPlotRangeSame = '); disp(spectrumPlotRangeSame);
+disp('spectrumPlotRange = '); disp(spectrumPlotRange);
+disp('spectrumPlotRangeSame = '); disp(spectrumPlotRangeSame);
 
 % Plot into one figure with multiple subplots, if selected
 if( strcmp(strShowSpectrumAndFit, 'YES') )
@@ -520,24 +537,24 @@ end		% End of if( strcmp(strShowSpectrumAndFit, 'YES') )
 % ppm_range		= [min(ppm) max(ppm)]
 font			= 16;
 plotLineWidth	= 1.2;
-ppmPlotRange	= [(min_ppmFloor-ppmPlotDelta) (max_ppmCeil+ppmPlotDelta)];
+%ppmPlotRange	= [(min_ppmFloor-ppmPlotDelta) (max_ppmCeil+ppmPlotDelta)];
 % % HACK for metabolite T2s
 % if( indCase == 7 )
 % 	ppmPlotRange = [(1.8-ppmPlotDelta) (max(ppm)+ppmPlotDelta)];
 % end
-% Determine a suitable plotting scale, also for the case that all data are plotted at
-% same scale
-if( min_spectrum < 0 )
-	% Water signal negative
-	spectrumPlotRange		= [(1.05*abs(min_spectrum)*sign(min_spectrum)) 1.05*max_spectrum];
-	spectrumPlotRangeSame	= [(min_spectrum-0.05*max_spectrum) 1.05*max_spectrum];
-else
-% Water signal positive
-	spectrumPlotRange		= [0 1.05*max_spectrum];
-	spectrumPlotRangeSame	= [-0.05*max_spectrum 1.05*max_spectrum];
-end
-ranges_fig				= [ppmPlotRange spectrumPlotRange];
-ranges_figSameScale		= [ppmPlotRange spectrumPlotRangeSame];
+% % Determine a suitable plotting scale, also for the case that all data are plotted at
+% % same scale
+% if( min_spectrum < 0 )
+% 	% Water signal negative
+% 	spectrumPlotRange		= [(1.05*abs(min_spectrum)*sign(min_spectrum)) 1.05*max_spectrum];
+% 	spectrumPlotRangeSame	= [(min_spectrum-0.05*max_spectrum) 1.05*max_spectrum];
+% else
+% % Water signal positive
+% 	spectrumPlotRange		= [0 1.05*max_spectrum];
+% 	spectrumPlotRangeSame	= [-0.05*max_spectrum 1.05*max_spectrum];
+% end
+% ranges_fig				= [ppmPlotRange spectrumPlotRange];
+% ranges_figSameScale		= [ppmPlotRange spectrumPlotRangeSame];
 
 % Plot spectrum and fits into separate figures, if selected
 if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
