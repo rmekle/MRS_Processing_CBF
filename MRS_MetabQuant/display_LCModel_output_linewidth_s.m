@@ -410,8 +410,7 @@ end		% End of if bAcquired_MMs
 indFigs	= 0;
 % Set figure properties for spectrum and fit of spectrum
 % ppm_range		= [min(ppm) max(ppm)]
-font_figR		= 10;
-font			= 10;
+font			= 12;
 plotLineWidth	= 1.2;
 ppmTextPos      = [0.9, -0.11, 0];
 ppmPlotDelta    = 0.10;				% 0.05;		% 0.10;		% 0.15;
@@ -432,6 +431,7 @@ ranges_fig				= [ppmPlotRange spectrumPlotRange];
 ranges_figSameScale		= [ppmPlotRange spectrumPlotRangeSame];
 
 % Set figure properties for plot of residuals
+font_figR			= 10;
 plotFactor_figR		= 1.5;		% 1.05;		% 1.1;	% 1.5;
 max_residuals		= max(abs(residuals));
 ranges_figR			= [ppmPlotRange -plotFactor_figR*max_residuals plotFactor_figR*max_residuals];
@@ -479,6 +479,7 @@ if( strcmp(strShowSpectrumAndFit, 'YES') )
 		'YColor', [0 0 0], 'TickDir', 'out', 'Box', 'off', 'FontName', 'Arial', ...
 		'YTickLabelMode', 'Manual', 'YTick', [0 20000 60000 100000], ...
 		'YTickLabel', {'0' '2*10^4' '6*10^4' '10*10^4'}, ...
+		'YColor', 'none', ...		% Hide y-axis using set(gca, ...);
 		'YGrid', 'off');
 	%'YTickLabelMode', 'Manual', 'YTick', []);
 	if( strcmp(strUseSameScale, 'YES') )
