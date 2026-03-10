@@ -63,8 +63,10 @@ strFilterSpec			= strcat('*', file_ext);
 %[file_name, file_path]	= uigetfile(strFilterSpec, 'Select file to be analyzed')
 %file_name				= '3T_SBAM_0088_20230413_meas_MID00262_PCG_Con8_Fig.coord';
 %file_path				= '/home/mekler/CSB_NeuroRad/mekler/Ralf/Papers/ISMRM_2026_05/Figures_Abstract_MRS_MPM/Fig_1_MRS/Fig_1_MRS_Aux/3T_SBAM_0088_20230413_PCG_LCM_Out_PCG_ref_Quant_Con8_Fig/';
-file_name				= '3T_SBAM_0088_20230413_meas_MID00252_HC_Con8_Fig.coord';
-file_path				= '/home/mekler/CSB_NeuroRad/mekler/Ralf/Papers/ISMRM_2026_05/Figures_Abstract_MRS_MPM/Fig_1_MRS/Fig_1_MRS_Aux/3T_SBAM_0088_20230413_HC_LCM_Out_HC_ref_Quant_Con8_Fig/';
+%file_name				= '3T_SBAM_0088_20230413_meas_MID00252_HC_Con8_Fig.coord';
+%file_path				= '/home/mekler/CSB_NeuroRad/mekler/Ralf/Papers/ISMRM_2026_05/Figures_Abstract_MRS_MPM/Fig_1_MRS/Fig_1_MRS_Aux/3T_SBAM_0088_20230413_HC_LCM_Out_HC_ref_Quant_Con8_Fig/';
+file_name				= '3T_TGA_21_1_20250420_DICOM_SVS_SLASER_DKD_HC_RIGHT_TE23_WS128_0028_wOVS_3_0_SR1_processed_lcm.coord';
+file_path				= '/home/mekler/CSB_NeuroRad/mekler/Ralf/Papers/Papers_Co_Author/Charite_202510_Charite_Psych_MRS_Networks/3T_TGA_Data_Display/3T_MRS_TGA_Analysis/HC_IMA_FID-A_ls1_SD3_0_SR1_ECCref/HC_LCM_Out_HC_ref_Quant_Conc8_43206/';
 fileName				= [file_path file_name];
 caseName				= file_name(1:(strfind(file_name, file_ext) - 1));
 
