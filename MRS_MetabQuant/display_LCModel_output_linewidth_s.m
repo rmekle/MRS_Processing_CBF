@@ -25,7 +25,8 @@ strBoField							= '3T';			%	'3T';	'7T';
 strUseSameScale						= 'YES';		%	'YES';	'NO';
 strUseSameScaleFitPlot				= 'NO';
 strShowSpectrumAndFit				= 'YES';
-strShowSpectrumAndFitFigs			= 'YES';
+strAddBaselineToPlot				= 'YES';
+strShowSpectrumAndFitFigs			= 'NO';
 strShowMetaboliteFits				= 'NO';
 strLinewidthFit						= 'NO';
 strAllLinewidthFitsWoutResiduals	= 'NO';
@@ -443,7 +444,7 @@ disp('ppmPlotRange = '); disp(ppmPlotRange);
 disp('spectumPlotRange = '); disp(spectrumPlotRange);
 disp('spectumPlotRangeSame = '); disp(spectrumPlotRangeSame);
 
-% Plot into one figure with 2 subplots, if selected
+% Plot into one figure with multiple subplots, if selected
 if( strcmp(strShowSpectrumAndFit, 'YES') )
 	indFigs				= indFigs + 1;
 	h_figures(indFigs)	= figure;
@@ -469,11 +470,17 @@ if( strcmp(strShowSpectrumAndFit, 'YES') )
 	% xlabel('ppm', 'FontSize', (font+4), 'FontWeight', 'bold', 'VerticalAlignment', 'bottom', ...
 	% 	'Units', 'normalized', 'Position', ppmTextPos);
 
-	% Spectrum and fit of spectrum
+	% Spectrum and fit of spectrum and if selected, baseline
 	%subplot(2,1,2);
 	subplot('Position',[0.13 0.10 0.775 0.74]);
-	hplot = plot(ppm, raw_spectrum, 'k', ppm, spectrum_fit, 'r', 'LineWidth', plotLineWidth);
-	%hplot				= plot(ppm, raw_spectrum, 'k', 'LineWidth', plotLineWidth);
+	if( strcmp(strAddBaselineToPlot, 'YES') )
+		% Plot spectrum and fit and baseline into same subplot
+		hplot = plot(ppm, raw_spectrum, 'k', ppm, spectrum_fit, 'r', ppm, background, 'k', 'LineWidth', plotLineWidth);
+	else
+		% Plot spectrum and fit into same subplot
+		hplot = plot(ppm, raw_spectrum, 'k', ppm, spectrum_fit, 'r', 'LineWidth', plotLineWidth);
+		%hplot				= plot(ppm, raw_spectrum, 'k', 'LineWidth', plotLineWidth);
+	end % End of if( strcmp(strAddBaselineToPlot, 'YES') )
 	set(gca,'Xdir','reverse', 'XTick', [0.5:0.5:5], 'XTickLabel', {'', '1', '', '2', '', '3', '', '4', '', '5'}, ...
 		'FontSize', font, 'LineWidth', 2, 'FontWeight', 'bold', 'XColor', [0 0 0], ...
 		'YColor', [0 0 0], 'TickDir', 'out', 'Box', 'off', 'FontName', 'Arial', ...
