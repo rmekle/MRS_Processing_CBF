@@ -26,13 +26,13 @@ strUseSameScale						= 'YES';		%	'YES';	'NO';
 strShowSpectrumAndFit				= 'YES';
 strShowSpectrumAndFitFigs			= 'YES';
 strShowMetaboliteFits				= 'NO';
-strLinewidthFit						= 'YES';
-strAllLinewidthFitsWoutResiduals	= 'YES';
-strShowLinewidthData				= 'YES';
+strLinewidthFit						= 'NO';
+strAllLinewidthFitsWoutResiduals	= 'NO';
+strShowLinewidthData				= 'NO';
 strCloseLinewidthFits				= 'NO';
 strSaveLinewidthFits				= 'YES';
 strEstimateSignal					= 'YES';
-strShowEstimateSignal				= 'YES';
+strShowEstimateSignal				= 'NO';
 strSaveEstimateSignal				= 'YES';
 
 
