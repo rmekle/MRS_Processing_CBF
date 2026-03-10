@@ -25,7 +25,7 @@ strBoField							= '3T';			%	'3T';	'7T';
 strUseSameScale						= 'YES';		%	'YES';	'NO';
 strUseSameScaleFitPlot				= 'NO';
 strShowSpectrumAndFit				= 'YES';
-strAddBaselineToPlot				= 'YES';
+strAddBaselineToPlot				= 'NO';
 strShowSpectrumAndFitFigs			= 'NO';
 strShowMetaboliteFits				= 'NO';
 strLinewidthFit						= 'NO';
@@ -418,16 +418,29 @@ ppmPlotDelta    = 0.10;				% 0.05;		% 0.10;		% 0.15;
 ppmPlotRange	= [(min_ppmFloor-ppmPlotDelta) (max_ppmCeil+ppmPlotDelta)];
 
 % Determine a suitable plotting scale, also for the case that all data are plotted at
-% same scale
+% % same scale
+% if( min_spectrum < 0 )
+% 	% Water signal or other part of spectrum negative
+% 	spectrumPlotRange		= [(1.05*abs(min_spectrum)*sign(min_spectrum)) 1.05*max_spectrum];
+% 	spectrumPlotRangeSame	= [(min_spectrum-0.05*max_spectrum) 1.05*max_spectrum];
+% else
+% 	% Water signal and spectrum positive
+% 	spectrumPlotRange		= [0 1.05*max_spectrum];
+% 	spectrumPlotRangeSame	= [-0.05*max_spectrum 1.05*max_spectrum];
+% end
+yPlotDeltaMax		= 0.05;
+yPlotDeltaMin		= 0.05;
+yPlotFactorMax		= 1 + yPlotDeltaMax;
+yPlotFactorMin		= 1 + yPlotDeltaMin;
 if( min_spectrum < 0 )
 	% Water signal or other part of spectrum negative
-	spectrumPlotRange		= [(1.05*abs(min_spectrum)*sign(min_spectrum)) 1.05*max_spectrum];
-	spectrumPlotRangeSame	= [(min_spectrum-0.05*max_spectrum) 1.05*max_spectrum];
+	spectrumPlotRange		= [(yPlotFactorMin*abs(min_spectrum)*sign(min_spectrum)) yPlotFactorMax*max_spectrum];
+	spectrumPlotRangeSame	= [(min_spectrum-yPlotDeltaMin*max_spectrum) yPlotFactorMax*max_spectrum];
 else
 	% Water signal and spectrum positive
-	spectrumPlotRange		= [0 1.05*max_spectrum];
-	spectrumPlotRangeSame	= [-0.05*max_spectrum 1.05*max_spectrum];
-end
+	spectrumPlotRange		= [0 yPlotFactorMax*max_spectrum];
+	spectrumPlotRangeSame	= [-yPlotDeltaMin*max_spectrum yPlotFactorMax*max_spectrum];
+end % End of if( min_spectrum < 0 )
 ranges_fig				= [ppmPlotRange spectrumPlotRange];
 ranges_figSameScale		= [ppmPlotRange spectrumPlotRangeSame];
 
