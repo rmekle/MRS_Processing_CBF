@@ -558,8 +558,9 @@ plotLineWidth	= 1.2;
 
 % Plot spectrum and fits into separate figures, if selected
 if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
-	indFigs				= indFigs + 1;
-	h_figures(indFigs)	= figure;
+	firstSpectrumAndFitFig	= indFigs + 1;
+	indFigs					= indFigs + 1;
+	h_figures(indFigs)		= figure;
 	% hplot = plot(ppm, raw_spectrum, 'k', ppm, spectrum_fit, '--r', 'LineWidth', plotLineWidth);
 	hplot				= plot(ppm, raw_spectrum, 'k', 'LineWidth', plotLineWidth);
 	set(gca,'Xdir','reverse', 'XTick', [0.5:0.5:5], 'XTickLabel', {'', '1', '', '2', '', '3', '', '4', '', '5'}, ...
@@ -635,8 +636,9 @@ end		% End of if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
 if( strcmp(strShowMetaboliteFits, 'YES') )
 	% Set index into figure handles to specific value
 	% (to have a definite starting point for handles to figures for metabolite fits)
-	firstMetabFig	= 6;
-	indFigs			= firstMetabFig - 1;
+	%firstMetabFig	= 6;
+	%indFigs			= firstMetabFig - 1;
+	firstMetabFig	= indFigs + 1;
 	for lI=1 : 1 : noMetabolites
 		min_Metabolite	= min(fitsMetabolites(lI, :));
 		max_Metabolite	= max(fitsMetabolites(lI, :));
@@ -697,7 +699,7 @@ end		% End of if( strcmp(strShowMetaboliteFits, 'YES') )
 
 % Save plots of spectrum, fit from LCModel, fit residuals, and baseline, if selected
 % CHECK ON INDICES INTO ARRAY FOR FIGURE HANDLES
-if( strcmp(strShowSpectrumAndFit, 'YES') )
+if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
 	acellNames		= {'spectrum', 'fitOfSpectrum', 'fitResiduals', 'baseline'};
 	answer = questdlg('Do you want to save the figures for spectrum, fit, residuals, and baseline?', ...
 		'Saving of Spectrum Figures', 'Yes', 'Default', 'No', 'No');
@@ -712,11 +714,11 @@ if( strcmp(strShowSpectrumAndFit, 'YES') )
 					disp(messageID);
 				end
 			end
-			for lI=1 : 1 : 4
-				figureName	= strcat(acellNames{lI}, strSaveName);
-				saveFigure_s(h_figures(lI+1), saveDir, figureName, 'fig', resolution);
-				saveFigure_s(h_figures(lI+1), saveDir, figureName, 'eps', resolution);
-                saveFigure_s(h_figures(lI+1), saveDir, figureName, 'png', resolution);
+			for lI=firstSpectrumAndFitFig : 1 : (firstSpectrumAndFitFig + length(acellNames) - 1)
+				figureName	= strcat(acellNames{lI-firstSpectrumAndFitFig+1}, strSaveName);
+				saveFigure_s(h_figures(lI), saveDir, figureName, 'fig', resolution);
+				saveFigure_s(h_figures(lI), saveDir, figureName, 'eps', resolution);
+                saveFigure_s(h_figures(lI), saveDir, figureName, 'png', resolution);
 				%saveFigure_s(h_figures(lI+1), saveDir, figureName, 'png', 300);
 			end
 		case 'Default'
@@ -724,44 +726,44 @@ if( strcmp(strShowSpectrumAndFit, 'YES') )
 		case 'No'
 			fprintf('\n\nSpectrum figures were not saved!\n\n\n');
 	end		% End of switch answer
+end		% End of if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
 
-	% Save plots of fits for metabolite signals, if selected
-	% CHECK ON INDICES INTO ARRAY FOR FIGURE HANDLES
-	if( strcmp(strShowMetaboliteFits, 'YES') )
-		answer = questdlg('Do you want to save the figures for the metabolite fits?', ...
-			'Saving of Metabolite Fit Figures', 'Yes', 'Default', 'No', 'No');
-		switch answer
-			case 'Yes'
-				fprintf('\n\nSaving of metabolite fit figures ...\n\n\n')
-				% If directory for saving does not exist, create it
-				if( ~exist(saveDir, 'dir') )
-					[success,message,messageID] = mkdir(parentDir, 'SameScale');
-					if( success == 0 )
-						disp(message);
-						disp(messageID);
-					end
+% Save plots of fits for metabolite signals, if selected
+% CHECK ON INDICES INTO ARRAY FOR FIGURE HANDLES
+if( strcmp(strShowMetaboliteFits, 'YES') )
+	answer = questdlg('Do you want to save the figures for the metabolite fits?', ...
+		'Saving of Metabolite Fit Figures', 'Yes', 'Default', 'No', 'No');
+	switch answer
+		case 'Yes'
+			fprintf('\n\nSaving of metabolite fit figures ...\n\n\n')
+			% If directory for saving does not exist, create it
+			if( ~exist(saveDir, 'dir') )
+				[success,message,messageID] = mkdir(parentDir, 'SameScale');
+				if( success == 0 )
+					disp(message);
+					disp(messageID);
 				end
-				for lI=1 : 1 : noMetabolites
-					figureName	= strcat('fitSig_', acellMetabolites{lI}, strSaveName);
-					saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'fig', resolution);
-					saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'eps', resolution);
-                    saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'png', resolution);
-					%saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'png', 300);
-				end
-				% Save figure for summed up macromolecule contributions for 3T data
-				if( strcmp(strBoField, '3T') )
-					figureName	= strcat('fitSig_', 'SummedMM', strSaveName);
-					saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'fig', resolution);
-					saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'eps', resolution);
-					saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'png', resolution);
-				end
-			case 'Default'
-				fprintf('\n\nMetabolite figures were not saved!\n\n\n');
-			case 'No'
-				fprintf('\n\nMetabolite figures were not saved!\n\n\n');
-		end
-	end		% End of if( strcmp(strShowMetaboliteFits, 'YES') )
-end		% End of if( strcmp(strShowSpectrumAndFit, 'YES') )
+			end
+			for lI=1 : 1 : noMetabolites
+				figureName	= strcat('fitSig_', acellMetabolites{lI}, strSaveName);
+				saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'fig', resolution);
+				saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'eps', resolution);
+				saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'png', resolution);
+				%saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'png', 300);
+			end
+			% Save figure for summed up macromolecule contributions for 3T data
+			if( strcmp(strBoField, '3T') )
+				figureName	= strcat('fitSig_', 'SummedMM', strSaveName);
+				saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'fig', resolution);
+				saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'eps', resolution);
+				saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'png', resolution);
+			end
+		case 'Default'
+			fprintf('\n\nMetabolite figures were not saved!\n\n\n');
+		case 'No'
+			fprintf('\n\nMetabolite figures were not saved!\n\n\n');
+	end
+end		% End of if( strcmp(strShowMetaboliteFits, 'YES') )
 
 
 %% Creatine for linewidth estimation, if selected
