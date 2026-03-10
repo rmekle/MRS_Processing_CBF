@@ -23,6 +23,7 @@ fprintf('\n\n');
 % Same scale
 strBoField							= '3T';			%	'3T';	'7T';
 strUseSameScale						= 'YES';		%	'YES';	'NO';
+strUseSameScaleFitPlot				= 'NO';
 strShowSpectrumAndFit				= 'YES';
 strShowSpectrumAndFitFigs			= 'YES';
 strShowMetaboliteFits				= 'NO';
@@ -455,7 +456,8 @@ if( strcmp(strShowSpectrumAndFit, 'YES') )
 		'YTickLabelMode', 'Manual', 'YTick', [-2000 0 2000], ...
 		'YTickLabel', {'-2*10^3' '0' '2*10^3'}, ...
 		'YGrid', 'off');
-	if( strcmp(strUseSameScale, 'YES') )
+	%if( strcmp(strUseSameScale, 'YES') )
+	if( strcmp(strUseSameScaleFitPlot, 'YES') )
 		axis(ranges_figSameScale);
 	else
 		axis(ranges_figR);
