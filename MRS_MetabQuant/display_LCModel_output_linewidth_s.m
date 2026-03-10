@@ -410,6 +410,7 @@ end		% End of if bAcquired_MMs
 indFigs	= 0;
 % Set figure properties for spectrum and fit of spectrum
 % ppm_range		= [min(ppm) max(ppm)]
+font_figR		= 10;
 font			= 10;
 plotLineWidth	= 1.2;
 ppmTextPos      = [0.9, -0.11, 0];
@@ -431,8 +432,9 @@ ranges_fig				= [ppmPlotRange spectrumPlotRange];
 ranges_figSameScale		= [ppmPlotRange spectrumPlotRangeSame];
 
 % Set figure properties for plot of residuals
+plotFactor_figR		= 1.5;		% 1.05;		% 1.1;	% 1.5;
 max_residuals		= max(abs(residuals));
-ranges_figR			= [ppmPlotRange -1.05*max_residuals 1.05*max_residuals];
+ranges_figR			= [ppmPlotRange -plotFactor_figR*max_residuals plotFactor_figR*max_residuals];
 
 % Display some info
 fprintf('\n\n');
@@ -451,11 +453,12 @@ if( strcmp(strShowSpectrumAndFit, 'YES') )
 	subplot('Position',[0.13 0.85 0.775 0.1]);
 	hplot				= plot(ppm, residuals, 'k', 'LineWidth', 1.0);
 	set(gca,'Xdir','reverse', 'XTick', [],  'FontName', 'Arial', ...
-		'FontSize', font, 'LineWidth', 1, 'FontWeight', 'bold', 'XColor', [0 0 0], ...
-		'YColor', [0 0 0], 'TickDir', 'out', 'Box', 'on', ...
+		'FontSize', font_figR, 'LineWidth', 0.7, 'FontWeight', 'bold', 'XColor', [0 0 0], ...
+		'YColor', [0 0 0], 'TickDir', 'out', 'Box', 'on', 'Linewidth', 0.7, ...
 		'YTickLabelMode', 'Manual', 'YTick', [-2000 0 2000], ...
 		'YTickLabel', {'-2*10^3' '0' '2*10^3'}, ...
-		'YGrid', 'off');
+		'YGrid', 'on', 'GridLineStyle', '--', 'GridColor', [0.0 0.0 0.0], ...
+		'GridAlpha', 0.5, 'GridLineWidth', 1.0);		%'YGrid', 'off');
 	%if( strcmp(strUseSameScale, 'YES') )
 	if( strcmp(strUseSameScaleFitPlot, 'YES') )
 		axis(ranges_figSameScale);
