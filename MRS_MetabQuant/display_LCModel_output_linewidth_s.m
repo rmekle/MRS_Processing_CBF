@@ -24,8 +24,8 @@ fprintf('\n\n');
 strBoField							= '3T';			%	'3T';	'7T';
 strUseSameScale						= 'YES';		%	'YES';	'NO';
 strUseSameScaleFitPlot				= 'NO';
-strShowSpectrumAndFit				= 'YES';
-strAddBaselineToPlot				= 'NO';
+strShowSpecAndFitSamePlot			= 'YES';
+strAddBaselineToPlot				= 'YES';
 strShowSpectrumAndFitFigs			= 'NO';
 strShowMetaboliteFits				= 'NO';
 strLinewidthFit						= 'NO';
@@ -380,7 +380,6 @@ max_background	= max(background);
 min_Signals		= min(min_spectrum, min_background);
 max_Signals		= max_spectrum;
 
-
 %%%%%%%%%%%%%     RESIDUALS    %%%%%%%%%%%%
 residuals		= raw_spectrum - spectrum_fit;
 ranges_figR		= [min_ppmFloor max_ppmCeil -0.25*SIrange 0.25*SIrange];
@@ -421,8 +420,12 @@ end		% End of if bAcquired_MMs
 % plot(ppm, residuals); set(gca,'Xdir','reverse'); title('RESIDUALS '); axis(ranges_figR)
 
 
-% Init index into array of figure handles
-indFigs	= 0;
+% Init index into array of figure handles and indices of first figures for various plots
+indFigs					= 0;
+firstSpecAndFitSame		= 1;
+firstSpectrumAndFitFig	= 1;
+firstMetabFig			= 1;
+
 % Set figure properties for spectrum and fit of spectrum
 % ppm_range		= [min(ppm) max(ppm)]
 font			= 12;
@@ -475,7 +478,8 @@ disp('spectrumPlotRange = '); disp(spectrumPlotRange);
 disp('spectrumPlotRangeSame = '); disp(spectrumPlotRangeSame);
 
 % Plot into one figure with multiple subplots, if selected
-if( strcmp(strShowSpectrumAndFit, 'YES') )
+if( strcmp(strShowSpecAndFitSamePlot, 'YES') )
+	firstSpecAndFitSame = indFigs + 1;	 % Same notation was chosen as for metabolites
 	indFigs				= indFigs + 1;
 	h_figures(indFigs)	= figure;
 
@@ -528,7 +532,7 @@ if( strcmp(strShowSpectrumAndFit, 'YES') )
 	xlabel('ppm', 'FontSize', (font+2), 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
 	% xlabel('ppm', 'FontSize', (font+4), 'FontWeight', 'bold', 'VerticalAlignment', 'bottom', ...
 	% 	'Units', 'normalized', 'Position', ppmTextPos);
-end		% End of if( strcmp(strShowSpectrumAndFit, 'YES') )
+end		% End of if( strcmp(strShowSpecAndFitSamePlot, 'YES') )
 
 
 %% Plot spectrum, fit from LCModel, fit residuals, and baseline into separate figures, if selected
@@ -558,7 +562,7 @@ plotLineWidth	= 1.2;
 
 % Plot spectrum and fits into separate figures, if selected
 if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
-	firstSpectrumAndFitFig	= indFigs + 1;
+	firstSpectrumAndFitFig	= indFigs + 1;  % Same notation was chosen as for metabolites
 	indFigs					= indFigs + 1;
 	h_figures(indFigs)		= figure;
 	% hplot = plot(ppm, raw_spectrum, 'k', ppm, spectrum_fit, '--r', 'LineWidth', plotLineWidth);
@@ -666,41 +670,79 @@ if( strcmp(strShowMetaboliteFits, 'YES') )
 			'Units', 'normalized', 'Position', ppmTextPos);
 	end
 
-	% Plot summed up macromolecule contributions for 3T data
-	if( strcmp(strBoField, '3T') )
-		% Assume that 'max_Mac' > 0
-		if( min_Mac  > 0.1*max_Mac )
-			ranges_figSummedMM	= [ppmPlotRange 0 (1.1*max_Mac)];
-		else
-			ranges_figSummedMM	= [ppmPlotRange ...
-				(min_Mac-0.1*max_Mac) (1.1*max_Mac)];
-		end
-		indFigs				= indFigs + 1;
-		h_figures(indFigs)	= figure;
-		indFigSummedMM		= indFigs;
-		hplot				= plot(ppm, fitSummedMM, 'k', 'LineWidth', plotLineWidth);
-		set(gca,'Xdir','reverse', 'XTick', [0.5:0.5:5], 'XTickLabel', {'', '1', '', '2', '', '3', '', '4', '', '5'}, ...
-			'FontSize', font, 'LineWidth', 2, 'FontWeight', 'bold', 'XColor', [0 0 0], ...
-			'YColor', [0 0 0], 'TickDir', 'out', 'TickLength', [0.02, 0.025], 'Box', 'off', ...
-			'YTickLabelMode', 'Manual', 'YTick', [0], 'YTickLabel', {'0'}, 'YGrid', 'off');
-		if( strcmp(strUseSameScale, 'YES') )
-			axis(ranges_figSameScale);
-		else
-			axis(ranges_figSummedMM);
-		end
-		title('Fit for Summed MM (Macromolecules)');
-		xlabel('ppm', 'FontSize', (font+4), 'FontWeight', 'bold', 'VerticalAlignment', 'bottom', ...
-			'Units', 'normalized', 'Position', ppmTextPos);
-	end
+	% Plot summed up macromolecule contributions for 3T data, if existent
+	if ~bAcquired_MMs
+		if( strcmp(strBoField, '3T') )
+			% Assume that 'max_Mac' > 0
+			if( min_Mac  > 0.1*max_Mac )
+				ranges_figSummedMM	= [ppmPlotRange 0 (1.1*max_Mac)];
+			else
+				ranges_figSummedMM	= [ppmPlotRange ...
+					(min_Mac-0.1*max_Mac) (1.1*max_Mac)];
+			end
+			indFigs				= indFigs + 1;
+			h_figures(indFigs)	= figure;
+			indFigSummedMM		= indFigs;
+			hplot				= plot(ppm, fitSummedMM, 'k', 'LineWidth', plotLineWidth);
+			set(gca,'Xdir','reverse', 'XTick', [0.5:0.5:5], 'XTickLabel', {'', '1', '', '2', '', '3', '', '4', '', '5'}, ...
+				'FontSize', font, 'LineWidth', 2, 'FontWeight', 'bold', 'XColor', [0 0 0], ...
+				'YColor', [0 0 0], 'TickDir', 'out', 'TickLength', [0.02, 0.025], 'Box', 'off', ...
+				'YTickLabelMode', 'Manual', 'YTick', [0], 'YTickLabel', {'0'}, 'YGrid', 'off');
+			if( strcmp(strUseSameScale, 'YES') )
+				axis(ranges_figSameScale);
+			else
+				axis(ranges_figSummedMM);
+			end
+			title('Fit for Summed MM (Macromolecules)');
+			xlabel('ppm', 'FontSize', (font+4), 'FontWeight', 'bold', 'VerticalAlignment', 'bottom', ...
+				'Units', 'normalized', 'Position', ppmTextPos);
+		end		% End of if( strcmp(strBoField, '3T') )
+	end		% End of if ~bAcquired_MMs
 end		% End of if( strcmp(strShowMetaboliteFits, 'YES') )
 
 
 %% Save plots as Matlab figures and EPS files and PNG files
+% Create cell structures with names for figure saving
+% For common figure of spectrum, fit, residuals, and, if selected, baseline
+if strcmp(strAddBaselineToPlot, 'YES')
+	acellSpecAndFit	= {'spectrumFitResBaseline'};
+else
+	acellSpecAndFit	= {'spectrumFitRes'};
+end % End of if strcmp(strAddBaselineToPlot, 'YES')
+% For separate figures for spectrum, fit, residuals, and baseline
+acellNames		= {'spectrum', 'fitOfSpectrum', 'fitResiduals', 'baseline'};
 
 % Save plots of spectrum, fit from LCModel, fit residuals, and baseline, if selected
-% CHECK ON INDICES INTO ARRAY FOR FIGURE HANDLES
+if( strcmp(strShowSpecAndFitSamePlot, 'YES') )
+	answer = questdlg('Do you want to save the common figure for spectrum, fit, residuals, and baseline?', ...
+		'Saving of SpecAndFitSamePlot', 'Yes', 'Default', 'No', 'No');
+	switch answer
+		case 'Yes'
+			fprintf('\n\nSaving of common spectrum and fit figure(s) ...\n\n\n')
+			% If directory for saving does not exist, create it
+			if( ~exist(saveDir, 'dir') )
+				[success,message,messageID] = mkdir(parentDir, 'SameScale');
+				if( success == 0 )
+					disp(message);
+					disp(messageID);
+				end
+			end
+			for lI=firstSpecAndFitSame : 1 : (firstSpecAndFitSame  + length(acellSpecAndFit) - 1)
+				figureName	= strcat(acellSpecAndFit{lI-firstSpecAndFitSame+1}, strSaveName);
+				saveFigure_s(h_figures(lI), saveDir, figureName, 'fig', resolution);
+				saveFigure_s(h_figures(lI), saveDir, figureName, 'eps', resolution);
+				saveFigure_s(h_figures(lI), saveDir, figureName, 'png', resolution);
+				%saveFigure_s(h_figures(lI+1), saveDir, figureName, 'png', 300);
+			end
+		case 'Default'
+			fprintf('\n\nCommon spectrum and fit figure(s) were not saved!\n\n\n');
+		case 'No'
+			fprintf('\n\nCommon spectrum and fit figure(s) were not saved!\n\n\n');
+	end		% End of switch answer
+end		% End of if( strcmp(strShowSpecAndFitSamePlot, 'YES') )
+
+% Save plots of spectrum, fit from LCModel, fit residuals, and baseline, if selected
 if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
-	acellNames		= {'spectrum', 'fitOfSpectrum', 'fitResiduals', 'baseline'};
 	answer = questdlg('Do you want to save the figures for spectrum, fit, residuals, and baseline?', ...
 		'Saving of Spectrum Figures', 'Yes', 'Default', 'No', 'No');
 	switch answer
@@ -718,18 +760,17 @@ if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
 				figureName	= strcat(acellNames{lI-firstSpectrumAndFitFig+1}, strSaveName);
 				saveFigure_s(h_figures(lI), saveDir, figureName, 'fig', resolution);
 				saveFigure_s(h_figures(lI), saveDir, figureName, 'eps', resolution);
-                saveFigure_s(h_figures(lI), saveDir, figureName, 'png', resolution);
+				saveFigure_s(h_figures(lI), saveDir, figureName, 'png', resolution);
 				%saveFigure_s(h_figures(lI+1), saveDir, figureName, 'png', 300);
 			end
 		case 'Default'
-			fprintf('\n\nSpectrum figures were not saved!\n\n\n');
+			fprintf('\n\nSeparate spectrum and fit figures were not saved!\n\n\n');
 		case 'No'
-			fprintf('\n\nSpectrum figures were not saved!\n\n\n');
+			fprintf('\n\nSeparate spectrum and fit figures were not saved!\n\n\n');
 	end		% End of switch answer
 end		% End of if( strcmp(strShowSpectrumAndFitFigs, 'YES') )
 
 % Save plots of fits for metabolite signals, if selected
-% CHECK ON INDICES INTO ARRAY FOR FIGURE HANDLES
 if( strcmp(strShowMetaboliteFits, 'YES') )
 	answer = questdlg('Do you want to save the figures for the metabolite fits?', ...
 		'Saving of Metabolite Fit Figures', 'Yes', 'Default', 'No', 'No');
@@ -751,14 +792,15 @@ if( strcmp(strShowMetaboliteFits, 'YES') )
 				saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'png', resolution);
 				%saveFigure_s(h_figures((lI-1)+firstMetabFig), saveDir, figureName, 'png', 300);
 			end
-			% Save figure for summed up macromolecule contributions for 3T data
-			if( strcmp(strBoField, '3T') )
-				figureName	= strcat('fitSig_', 'SummedMM', strSaveName);
-				saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'fig', resolution);
-				saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'eps', resolution);
-				saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'png', resolution);
-			end
-		case 'Default'
+			% Save figure for summed up macromolecules for 3T data, if existent
+			if ~bAcquired_MMs
+				if( strcmp(strBoField, '3T') )
+					figureName	= strcat('fitSig_', 'SummedMM', strSaveName);
+					saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'fig', resolution);
+					saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'eps', resolution);
+					saveFigure_s(h_figures(indFigSummedMM), saveDir, figureName, 'png', resolution);
+				end		% End of if( strcmp(strBoField, '3T') )
+			end		% End of if ~bAcquired_MMs
 			fprintf('\n\nMetabolite figures were not saved!\n\n\n');
 		case 'No'
 			fprintf('\n\nMetabolite figures were not saved!\n\n\n');
