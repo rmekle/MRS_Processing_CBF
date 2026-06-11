@@ -28,11 +28,16 @@ parentDir			= [parentDir_Base, parentDir_AddOn];
 % Select start and end pattern for substring extraction, if required
 % End pattern can be empty, if substring to be extracted is at end of name of subdirectory
 % Select string additions that have to be added at start and/or end of new filenames
+% Consider cases of different file types, e.g. DICOM files
 %startPat		= 'MRS_Trauma_';
+bAdd_DICOM		= 0;
 startPat		= 'MRS_';
 endPat			= '_LOBI';		% '';	'_LOBI';	'_G';	'_R';	'_DICOM';
 strAddStart		= '';		% 3T_';		'';
-strAddEnd		= '_DICOM_';		% '_';		'_DICOM_';	
+strAddEnd		= '_';
+if bAdd_DICOM
+	strAddEnd		= '_DICOM_';		% '_';		'_DICOM_';
+end		% End of if bAdd_DICOM
 lenStartPat		= length(startPat);
 
 % Select whether all files and folders in each subfolder are renamed using the same
