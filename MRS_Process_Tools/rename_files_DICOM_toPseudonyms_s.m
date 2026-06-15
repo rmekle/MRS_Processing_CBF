@@ -50,6 +50,8 @@
 
 %rootDir     = '/path/to/your/top/level/folder';   % <-- set this
 %mappingFile = '/path/to/your/mapping.csv';         % <-- set this
+%rootDir     = '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_Data_TGA_01_1/';
+%mappingFile = '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/3T_MRS_TGA_Data_Info_TGA_01_1.csv';
 rootDir     = '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/MRS_TGA_Data_All/';
 mappingFile = '/home/mekler/CSB_NeuroRad/mekler/Data_II/3T_MRS_TGA/3T_MRS_TGA_Data_Info.csv';
 dryRun      = true;   % true = preview only; false = rename for real
